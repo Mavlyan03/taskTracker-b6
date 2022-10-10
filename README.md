@@ -1,1 +1,1 @@
-![attachments.png](attachments.png)
+![create_table_diagram.png](create_table_diagram.png)
