@@ -21,9 +21,13 @@ public class Board {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "board_gen")
     @SequenceGenerator(name = "board_gen", sequenceName = "board_seq", allocationSize = 1)
     private Long id;
+
     private String title;
+
     private String photoLink;
+
     private boolean isArchive = false;
+
     private boolean isFavorite = false;
 
     @OneToMany(cascade = ALL, mappedBy = "board")

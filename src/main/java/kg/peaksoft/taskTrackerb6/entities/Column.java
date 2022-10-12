@@ -15,10 +15,12 @@ import static javax.persistence.CascadeType.*;
 @Setter
 @NoArgsConstructor
 public class Column {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "column_gen")
     @SequenceGenerator(name = "column_gen", sequenceName = "column_seq", allocationSize = 1)
     private Long id;
+
     private String title;
 
     @OneToMany(cascade = ALL, mappedBy = "column")

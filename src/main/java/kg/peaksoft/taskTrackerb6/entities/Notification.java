@@ -21,7 +21,9 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "notification_gen")
     @SequenceGenerator(name = "notification_gen", sequenceName = "notification_seq",allocationSize = 1)
     private Long id;
+
     private String text;
+
     private boolean read=false;
 
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})

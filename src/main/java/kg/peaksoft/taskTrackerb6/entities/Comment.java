@@ -20,7 +20,9 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "comment_gen")
     @SequenceGenerator(name = "comment_gen", sequenceName = "comment_seq", allocationSize = 1)
     private Long id;
+
     private String text;
+
     private LocalDateTime created;
 
     @ManyToOne(cascade = {DETACH, MERGE, PERSIST, REFRESH})

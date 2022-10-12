@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.persistence.Column;
 import java.util.List;
 
 import static javax.persistence.CascadeType.*;
@@ -22,10 +23,16 @@ public class User {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_gen")
     @SequenceGenerator(name = "user_gen", sequenceName = "user_seq", allocationSize = 1)
     private Long id;
-    private String name;
-    private String surname;
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "last_name")
+    private String lastName;
+
     private String photoLink;
+
     private String email;
+
     private String password;
 
     @OneToMany(cascade = {ALL}, mappedBy = "user")

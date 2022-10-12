@@ -20,8 +20,11 @@ public class Workspace {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "workspace_gen")
     @SequenceGenerator(name = "workspace_gen", sequenceName = "workspace_seq", allocationSize = 1)
     private Long id;
+
     private String name;
+
     private boolean isFavourite = false;
+
     private String photo;
 
     @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST}, mappedBy = "workspaces")

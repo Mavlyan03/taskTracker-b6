@@ -21,7 +21,9 @@ public class Checklist {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "checklist_gen")
     @SequenceGenerator(name = "checklist_gen", sequenceName = "checklist_seq", allocationSize = 1)
     private Long id;
+
     private String name;
+
     private int taskTracker;
 
     @OneToMany(cascade = {ALL}, mappedBy = "checklist")

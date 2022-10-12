@@ -20,7 +20,9 @@ public class SubTask {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sub_gen")
     @SequenceGenerator(name = "sub_gen", sequenceName = "sub_seq", allocationSize = 1)
     private Long id;
+
     private String description;
+
     private boolean done = false;
 
     @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST}, mappedBy = "workspaces")

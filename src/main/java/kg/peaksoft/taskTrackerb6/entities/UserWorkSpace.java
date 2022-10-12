@@ -16,6 +16,7 @@ import static javax.persistence.CascadeType.MERGE;
 @Setter
 @NoArgsConstructor
 public class UserWorkSpace {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_workspace_roles_gen")
     @SequenceGenerator(name = "user_workspace_roles_gen", sequenceName = "user_workspace_roles_seq",allocationSize = 1)

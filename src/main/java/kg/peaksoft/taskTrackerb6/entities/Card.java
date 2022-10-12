@@ -22,8 +22,11 @@ public class Card {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "card_gen")
     @SequenceGenerator(name = "card_gen", sequenceName = "card_seq", allocationSize = 1)
     private Long id;
+
     private String title;
+
     private String description;
+
     private boolean idArchive = false;
 
     @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
@@ -34,6 +37,7 @@ public class Card {
 
     @OneToOne(cascade = {ALL})
     private Estimation estimation;
+
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private Column column;
 
@@ -45,6 +49,7 @@ public class Card {
 
     @OneToMany(cascade = {ALL}, mappedBy = "card")
     private List<Attachment> attachments;
+
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private Board board;
 }

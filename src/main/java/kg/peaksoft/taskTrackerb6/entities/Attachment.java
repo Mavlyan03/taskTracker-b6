@@ -21,8 +21,11 @@ public class Attachment {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "attachment_gen")
     @SequenceGenerator(name = "attachment_gen", sequenceName = "attachment_seq", allocationSize = 1)
     private Long id;
+
     private String documentLink;
+
     private LocalDateTime attachedDate;
+
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private Card card;
 }

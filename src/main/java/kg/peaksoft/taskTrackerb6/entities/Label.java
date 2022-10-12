@@ -20,7 +20,10 @@ public class Label {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "label_gen")
     @SequenceGenerator(name = "label_gen", sequenceName = "label_seq", allocationSize = 1)
     private Long id;
+
     private String description;
+
+    @Enumerated(EnumType.STRING)
     private LabelsColor color;
 
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
