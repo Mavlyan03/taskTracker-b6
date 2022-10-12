@@ -11,10 +11,10 @@ import java.util.List;
 import static javax.persistence.CascadeType.*;
 
 @Entity
+@Table(name = "attachments")
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "attachments")
 public class Attachment {
 
     @Id
