@@ -28,5 +28,6 @@ public class UserWorkSpace {
     @ManyToOne(cascade = {REFRESH, DETACH, PERSIST, MERGE})
     private Workspace workspace;
 
+    @Enumerated(EnumType.STRING)
     private Role role;
 }

@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.persistence.Column;
 import java.util.List;
 
 import static javax.persistence.CascadeType.*;
@@ -21,9 +22,10 @@ public class SubTask {
     @SequenceGenerator(name = "sub_gen", sequenceName = "sub_seq", allocationSize = 1)
     private Long id;
 
+    @Column(length = 10000)
     private String description;
 
-    private boolean done = false;
+    private boolean isDone = false;
 
     @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST}, mappedBy = "workspaces")
     private List<User> workspacesUsers;

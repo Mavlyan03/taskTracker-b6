@@ -31,7 +31,7 @@ public class Board {
     private boolean isFavorite = false;
 
     @OneToMany(cascade = ALL, mappedBy = "board")
-    private List<Column> columns;
+    private List<Line> lines;
 
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private User creator;

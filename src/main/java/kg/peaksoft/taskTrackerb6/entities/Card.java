@@ -5,7 +5,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.persistence.Column;
 import java.util.List;
+
 
 import static javax.persistence.CascadeType.*;
 import static javax.persistence.CascadeType.PERSIST;
@@ -24,6 +26,7 @@ public class Card {
 
     private String title;
 
+    @Column(length = 10000)
     private String description;
 
     private boolean idArchive = false;
@@ -38,7 +41,7 @@ public class Card {
     private Estimation estimation;
 
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
-    private Column column;
+    private Line line;
 
     @OneToMany(cascade = {ALL}, mappedBy = "card")
     private List<Label> labels;

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.persistence.Column;
 
 import static javax.persistence.CascadeType.*;
 
@@ -21,6 +22,7 @@ public class Label {
     @SequenceGenerator(name = "label_gen", sequenceName = "label_seq", allocationSize = 1)
     private Long id;
 
+    @Column(length = 10000)
     private String description;
 
     @Enumerated(EnumType.STRING)
