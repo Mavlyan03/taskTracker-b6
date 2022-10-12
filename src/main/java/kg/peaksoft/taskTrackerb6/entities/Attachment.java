@@ -8,23 +8,21 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static javax.persistence.CascadeType.*;
+
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @Table(name = "attachments")
 public class Attachment {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "attachment_gen")
     @SequenceGenerator(name = "attachment_gen", sequenceName = "attachment_seq", allocationSize = 1)
     private Long id;
     private String documentLink;
     private LocalDateTime attachedDate;
-
-    @ManyToOne(cascade = {
-            CascadeType.DETACH,
-            CascadeType.REFRESH,
-            CascadeType.MERGE,
-            CascadeType.PERSIST})
+    @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private Card card;
 }

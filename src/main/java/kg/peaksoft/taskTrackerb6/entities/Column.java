@@ -6,6 +6,9 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
+
+import static javax.persistence.CascadeType.*;
+
 @Entity
 @Table(name = "columns")
 @Getter
@@ -17,12 +20,9 @@ public class Column {
     @SequenceGenerator(name = "column_gen", sequenceName = "column_seq", allocationSize = 1)
     private Long id;
     private String title;
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "column")
-    private List<Card>cards;
-    @ManyToOne(cascade = {
-            CascadeType.DETACH,
-            CascadeType.REFRESH,
-            CascadeType.MERGE,
-            CascadeType.PERSIST})
+
+    @OneToMany(cascade = ALL, mappedBy = "column")
+    private List<Card> cards;
+    @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private Board board;
 }

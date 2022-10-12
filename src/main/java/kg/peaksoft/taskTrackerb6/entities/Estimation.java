@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 public class Estimation {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "estimation_gen")
     @SequenceGenerator(name = "estimation_gen", sequenceName = "estimation_seq", allocationSize = 1)
@@ -20,4 +21,14 @@ public class Estimation {
     private LocalDate created;
     private LocalDate deadline;
     private int reminder;
+    private String text;
+
+    @OneToOne
+    private Card card;
+
+    @OneToOne
+    private SubTask subTask;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private User user;
 }

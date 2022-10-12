@@ -7,39 +7,37 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.List;
 
+import static javax.persistence.CascadeType.*;
+import static javax.persistence.CascadeType.PERSIST;
+
 @Entity
 @Table(name = "boards")
 @Getter
 @Setter
 @NoArgsConstructor
 public class Board {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "board_gen")
     @SequenceGenerator(name = "board_gen", sequenceName = "board_seq", allocationSize = 1)
     private Long id;
     private String title;
-    private boolean isFavorite = false;
     private String photoLink;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "board")
+    private boolean isArchive = false;
+    private boolean isFavorite = false;
+
+    @OneToMany(cascade = ALL, mappedBy = "board")
     private List<Column> columns;
-    @ManyToOne(cascade = {
-            CascadeType.DETACH,
-            CascadeType.REFRESH,
-            CascadeType.MERGE,
-            CascadeType.PERSIST})
-    private User admin;
-    @ManyToMany(cascade = {
-            CascadeType.DETACH,
-            CascadeType.REFRESH,
-            CascadeType.MERGE,
-            CascadeType.PERSIST})
+
+    @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    private User creator;
+
+    @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST}, mappedBy = "boards")
     private List<User> members;
-    @OneToMany(cascade = CascadeType.ALL)
+
+    @OneToMany(cascade = {ALL}, mappedBy = "board")
     private List<Card> allIssues;
-    @ManyToOne(cascade = {
-            CascadeType.DETACH,
-            CascadeType.REFRESH,
-            CascadeType.MERGE,
-            CascadeType.PERSIST})
-    private WorkSpace workspace;
+
+    @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    private Workspace workspace;
 }

@@ -6,6 +6,9 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
+
+import static javax.persistence.CascadeType.*;
+
 @Entity
 @Table(name = "subtasks")
 @Getter
@@ -19,23 +22,14 @@ public class SubTask {
     private Long id;
     private String description;
     private boolean done = false;
-    @ManyToMany(cascade = {
-            CascadeType.DETACH,
-            CascadeType.REFRESH,
-            CascadeType.MERGE,
-            CascadeType.PERSIST}, mappedBy = "workspaces")
-    private List<User> userCards;
-    @OneToOne(cascade = {
-            CascadeType.DETACH,
-            CascadeType.REFRESH,
-            CascadeType.MERGE,
-            CascadeType.PERSIST})
+
+    @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST}, mappedBy = "workspaces")
+    private List<User> workspacesUsers;
+
+    @OneToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private Estimation estimation;
-    @ManyToOne(cascade = {
-            CascadeType.DETACH,
-            CascadeType.REFRESH,
-            CascadeType.MERGE,
-            CascadeType.PERSIST})
+
+    @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private Checklist checklist;
 
 }
