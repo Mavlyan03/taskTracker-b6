@@ -1,1 +1,1 @@
-![create_table_diagram.png](create_table_diagram.png)
+![public.png](public.png)
