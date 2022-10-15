@@ -1,9 +1,14 @@
 package kg.peaksoft.taskTrackerb6.service;
 
+import antlr.Token;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseToken;
 import kg.peaksoft.taskTrackerb6.dto.request.ResetPasswordRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SignInRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SignUpRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.AuthResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.LoginWithGoogleResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.entities.User;
 import kg.peaksoft.taskTrackerb6.enums.Role;
@@ -87,7 +92,7 @@ public class UserService {
                 () -> new NotFoundException("User with email: " + email)
         );
         MimeMessage mimeMessage = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true,"UTF-8");
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
         helper.setSubject("[task_tracker] reset password link");
         helper.setFrom("personjust574@gmail.com");
         helper.setTo(email);
@@ -111,5 +116,35 @@ public class UserService {
                 .email(signUpRequest.getEmail())
                 .password(signUpRequest.getPassword())
                 .build();
+
     }
+
+    public AuthResponse authWithGoogle(String tokenId) throws FirebaseAuthException {
+        FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdToken(tokenId);
+        User user;
+        if (!repository.existsByEmail(firebaseToken.getEmail())) {
+            User newUser = new User();
+            newUser.setFirstName(firebaseToken.getName());
+            newUser.setEmail(firebaseToken.getEmail());
+            newUser.setPassword(firebaseToken.getEmail());
+            newUser.setRole(Role.USER);
+            user = repository.save(newUser);
+        }
+        user = repository.findByEmail(firebaseToken.getEmail()).orElseThrow(() -> new NotFoundException("this user is not found"));
+        String token = jwtUtil.generateToken(user.getEmail());
+        return new AuthResponse(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getRole(), token);
+    }
+
+    public LoginWithGoogleResponse loginWithGoogle(String email) throws FirebaseAuthException {
+        FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdToken(email);
+        User user;
+        if (!repository.existsByEmail(email)) {
+            throw new NotFoundException("user with email : " + email + " not found !");
+        }
+
+        user = repository.findByEmail(firebaseToken.getEmail()).orElseThrow(() -> new NotFoundException("this user is not found"));
+        String token = jwtUtil.generateToken(user.getEmail());
+        return new LoginWithGoogleResponse("Successfully", token);
+    }
+
 }

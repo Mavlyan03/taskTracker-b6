@@ -23,7 +23,7 @@ public class Workspace {
 
     private String name;
 
-    private boolean isFavourite = false;
+    private boolean isFavorite = false;
 
     private String photo;
 

@@ -29,7 +29,7 @@ public class Card {
     @Column(length = 10000)
     private String description;
 
-    private boolean idArchive = false;
+    private boolean isArchive = false;
 
     @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private List<User> members;
