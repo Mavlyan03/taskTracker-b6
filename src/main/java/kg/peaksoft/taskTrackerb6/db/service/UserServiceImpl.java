@@ -1,17 +1,17 @@
-package kg.peaksoft.taskTrackerb6.service;
+package kg.peaksoft.taskTrackerb6.db.service;
 
-import kg.peaksoft.taskTrackerb6.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserDetailsService {
 
-    @Autowired
-    private UserRepository repository;
+    private final UserRepository repository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

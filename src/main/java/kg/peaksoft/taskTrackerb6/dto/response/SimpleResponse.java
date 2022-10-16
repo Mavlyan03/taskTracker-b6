@@ -11,4 +11,5 @@ public class SimpleResponse {
 
     private String message;
     private String status;
+
 }

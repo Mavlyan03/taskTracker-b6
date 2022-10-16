@@ -9,4 +9,5 @@ public class ResetPasswordRequest {
 
     private Long userId;
     private String newPassword;
+
 }

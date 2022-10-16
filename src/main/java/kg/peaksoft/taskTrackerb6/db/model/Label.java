@@ -1,4 +1,4 @@
-package kg.peaksoft.taskTrackerb6.entities;
+package kg.peaksoft.taskTrackerb6.db.model;
 
 import kg.peaksoft.taskTrackerb6.enums.LabelsColor;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package kg.peaksoft.taskTrackerb6.configs.jwt;
+package kg.peaksoft.taskTrackerb6.config.security;
 
 
 import com.auth0.jwt.JWT;

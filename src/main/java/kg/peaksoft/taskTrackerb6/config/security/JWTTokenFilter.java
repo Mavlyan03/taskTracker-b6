@@ -1,7 +1,7 @@
-package kg.peaksoft.taskTrackerb6.configs.jwt;
+package kg.peaksoft.taskTrackerb6.config.security;
 
-import kg.peaksoft.taskTrackerb6.entities.User;
-import kg.peaksoft.taskTrackerb6.repository.UserRepository;
+import kg.peaksoft.taskTrackerb6.db.model.User;
+import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;

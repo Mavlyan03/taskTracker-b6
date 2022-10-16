@@ -1,4 +1,4 @@
-package kg.peaksoft.taskTrackerb6.service;
+package kg.peaksoft.taskTrackerb6.db.service;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -8,12 +8,12 @@ import kg.peaksoft.taskTrackerb6.dto.request.SignInRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SignUpRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.AuthResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
-import kg.peaksoft.taskTrackerb6.entities.User;
+import kg.peaksoft.taskTrackerb6.db.model.User;
 import kg.peaksoft.taskTrackerb6.enums.Role;
 import kg.peaksoft.taskTrackerb6.exceptions.BadRequestException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
-import kg.peaksoft.taskTrackerb6.repository.UserRepository;
-import kg.peaksoft.taskTrackerb6.configs.jwt.JWTUtil;
+import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
+import kg.peaksoft.taskTrackerb6.config.security.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;

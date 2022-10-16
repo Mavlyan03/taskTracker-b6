@@ -1,4 +1,4 @@
-package kg.peaksoft.taskTrackerb6.configs;
+package kg.peaksoft.taskTrackerb6.config.swagger;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.Collections;
 
 @Configuration
-public class Swagger {
+public class SwaggerConfig {
 
     private static final String API_KEY = "Bearer Token";
 
@@ -20,7 +20,7 @@ public class Swagger {
         return new OpenAPI()
                 .components(new Components()
                         .addSecuritySchemes(API_KEY, apiKeySecuritySchema()))
-                .info(new Info().title("Task Tracker").title("Java 6 Swagger APP").description("Written by: Datka Mamatzhanova"))
+                .info(new Info().title("Task Tracker App").description("Written by: Datka Mamatzhanova"))
                 .security(Collections.singletonList(new SecurityRequirement().addList(API_KEY)));
     }
 
