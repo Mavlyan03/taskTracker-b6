@@ -19,9 +19,9 @@ public class Swagger {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .components(new Components()
-                        .addSecuritySchemes(API_KEY, apiKeySecuritySchema())) // define the apiKey SecuritySchema
+                        .addSecuritySchemes(API_KEY, apiKeySecuritySchema()))
                 .info(new Info().title("Task Tracker").title("Java 6 Swagger APP").description("Written by: Datka Mamatzhanova"))
-                .security(Collections.singletonList(new SecurityRequirement().addList(API_KEY))); // then apply it. If you don't apply it will not be added to the header in cURL
+                .security(Collections.singletonList(new SecurityRequirement().addList(API_KEY)));
     }
 
     private SecurityScheme apiKeySecuritySchema() {

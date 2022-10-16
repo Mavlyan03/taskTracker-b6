@@ -40,7 +40,7 @@ public class JWTTokenFilter extends OncePerRequestFilter {
             String email = jwtUtil.validateJWTToken(token);
 
             User user = userRepository.findByEmail(email).orElseThrow(
-                    ()-> new UsernameNotFoundException("user with email: " + email + " not found")
+                    () -> new UsernameNotFoundException("user with email: " + email + " not found")
             );
 
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(

@@ -7,7 +7,6 @@ import kg.peaksoft.taskTrackerb6.dto.request.ResetPasswordRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SignInRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SignUpRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.AuthResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.LoginWithGoogleResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -58,20 +57,10 @@ public class AuthApi {
     }
 
     @Operation(
-            summary = "Authenticate with Google",
-            description = "You can sign up  with Google"
-    )
-    @PostMapping("/authenticate/google")
+            summary = "Authenticate with google",
+            description = "You can sign up with Google")
+    @PostMapping("authenticate/google")
     public AuthResponse authWithGoogleAccount(@RequestBody String tokenId) throws FirebaseAuthException {
         return userService.authWithGoogle(tokenId);
-    }
-
-    @Operation(
-            summary = "Login with Google",
-            description = "You can log in with Google"
-    )
-    @PostMapping("/login/withGoogle")
-    public LoginWithGoogleResponse loginWithGoogle(@RequestBody String email) throws FirebaseAuthException {
-        return userService.loginWithGoogle(email);
     }
 }
