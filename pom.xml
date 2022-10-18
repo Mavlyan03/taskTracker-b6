@@ -108,6 +108,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>taskTracker</finalName>
 	</build>
 
 </project>
