@@ -14,7 +14,7 @@ apt-cache policy docker-ce
 yes | sudo apt install docker-ce
 
 # make sure demo docker is not running
-sudo docker rm $(sudo docker stop $(sudo docker ps -a -q --filter ancestor=taskTracker:latest --format="{{.ID}}"))
+sudo docker rm $(sudo docker stop $(sudo docker ps -a -q --filter ancestor=tasktracker:latest --format="{{.ID}}"))
 
 # copy nginx conf to default
 sudo cp nginx.conf /etc/nginx/conf.d/default.conf
@@ -22,10 +22,10 @@ sudo cp nginx.conf /etc/nginx/conf.d/default.conf
 sudo systemctl restart nginx
 
 # build dockerfile
-sudo docker build -f Dockerfile -t taskTracker:latest .
+sudo docker build -f Dockerfile -t tasktracker:latest .
 
 # run in detached mode
-sudo docker run -p 8080:8080 -d taskTracker:latest
+sudo docker run -p 8080:8080 -d tasktracker:latest
 
 sleep 15
 
