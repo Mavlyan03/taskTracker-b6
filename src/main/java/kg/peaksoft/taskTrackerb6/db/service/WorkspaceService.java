@@ -1,23 +1,22 @@
-package kg.peaksoft.taskTrackerb6.service;
+package kg.peaksoft.taskTrackerb6.db.service;
 
+import kg.peaksoft.taskTrackerb6.db.model.User;
+import kg.peaksoft.taskTrackerb6.db.model.UserWorkSpace;
+import kg.peaksoft.taskTrackerb6.db.model.Workspace;
+import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
+import kg.peaksoft.taskTrackerb6.db.repository.UserWorkSpaceRepository;
+import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
 import kg.peaksoft.taskTrackerb6.dto.converter.WorkspaceConverter;
 import kg.peaksoft.taskTrackerb6.dto.request.WorkspaceRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.WorkspaceResponse;
-import kg.peaksoft.taskTrackerb6.entities.User;
-import kg.peaksoft.taskTrackerb6.entities.UserWorkSpace;
-import kg.peaksoft.taskTrackerb6.entities.Workspace;
 import kg.peaksoft.taskTrackerb6.enums.Role;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
-import kg.peaksoft.taskTrackerb6.repository.UserRepository;
-import kg.peaksoft.taskTrackerb6.repository.UserWorkSpaceRepository;
-import kg.peaksoft.taskTrackerb6.repository.WorkspaceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -64,9 +63,7 @@ public class WorkspaceService {
 
     public WorkspaceResponse getWorkspaceById(Long id) {
         Workspace workspace = workspaceRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(
-                        "workspace with id: " + id + " not found!"
-                )
+                () -> new NotFoundException("workspace with id: " + id + " not found!")
         );
 
         return converter.convertToResponse(workspace);
