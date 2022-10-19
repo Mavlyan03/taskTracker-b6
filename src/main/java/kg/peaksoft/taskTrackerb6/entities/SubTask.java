@@ -19,7 +19,7 @@ public class SubTask {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sub_gen")
-    @SequenceGenerator(name = "sub_gen", sequenceName = "sub_seq", allocationSize = 1)
+    @SequenceGenerator(name = "sub_gen", sequenceName = "sub_seq", allocationSize = 1, initialValue = 2)
     private Long id;
 
     @Column(length = 10000)

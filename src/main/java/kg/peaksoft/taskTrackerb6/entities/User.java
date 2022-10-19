@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.persistence.Column;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -25,7 +26,7 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_gen")
-    @SequenceGenerator(name = "user_gen", sequenceName = "user_seq", allocationSize = 1)
+    @SequenceGenerator(name = "user_gen", sequenceName = "user_seq", allocationSize = 1, initialValue = 4)
     private Long id;
 
     @Column(name = "first_name")
@@ -43,14 +44,33 @@ public class User implements UserDetails {
     @OneToMany(cascade = {ALL}, mappedBy = "user")
     private List<Notification> notifications;
 
-    @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST}, fetch = FetchType.EAGER)
     private List<Workspace> workspaces;
+
+    @OneToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    private List<Workspace> leadWorkspaces;
 
     @ManyToMany(cascade = {ALL})
     private List<Board> boards;
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    public User(String firstName, String lastName, String photoLink, String email, String password, Role role) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.photoLink = photoLink;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
+    public void addWorkspace(Workspace workspace) {
+        if (workspaces == null) {
+            workspaces = new ArrayList<>();
+        }
+        workspaces.add(workspace);
+    }
 
 
     @Override

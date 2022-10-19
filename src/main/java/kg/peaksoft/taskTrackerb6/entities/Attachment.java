@@ -18,7 +18,7 @@ public class Attachment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "attachment_gen")
-    @SequenceGenerator(name = "attachment_gen", sequenceName = "attachment_seq", allocationSize = 1)
+    @SequenceGenerator(name = "attachment_gen", sequenceName = "attachment_seq", allocationSize = 1, initialValue = 2)
     private Long id;
 
     private String documentLink;

@@ -18,14 +18,15 @@ import javax.mail.MessagingException;
 @RequiredArgsConstructor
 @RequestMapping("api/public")
 @CrossOrigin(origins = "*", maxAge = 3600)
-@Tag(name = "Auth Api", description = "Authorization and Authentication")
+@Tag(name = "Auth Api", description = "Authentication and Authorization")
 public class AuthApi {
 
     private final UserService userService;
 
     @Operation(
             summary = "User registration",
-            description = "Allows you to register a user")
+            description = "Allows you to register a user"
+    )
     @PostMapping("registration")
     public AuthResponse registration(@RequestBody SignUpRequest signUpRequest) {
         return userService.registration(signUpRequest);
@@ -33,7 +34,8 @@ public class AuthApi {
 
     @Operation(
             summary = "Login",
-            description = "Sign in")
+            description = "Sign in"
+    )
     @PostMapping("login")
     public AuthResponse login(@RequestBody SignInRequest signInRequest) {
         return userService.login(signInRequest);
@@ -41,8 +43,9 @@ public class AuthApi {
 
     @Operation(
             summary = "Forgot password",
-            description = "If the user has forgotten the password")
-    @GetMapping("forgot/password")
+            description = "If the user has forgotten the password"
+    )
+    @PostMapping("forgot/password")
     public SimpleResponse forgotPassword(@RequestParam String email,
                                          @RequestParam String link) throws MessagingException {
         return userService.forgotPassword(email, link);
@@ -50,15 +53,17 @@ public class AuthApi {
 
     @Operation(
             summary = "Reset password",
-            description = "Allows you to reset the user's password")
-    @PatchMapping("reset/password")
+            description = "Allows you to reset the user's password"
+    )
+    @PostMapping("reset/password")
     public SimpleResponse resetPassword(@RequestBody ResetPasswordRequest request) {
         return userService.resetPassword(request);
     }
 
     @Operation(
             summary = "Authenticate with google",
-            description = "You can sign up with Google")
+            description = "You can sign up with Google"
+    )
     @PostMapping("authenticate/google")
     public AuthResponse authWithGoogleAccount(@RequestBody String tokenId) throws FirebaseAuthException {
         return userService.authWithGoogle(tokenId);

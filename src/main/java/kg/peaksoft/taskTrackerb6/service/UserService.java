@@ -10,6 +10,7 @@ import kg.peaksoft.taskTrackerb6.dto.response.AuthResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.entities.User;
 import kg.peaksoft.taskTrackerb6.enums.Role;
+import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.BadRequestException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import kg.peaksoft.taskTrackerb6.repository.UserRepository;
@@ -17,7 +18,6 @@ import kg.peaksoft.taskTrackerb6.configs.jwt.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +46,7 @@ public class UserService {
 
         User user = convertToRegisterEntity(signUpRequest);
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
-        user.setRole(Role.USER);
+        user.setRole(Role.ADMIN);
         repository.save(user);
 
         String jwt = jwtUtil.generateToken(user.getEmail());
@@ -63,14 +63,15 @@ public class UserService {
 
     public AuthResponse login(SignInRequest signInRequest) {
 
-        if (signInRequest.getPassword().isBlank()) {
+        if (signInRequest.getPassword().isBlank()   ) {
             throw new BadRequestException("password can not be empty!");
         }
 
-        User user = repository.findByEmail(signInRequest.getEmail()).orElseThrow(() -> new NotFoundException("user with this email: " + signInRequest.getEmail() + " not found!"));
+        User user = repository.findByEmail(signInRequest.getEmail()).orElseThrow(
+                () -> new NotFoundException("user with this email: " + signInRequest.getEmail() + " not found!"));
 
         if (!passwordEncoder.matches(signInRequest.getPassword(), user.getPassword())) {
-            throw new BadCredentialsException("incorrect password");
+            throw new BadCredentialException("incorrect password");
         }
 
         String jwt = jwtUtil.generateToken(user.getEmail());
@@ -89,6 +90,7 @@ public class UserService {
         User user = repository.findByEmail(email).orElseThrow(
                 () -> new NotFoundException("User with email: " + email + " not found!")
         );
+
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
         helper.setSubject("[task_tracker] reset password link");
@@ -96,15 +98,16 @@ public class UserService {
         helper.setTo(email);
         helper.setText(link + "/" + user.getId(), true);
         mailSender.send(mimeMessage);
-        return new SimpleResponse("email send", "ok");
+        return new SimpleResponse("email send", "OK");
     }
 
     public SimpleResponse resetPassword(ResetPasswordRequest request) {
         User user = repository.findById(request.getUserId()).orElseThrow(
                 () -> new NotFoundException("user with id: " + request.getUserId() + " not found")
         );
+
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-        return new SimpleResponse("password updated ", "ok");
+        return new SimpleResponse("password updated ", "OK");
     }
 
     private User convertToRegisterEntity(SignUpRequest signUpRequest) {
@@ -124,12 +127,21 @@ public class UserService {
             newUser.setFirstName(firebaseToken.getName());
             newUser.setEmail(firebaseToken.getEmail());
             newUser.setPassword(firebaseToken.getEmail());
-            newUser.setRole(Role.USER);
+            newUser.setRole(Role.ADMIN);
             user = repository.save(newUser);
         }
-        user = repository.findByEmail(firebaseToken.getEmail()).orElseThrow(() -> new NotFoundException("user with this email not found!"));
+        user = repository.findByEmail(firebaseToken.getEmail()).orElseThrow(
+                () -> new NotFoundException("user with this email not found!"));
         String token = jwtUtil.generateToken(user.getPassword());
-        return new AuthResponse(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getRole(), token);
+        return new AuthResponse(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getRole(),
+                token);
     }
+
+
 
 }

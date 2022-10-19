@@ -19,7 +19,7 @@ public class Estimation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "estimation_gen")
-    @SequenceGenerator(name = "estimation_gen", sequenceName = "estimation_seq", allocationSize = 1)
+    @SequenceGenerator(name = "estimation_gen", sequenceName = "estimation_seq", allocationSize = 1, initialValue = 2)
     private Long id;
 
     private LocalDate createdDate;

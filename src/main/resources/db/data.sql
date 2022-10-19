@@ -10,8 +10,8 @@ values (1, 'Esen', 'Niyazov', 'photoLink', 'esen@gmail.com',
        (3, 'Nursultan', 'Askarov', 'users_photoLink', 'user@gmail.com',
         '$2a$12$oRaUgIHxClArpaNXqFIPD.xUSju4iSsGFGEwlQgSWV2aii/3LqYyW', 'USER');
 
-insert into workspaces (id, name, is_favorite, photo, lead_id)
-values (1, 'Workspace Name', false, 'photoPeaksoft', 1);
+insert into workspaces (id, name, is_favorite, lead_id)
+values (1, 'Workspace Name', false,  1);
 
 insert into boards(id, title, photo_link, is_archive, is_favorite, creator_id, workspace_id)
 values (1, 'First Board', 'board_photo', false, false, 1, 1);
@@ -53,7 +53,7 @@ insert into users_boards (members_id, boards_id)
 values (1, 1);
 
 insert into user_workspace_roles (id, user_id, workspace_id, role)
-values (1, 1, 1, 'USER');
+values (1, 1, 1, 'SUPER_ADMIN');
 
 insert into workspaces_all_issues (workspace_id, all_issues_id)
 values (1, 1);

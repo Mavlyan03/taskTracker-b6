@@ -44,7 +44,7 @@ public class JWTUtil {
     }
 
     private DecodedJWT getDecodedJWT(String jwt) {
-        JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(secret))
+        JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC512(secret))
                 .withIssuer(issuer)
                 .build();
 
