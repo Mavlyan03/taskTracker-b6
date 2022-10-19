@@ -33,7 +33,7 @@ jobs:
         run: |
           echo "$PRIVATE_KEY" > private_key.pem && chmod 600 private_key.pem
           ssh -o StrictHostKeyChecking=no -i private_key.pem ${USER_NAME}@${HOSTNAME} '
-            rm -rf /home/ubuntu/<your-repo-name>
+            rm -rf /home/ubuntu/<taskTracker-b6>
             git clone <your-repo-link>.git
             cd <your-repo>
             git checkout master
