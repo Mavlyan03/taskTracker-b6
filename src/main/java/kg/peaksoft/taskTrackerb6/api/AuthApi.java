@@ -8,9 +8,17 @@ import kg.peaksoft.taskTrackerb6.dto.request.SignInRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SignUpRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.AuthResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
-import kg.peaksoft.taskTrackerb6.service.UserService;
+import kg.peaksoft.taskTrackerb6.db.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.mail.MessagingException;
 
@@ -18,52 +26,37 @@ import javax.mail.MessagingException;
 @RequiredArgsConstructor
 @RequestMapping("api/public")
 @CrossOrigin(origins = "*", maxAge = 3600)
-@Tag(name = "Auth Api", description = "Authentication and Authorization")
+@Tag(name = "Auth Api", description = "Authorization and Authentication")
 public class AuthApi {
 
     private final UserService userService;
 
-    @Operation(
-            summary = "User registration",
-            description = "Allows you to register a user"
-    )
+    @Operation(summary = "Sign up", description = "Any user can register")
     @PostMapping("registration")
     public AuthResponse registration(@RequestBody SignUpRequest signUpRequest) {
         return userService.registration(signUpRequest);
     }
 
-    @Operation(
-            summary = "Login",
-            description = "Sign in"
-    )
+    @Operation(summary = "Sign in", description = "Only registered users can login")
     @PostMapping("login")
     public AuthResponse login(@RequestBody SignInRequest signInRequest) {
         return userService.login(signInRequest);
     }
 
-    @Operation(
-            summary = "Forgot password",
-            description = "If the user has forgotten the password"
-    )
-    @PostMapping("forgot/password")
+    @Operation(summary = "Forgot password", description = "If the user has forgotten the password")
+    @GetMapping("forgot/password")
     public SimpleResponse forgotPassword(@RequestParam String email,
                                          @RequestParam String link) throws MessagingException {
         return userService.forgotPassword(email, link);
     }
 
-    @Operation(
-            summary = "Reset password",
-            description = "Allows you to reset the user's password"
-    )
-    @PostMapping("reset/password")
+    @Operation(summary = "Reset password", description = "Allows you to reset the user's password")
+    @PatchMapping("reset/password")
     public SimpleResponse resetPassword(@RequestBody ResetPasswordRequest request) {
         return userService.resetPassword(request);
     }
 
-    @Operation(
-            summary = "Authenticate with google",
-            description = "You can sign up with Google"
-    )
+    @Operation(summary = "Google authentication", description = "Any user can authenticate with Google")
     @PostMapping("authenticate/google")
     public AuthResponse authWithGoogleAccount(@RequestBody String tokenId) throws FirebaseAuthException {
         return userService.authWithGoogle(tokenId);

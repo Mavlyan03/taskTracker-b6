@@ -1,4 +1,4 @@
-package kg.peaksoft.taskTrackerb6.entities;
+package kg.peaksoft.taskTrackerb6.db.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
