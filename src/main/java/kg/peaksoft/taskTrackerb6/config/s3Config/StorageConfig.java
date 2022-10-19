@@ -28,5 +28,4 @@ public class StorageConfig {
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
                 .withRegion(region).build();
     }
-
 }
