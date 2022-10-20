@@ -32,16 +32,16 @@ public class WorkspaceApi {
 
     private final WorkspaceService service;
 
-    @Operation(summary = "Create workspace", description = "Create new workspace")
-    @PostMapping("/createWorkspace")
-    public WorkspaceResponse create(@RequestBody WorkspaceRequest request,
+    @Operation(summary = "Save workspace", description = "Save new workspace")
+    @PostMapping
+    public WorkspaceResponse save(@RequestBody WorkspaceRequest request,
                                     Authentication authentication) throws MessagingException {
         User user = (User) authentication.getPrincipal();
         return service.createWorkspace(request, user);
     }
 
     @Operation(summary = "Get workspace", description = "Get workspace by workspace id")
-    @GetMapping("/{id}")
+    @GetMapping("{id}")
     public WorkspaceResponse getById(@PathVariable Long id) {
         return service.getWorkspaceById(id);
     }
@@ -54,9 +54,9 @@ public class WorkspaceApi {
         return service.deleteWorkspaceById(id, user);
     }
 
-    @Operation(summary = "Workspaces", description = "Get all workspaces")
+    @Operation(summary = "All workspaces", description = "Get all workspaces")
     @PreAuthorize("hasAuthority('SUPER_ADMIN')")
-    @GetMapping("/getAllWorkspaces")
+    @GetMapping
     public List<WorkspaceResponse> getAll() {
         return service.getAllWorkspace();
     }

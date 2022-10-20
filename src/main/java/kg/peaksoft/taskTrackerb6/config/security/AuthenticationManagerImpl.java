@@ -1,4 +1,4 @@
-package kg.peaksoft.taskTrackerb6.configs.security;
+package kg.peaksoft.taskTrackerb6.config.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;

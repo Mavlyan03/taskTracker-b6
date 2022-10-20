@@ -1,8 +1,7 @@
-package kg.peaksoft.taskTrackerb6.configs.security;
+package kg.peaksoft.taskTrackerb6.config.security;
 
 
 
-import kg.peaksoft.taskTrackerb6.config.security.JWTTokenFilter;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;

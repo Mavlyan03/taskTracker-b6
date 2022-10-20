@@ -141,7 +141,4 @@ public class UserService {
                 user.getRole(),
                 token);
     }
-
-
-
 }

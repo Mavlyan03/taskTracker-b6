@@ -11,6 +11,6 @@ public class WorkspaceResponse {
 
     private Long id;
     private String name;
-    private UserResponse lead;
+    private CreatorResponse lead;
     private boolean action;
 }

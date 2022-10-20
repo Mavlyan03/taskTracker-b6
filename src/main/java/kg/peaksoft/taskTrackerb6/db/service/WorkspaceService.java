@@ -7,8 +7,8 @@ import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.UserWorkSpaceRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
 import kg.peaksoft.taskTrackerb6.dto.request.WorkspaceRequest;
+import kg.peaksoft.taskTrackerb6.dto.response.CreatorResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.UserResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.WorkspaceResponse;
 import kg.peaksoft.taskTrackerb6.enums.Role;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
@@ -89,6 +89,7 @@ public class WorkspaceService {
                 "workspace with id: " + id + " is deleted!",
                 "DELETE"
         );
+
     }
 
 
@@ -127,20 +128,20 @@ public class WorkspaceService {
         WorkspaceResponse workspaceResponse = new WorkspaceResponse();
         workspaceResponse.setId(workspace.getId());
         workspaceResponse.setName(workspace.getName());
-        UserResponse userResponse = convertToResponseUser(workspace.getLead());
-        workspaceResponse.setLead(userResponse);
+        CreatorResponse creatorResponse = convertToResponseCreator(workspace.getLead());
+        workspaceResponse.setLead(creatorResponse);
         workspace.setFavorite(workspace.isFavorite());
         return workspaceResponse;
     }
 
 
-    private UserResponse convertToResponseUser(User user) {
-        UserResponse userResponse = new UserResponse();
-        userResponse.setId(user.getId());
-        userResponse.setFirstName(user.getFirstName());
-        userResponse.setLastName(user.getLastName());
-        userResponse.setPhoto(user.getPhotoLink());
-        return userResponse;
+    private CreatorResponse convertToResponseCreator(User user) {
+        CreatorResponse creatorResponse = new CreatorResponse();
+        creatorResponse.setId(user.getId());
+        creatorResponse.setFirstName(user.getFirstName());
+        creatorResponse.setLastName(user.getLastName());
+        creatorResponse.setPhoto(user.getPhotoLink());
+        return creatorResponse;
     }
 
 }
