@@ -1,31 +1,38 @@
 package kg.peaksoft.taskTrackerb6.config.s3Config;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
 
 @Configuration
+@Getter
+@Setter
 public class StorageConfig {
 
-    @Value("${cloud.aws.credentials.access-key}")
-    private String accessKey;
+    @Value("${aws.bucket.access_key_id}")
+    private String AWS_ACCESS_KEY_ID;
 
-    @Value("${cloud.aws.credentials.secret-key}")
-    private String accessSecret;
+    @Value("${aws.bucket.secret_access_key}")
+    private String AWS_SECRET_ACCESS_KEY;
 
-    @Value("${cloud.aws.region.static}")
-    private String region;
+    @Value("${aws.bucket.region}")
+    private String REGION;
 
     @Bean
-    public AmazonS3 s3Client() {
-        AWSCredentials credentials = new BasicAWSCredentials(accessKey, accessSecret);
-        return AmazonS3ClientBuilder.standard()
-                .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(region).build();
+    S3Client s3Client() {
+
+        final AwsBasicCredentials credentials = AwsBasicCredentials.create(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY);
+        Region region = Region.of(REGION);
+
+        return S3Client.builder()
+                .region(region)
+                .credentialsProvider(StaticCredentialsProvider.create(credentials))
+                .build();
     }
 }
