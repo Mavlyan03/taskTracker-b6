@@ -32,7 +32,7 @@ sleep 15
 PORT=8080
 checkHealth() {
     PORT=$1
-    url="http://52.57.219.138:8080/actuator/health"
+    url="http://$HOSTNAME:$PORT/actuator/health"
 
     pingCount=0
     stopIterate=0
