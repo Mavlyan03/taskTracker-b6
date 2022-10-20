@@ -45,4 +45,5 @@ public class Workspace {
         this.isFavorite = isFavorite;
         this.lead = lead;
     }
+
 }
