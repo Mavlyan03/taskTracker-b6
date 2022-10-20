@@ -6,9 +6,9 @@ import kg.peaksoft.taskTrackerb6.db.model.Workspace;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.UserWorkSpaceRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
-import kg.peaksoft.taskTrackerb6.dto.converter.WorkspaceConverter;
 import kg.peaksoft.taskTrackerb6.dto.request.WorkspaceRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.UserResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.WorkspaceResponse;
 import kg.peaksoft.taskTrackerb6.enums.Role;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
@@ -29,12 +29,11 @@ public class WorkspaceService {
 
     private final WorkspaceRepository workspaceRepository;
     private final UserRepository userRepository;
-    private final WorkspaceConverter converter;
     private final UserWorkSpaceRepository userWorkSpaceRepository;
     private final JavaMailSender mailSender;
 
     public WorkspaceResponse createWorkspace(WorkspaceRequest workspaceRequest, User user) throws MessagingException {
-        Workspace workspace = converter.convertToEntity(workspaceRequest);
+        Workspace workspace = convertToEntity(workspaceRequest);
         User user1 = userRepository.findByEmail(user.getEmail()).orElseThrow(
                 () -> new NotFoundException(
                         "user with email: " + user.getEmail() + " not found!"
@@ -57,7 +56,7 @@ public class WorkspaceService {
         workspace.setUserWorkSpace(userWorkSpace);
         workspace.setLead(user1);
         user.addWorkspace(workspace);
-        return converter.convertToResponse(workspaceRepository.save(workspace));
+        return convertToResponse(workspaceRepository.save(workspace));
     }
 
 
@@ -66,7 +65,7 @@ public class WorkspaceService {
                 () -> new NotFoundException("workspace with id: " + id + " not found!")
         );
 
-        return converter.convertToResponse(workspace);
+        return convertToResponse(workspace);
     }
 
 
@@ -97,14 +96,14 @@ public class WorkspaceService {
         List<WorkspaceResponse> workspaceResponses = new ArrayList<>();
         List<Workspace> workspaces = workspaceRepository.findAll();
         for (Workspace workspace : workspaces) {
-            workspaceResponses.add(converter.convertToResponse(workspace));
+            workspaceResponses.add(convertToResponse(workspace));
         }
 
         return workspaceResponses;
     }
 
 
-    private SimpleResponse inviteMember(String email, String registrationLink) throws MessagingException {
+    private void inviteMember(String email, String registrationLink) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
         helper.setSubject("[Task tracker] invitation");
@@ -112,7 +111,36 @@ public class WorkspaceService {
         helper.setTo(email);
         helper.setText(registrationLink);
         mailSender.send(mimeMessage);
-        return new SimpleResponse("mail send", "OK");
+        new SimpleResponse("mail send", "OK");
+    }
+
+
+    private Workspace convertToEntity(WorkspaceRequest request) {
+        Workspace workspace = new Workspace();
+        workspace.setName(request.getName());
+        workspace.setFavorite(workspace.isFavorite());
+        return workspace;
+    }
+
+
+    private WorkspaceResponse convertToResponse(Workspace workspace) {
+        WorkspaceResponse workspaceResponse = new WorkspaceResponse();
+        workspaceResponse.setId(workspace.getId());
+        workspaceResponse.setName(workspace.getName());
+        UserResponse userResponse = convertToResponseUser(workspace.getLead());
+        workspaceResponse.setLead(userResponse);
+        workspace.setFavorite(workspace.isFavorite());
+        return workspaceResponse;
+    }
+
+
+    private UserResponse convertToResponseUser(User user) {
+        UserResponse userResponse = new UserResponse();
+        userResponse.setId(user.getId());
+        userResponse.setFirstName(user.getFirstName());
+        userResponse.setLastName(user.getLastName());
+        userResponse.setPhoto(user.getPhotoLink());
+        return userResponse;
     }
 
 }
