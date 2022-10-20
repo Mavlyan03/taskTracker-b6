@@ -18,14 +18,12 @@ public class Workspace {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "workspace_gen")
-    @SequenceGenerator(name = "workspace_gen", sequenceName = "workspace_seq", allocationSize = 1)
+    @SequenceGenerator(name = "workspace_gen", sequenceName = "workspace_seq", allocationSize = 1, initialValue = 2)
     private Long id;
 
     private String name;
 
     private boolean isFavorite = false;
-
-    private String photo;
 
     @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST}, mappedBy = "workspaces")
     private List<User> members;
@@ -36,5 +34,16 @@ public class Workspace {
     @ManyToOne(cascade = {ALL})
     private User lead;
 
+    @OneToOne(cascade = {ALL}, mappedBy = "workspace")
+    private UserWorkSpace userWorkSpace;
+
+    @OneToMany(cascade = {ALL}, mappedBy = "workspace")
+    private List<Board> boards;
+
+    public Workspace(String name, boolean isFavorite, User lead) {
+        this.name = name;
+        this.isFavorite = isFavorite;
+        this.lead = lead;
+    }
 
 }
