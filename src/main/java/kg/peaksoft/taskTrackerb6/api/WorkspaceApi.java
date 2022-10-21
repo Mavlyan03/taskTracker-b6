@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.peaksoft.taskTrackerb6.db.model.User;
 import kg.peaksoft.taskTrackerb6.dto.request.WorkspaceRequest;
+import kg.peaksoft.taskTrackerb6.dto.response.FavoritesResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.WorkspaceResponse;
 import kg.peaksoft.taskTrackerb6.db.service.WorkspaceService;
@@ -54,11 +55,26 @@ public class WorkspaceApi {
         return service.deleteWorkspaceById(id, user);
     }
 
+    @Operation(summary = "Change action", description = "Change workspace action by workspace id")
+    @PostMapping("{id}/action")
+    public WorkspaceResponse changeWorkspacesAction(@PathVariable Long id,
+                                                    @RequestBody boolean action) {
+        return service.changeWorkspacesAction(id, action);
+    }
+
     @Operation(summary = "All workspaces", description = "Get all workspaces")
     @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @GetMapping
     public List<WorkspaceResponse> getAll() {
         return service.getAllWorkspace();
     }
+
+
+    @Operation(summary = "All favorite workspaces and boards", description = "Get all favorite workspaces and boards")
+    @GetMapping("favorite")
+    public FavoritesResponse getAllFavoriteWorkspacesAndBoards() {
+        return service.getAllFavorites();
+    }
+
 
 }

@@ -1,19 +1,20 @@
 package kg.peaksoft.taskTrackerb6.db.service;
 
+import kg.peaksoft.taskTrackerb6.db.model.Board;
 import kg.peaksoft.taskTrackerb6.db.model.User;
 import kg.peaksoft.taskTrackerb6.db.model.UserWorkSpace;
 import kg.peaksoft.taskTrackerb6.db.model.Workspace;
+import kg.peaksoft.taskTrackerb6.db.repository.BoardRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.UserWorkSpaceRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
 import kg.peaksoft.taskTrackerb6.dto.request.WorkspaceRequest;
-import kg.peaksoft.taskTrackerb6.dto.response.CreatorResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.WorkspaceResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.*;
 import kg.peaksoft.taskTrackerb6.enums.Role;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.jdbc.Work;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ public class WorkspaceService {
     private final UserRepository userRepository;
     private final UserWorkSpaceRepository userWorkSpaceRepository;
     private final JavaMailSender mailSender;
+    private final BoardRepository boardRepository;
 
     public WorkspaceResponse createWorkspace(WorkspaceRequest workspaceRequest, User user) throws MessagingException {
         Workspace workspace = convertToEntity(workspaceRequest);
@@ -93,14 +95,70 @@ public class WorkspaceService {
     }
 
 
+    public WorkspaceResponse changeWorkspacesAction(Long id, boolean isFavorite) {
+        Workspace workspace = workspaceRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("workspace with id: " + id + " not found!")
+        );
+
+
+        if (workspace.isFavorite() == isFavorite) {
+            workspace.setFavorite(true);
+        }
+
+        workspace.setFavorite(false);
+
+        return convertToResponse(workspaceRepository.save(workspace));
+    }
+
+
     public List<WorkspaceResponse> getAllWorkspace() {
         List<WorkspaceResponse> workspaceResponses = new ArrayList<>();
         List<Workspace> workspaces = workspaceRepository.findAll();
+
         for (Workspace workspace : workspaces) {
             workspaceResponses.add(convertToResponse(workspace));
         }
 
         return workspaceResponses;
+    }
+
+    public List<WorkspaceResponse> getAllWorkspaceByUserId(Long id) {
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("user with id: " + id + " not found!")
+        );
+
+        List<WorkspaceResponse> allUserWorkspaces = new ArrayList<>();
+        List<Workspace> workspaces = workspaceRepository.findAll();
+
+        for (Workspace workspace : workspaces) {
+            if (workspace.getMembers().contains(user)){
+                allUserWorkspaces.add(convertToResponse(workspace));
+            }
+        }
+
+        return allUserWorkspaces;
+    }
+
+    public FavoritesResponse getAllFavorites() {
+        return new FavoritesResponse(getFavoriteWorkspacesList(), getFavoriteBoardsList());
+    }
+
+    private List<FavoriteWorkspaceResponse> getFavoriteWorkspacesList() {
+        List<FavoriteWorkspaceResponse> favoriteWorkspaces = new ArrayList<>();
+        List<Workspace> workspaces = workspaceRepository.findAllByFavorite();
+        for (Workspace workspace : workspaces) {
+            favoriteWorkspaces.add(convertToFavoriteWorkspaceResponse(workspace));
+        }
+        return favoriteWorkspaces;
+    }
+
+    private List<FavoriteBoardResponse> getFavoriteBoardsList() {
+        List<FavoriteBoardResponse> favoriteBoards = new ArrayList<>();
+        List<Board> boards = boardRepository.findAllByFavorite();
+        for (Board board : boards) {
+            favoriteBoards.add(convertToFavoriteBoardResponse(board));
+        }
+        return favoriteBoards;
     }
 
 
@@ -142,6 +200,24 @@ public class WorkspaceService {
         creatorResponse.setLastName(user.getLastName());
         creatorResponse.setPhoto(user.getPhotoLink());
         return creatorResponse;
+    }
+
+
+    private FavoriteWorkspaceResponse convertToFavoriteWorkspaceResponse(Workspace workspace) {
+        return new FavoriteWorkspaceResponse(
+                workspace.getId(),
+                workspace.getName(),
+                workspace.isFavorite()
+        );
+    }
+
+    private FavoriteBoardResponse convertToFavoriteBoardResponse(Board board) {
+        return new FavoriteBoardResponse(
+                board.getId(),
+                board.getTitle(),
+                board.getPhotoLink(),
+                board.isFavorite()
+        );
     }
 
 }
