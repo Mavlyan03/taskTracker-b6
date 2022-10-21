@@ -12,8 +12,6 @@ import kg.peaksoft.taskTrackerb6.db.service.UserService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,14 +42,14 @@ public class AuthApi {
     }
 
     @Operation(summary = "Forgot password", description = "If the user has forgotten the password")
-    @GetMapping("forgot/password")
+    @PostMapping("forgot/password")
     public SimpleResponse forgotPassword(@RequestParam String email,
                                          @RequestParam String link) throws MessagingException {
         return userService.forgotPassword(email, link);
     }
 
     @Operation(summary = "Reset password", description = "Allows you to reset the user's password")
-    @PatchMapping("reset/password")
+    @PostMapping("reset/password")
     public SimpleResponse resetPassword(@RequestBody ResetPasswordRequest request) {
         return userService.resetPassword(request);
     }

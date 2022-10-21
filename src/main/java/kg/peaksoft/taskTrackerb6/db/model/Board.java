@@ -19,7 +19,7 @@ public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "board_gen")
-    @SequenceGenerator(name = "board_gen", sequenceName = "board_seq", allocationSize = 1)
+    @SequenceGenerator(name = "board_gen", sequenceName = "board_seq", allocationSize = 1, initialValue = 2)
     private Long id;
 
     private String title;
@@ -38,9 +38,6 @@ public class Board {
 
     @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST}, mappedBy = "boards")
     private List<User> members;
-
-    @OneToMany(cascade = {ALL}, mappedBy = "board")
-    private List<Card> allIssues;
 
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private Workspace workspace;
