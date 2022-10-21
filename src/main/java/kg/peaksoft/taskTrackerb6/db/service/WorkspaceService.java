@@ -95,17 +95,11 @@ public class WorkspaceService {
     }
 
 
-    public WorkspaceResponse changeWorkspacesAction(Long id, boolean isFavorite) {
+    public WorkspaceResponse changeWorkspacesAction(Long id) {
         Workspace workspace = workspaceRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("workspace with id: " + id + " not found!")
         );
-
-
-        if (workspace.isFavorite() == isFavorite) {
-            workspace.setFavorite(true);
-        }
-
-        workspace.setFavorite(false);
+        workspace.setIsFavorite(!workspace.getIsFavorite());
 
         return convertToResponse(workspaceRepository.save(workspace));
     }
@@ -177,7 +171,7 @@ public class WorkspaceService {
     private Workspace convertToEntity(WorkspaceRequest request) {
         Workspace workspace = new Workspace();
         workspace.setName(request.getName());
-        workspace.setFavorite(workspace.isFavorite());
+        workspace.setIsFavorite(workspace.getIsFavorite());
         return workspace;
     }
 
@@ -188,7 +182,7 @@ public class WorkspaceService {
         workspaceResponse.setName(workspace.getName());
         CreatorResponse creatorResponse = convertToResponseCreator(workspace.getLead());
         workspaceResponse.setLead(creatorResponse);
-        workspace.setFavorite(workspace.isFavorite());
+        workspace.setIsFavorite(workspace.getIsFavorite());
         return workspaceResponse;
     }
 
@@ -207,7 +201,7 @@ public class WorkspaceService {
         return new FavoriteWorkspaceResponse(
                 workspace.getId(),
                 workspace.getName(),
-                workspace.isFavorite()
+                workspace.getIsFavorite()
         );
     }
 

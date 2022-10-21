@@ -57,9 +57,8 @@ public class WorkspaceApi {
 
     @Operation(summary = "Change action", description = "Change workspace action by workspace id")
     @PostMapping("{id}/action")
-    public WorkspaceResponse changeWorkspacesAction(@PathVariable Long id,
-                                                    @RequestBody boolean action) {
-        return service.changeWorkspacesAction(id, action);
+    public WorkspaceResponse changeWorkspacesAction(@PathVariable Long id) {
+        return service.changeWorkspacesAction(id);
     }
 
     @Operation(summary = "All workspaces", description = "Get all workspaces")
@@ -74,6 +73,12 @@ public class WorkspaceApi {
     @GetMapping("favorite")
     public FavoritesResponse getAllFavoriteWorkspacesAndBoards() {
         return service.getAllFavorites();
+    }
+
+    @Operation(summary = "Get user workspaces", description = "Get all user workspaces")
+    @GetMapping("user-workspace/{userId}")
+    public List<WorkspaceResponse> getWorkspacesByUserId(@PathVariable Long userId) {
+        return service.getAllWorkspaceByUserId(userId);
     }
 
 
