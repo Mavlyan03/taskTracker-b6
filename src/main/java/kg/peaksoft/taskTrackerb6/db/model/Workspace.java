@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import static javax.persistence.CascadeType.*;
@@ -39,6 +40,13 @@ public class Workspace {
 
     @OneToMany(cascade = {ALL}, mappedBy = "workspace")
     private List<Board> boards;
+
+    public void addBoard(Board board) {
+        if (boards == null) {
+            boards = new ArrayList<>();
+        }
+        boards.add(board);
+    }
 
     public Workspace(String name, boolean isFavorite, User lead) {
         this.name = name;
