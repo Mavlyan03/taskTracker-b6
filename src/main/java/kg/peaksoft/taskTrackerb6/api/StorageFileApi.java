@@ -21,14 +21,14 @@ public class StorageFileApi {
     private final StorageService storageService;
 
     @Operation(summary = "Upload file", description = "Upload file to database")
-    @PostMapping(path = "upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, String> uploadFile(@RequestParam(name = "file", required = false) MultipartFile file) throws IOException {
+    public Map<String, String> uploadFile(@RequestParam(required = false) MultipartFile file) throws IOException {
         return storageService.upload(file);
     }
 
     @Operation(summary = "Delete file", description = "Delete file from database")
-    @DeleteMapping("delete")
+    @DeleteMapping
     public Map<String, String> deleteFile(@RequestParam String fileLink) {
         return storageService.delete(fileLink);
     }
