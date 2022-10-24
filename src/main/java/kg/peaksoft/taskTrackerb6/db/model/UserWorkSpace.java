@@ -19,13 +19,13 @@ public class UserWorkSpace {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_workspace_roles_gen")
-    @SequenceGenerator(name = "user_workspace_roles_gen", sequenceName = "user_workspace_roles_seq",allocationSize = 1)
+    @SequenceGenerator(name = "user_workspace_roles_gen", sequenceName = "user_workspace_roles_seq",allocationSize = 1, initialValue = 2)
     private Long id;
 
     @OneToOne(cascade = {REFRESH, DETACH, PERSIST, MERGE})
     private User user;
 
-    @ManyToOne(cascade = {REFRESH, DETACH, PERSIST, MERGE})
+    @OneToOne(cascade = {REFRESH, DETACH, PERSIST, MERGE})
     private Workspace workspace;
 
     @Enumerated(EnumType.STRING)

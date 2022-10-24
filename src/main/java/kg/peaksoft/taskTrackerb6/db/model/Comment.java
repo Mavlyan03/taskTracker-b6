@@ -19,7 +19,7 @@ public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "comment_gen")
-    @SequenceGenerator(name = "comment_gen", sequenceName = "comment_seq", allocationSize = 1)
+    @SequenceGenerator(name = "comment_gen", sequenceName = "comment_seq", allocationSize = 1, initialValue = 2)
     private Long id;
 
     @Column(length = 10000)
