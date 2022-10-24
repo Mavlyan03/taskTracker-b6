@@ -20,11 +20,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("select u from User u inner join Board b on u.id=b.id")
     List<User> getAllUserFromBoardId(@Param("boardId") Long boardId);
 
-
-    @Query("select u from  User u join Workspace w on u.id=:id")
-    List<User> getAllUserFromWorkspace(@Param("workspace") Long workspaceId);
 }
-
-//    SELECT Parts.Part, Categories.Catnumb AS Cat, Categories.Price
-//        FROM Parts FULL OUTER JOIN Categories
-//        ON Parts.Cat = Categories.Catnumb

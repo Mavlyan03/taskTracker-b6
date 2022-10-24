@@ -1,12 +1,12 @@
 package kg.peaksoft.taskTrackerb6.api;
 
-import kg.peaksoft.taskTrackerb6.db.model.User;
 import kg.peaksoft.taskTrackerb6.db.service.ParticipantService;
 import kg.peaksoft.taskTrackerb6.dto.response.ParticipantResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import java.util.List;
 
 @RestController
@@ -27,15 +27,20 @@ public class ParticipantApi {
     }
 
 
-    @GetMapping("{boardId}")
+    @GetMapping("/board/participants/{boardId}")
     public List<ParticipantResponse> getAllParticipantFromBoard(@PathVariable Long boardId) {
         return participantService.getAllParticipantFromBoard(boardId);
     }
 
-    //
-    @GetMapping("{workspaceId}")
+
+    @GetMapping("/{workspaceId}")
     public List<ParticipantResponse> getAllParticipantFromWorkspace(@PathVariable Long workspaceId, Long boardId) {
         return participantService.getAllParticipantFromWorkspace(workspaceId, boardId);
+    }
+
+    @PostMapping("/invite")
+    public SimpleResponse inviteParticipant(@RequestParam String email, @RequestParam String link) throws MessagingException {
+        return participantService.inviteParticipant(email,link);
     }
 }
 

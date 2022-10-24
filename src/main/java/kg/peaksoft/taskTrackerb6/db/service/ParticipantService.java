@@ -11,8 +11,12 @@ import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +30,7 @@ public class ParticipantService {
     private final WorkspaceRepository workspaceRepository;
     private final BoardRepository boardRepository;
     private final UserWorkSpaceRepository userWorkSpaceRepository;
+    private final JavaMailSender mailSender;
 
     public ParticipantResponse mapToResponse(User user) {
         ParticipantResponse participantResponse = new ParticipantResponse();
@@ -62,7 +67,6 @@ public class ParticipantService {
     }
 
     public List<ParticipantResponse> getAllParticipantFromBoard(Long boardId) {
-        // Board board = boardRepository.findById(boardId).orElseThrow(() -> new NotFoundException("Board with id " + boardId + " not found"));
         List<ParticipantResponse> participantResponse = new ArrayList<>();
         for (User user : userRepository.getAllUserFromBoardId(boardId)) {
             participantResponse.add(mapToResponse(user));
@@ -73,22 +77,25 @@ public class ParticipantService {
     public List<ParticipantResponse> getAllParticipantFromWorkspace(Long workspaceId, Long boardId) {
         Workspace workspace = workspaceRepository.findById(workspaceId)
                 .orElseThrow(() -> new NotFoundException("Workspace with id " + workspaceId + " not found"));
-        Board board = boardRepository.findById(boardId).
-                orElseThrow(() -> new NotFoundException("Board with id " + boardId + " not found"));
-
-        List<User> allUserFromWorkspace = userRepository.getAllUserFromWorkspace(workspaceId);
-        List<User> allUserFromBoardId = userRepository.getAllUserFromBoardId(boardId);
-
+        List<User> members = workspace.getMembers();
         List<ParticipantResponse> participantResponses = new ArrayList<>();
-        participantResponses.add((ParticipantResponse) allUserFromWorkspace);
-        participantResponses.add((ParticipantResponse) allUserFromBoardId);
+        for (User member : members) {
+            participantResponses.add(new ParticipantResponse(member));
+        }
+
         return participantResponses;
     }
+
+    public SimpleResponse inviteParticipant(String email, String link) throws MessagingException {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+        helper.setSubject("[task_tracker] registry new member");
+        helper.setTo(email);
+        helper.setText(link, true);
+        mailSender.send(mimeMessage);
+        return new SimpleResponse("Email send", "ok");
+    }
 }
-
-
-
-
 
 
 
