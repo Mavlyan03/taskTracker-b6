@@ -1,5 +1,6 @@
 package kg.peaksoft.taskTrackerb6.db.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -44,4 +45,8 @@ public class Board {
 
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private Workspace workspace;
+
+    public void addUser(User user) {
+        this.members.add(user);
+    }
 }

@@ -2,9 +2,12 @@ package kg.peaksoft.taskTrackerb6.api;
 
 import kg.peaksoft.taskTrackerb6.db.model.User;
 import kg.peaksoft.taskTrackerb6.db.service.ParticipantService;
+import kg.peaksoft.taskTrackerb6.dto.response.ParticipantResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/participants")
@@ -13,24 +16,27 @@ public class ParticipantApi {
 
     private final ParticipantService participantService;
 
-    @DeleteMapping("${id}/{workspaceId}")
+    @DeleteMapping("{id}/{workspaceId}")
     public SimpleResponse deleteParticipantById(@PathVariable Long id, @PathVariable Long workspaceId) {
-        return participantService.deleteParticipantById(id, workspaceId);
+        return participantService.deleteParticipantFromWorkspace(id, workspaceId);
     }
 
-    @DeleteMapping("${id}/{boardId}/board")
+    @DeleteMapping("{id}/{boardId}/board")
     public SimpleResponse deleteParticipantFromBoard(@PathVariable Long id, @PathVariable Long boardId) {
         return participantService.deleteParticipantFromBoard(id, boardId);
     }
 
+
     @GetMapping("{boardId}")
-    public User getAllParticipantFromBoard(@PathVariable Long boardId) {
+    public List<ParticipantResponse> getAllParticipantFromBoard(@PathVariable Long boardId) {
         return participantService.getAllParticipantFromBoard(boardId);
     }
 
+    //
     @GetMapping("{workspaceId}")
-    public User getAllParticipantFromWorkspace(@PathVariable Long workspaceId) {
-        return participantService.getAllParticipantFromWorkspace(workspaceId);
+    public List<ParticipantResponse> getAllParticipantFromWorkspace(@PathVariable Long workspaceId, Long boardId) {
+        return participantService.getAllParticipantFromWorkspace(workspaceId, boardId);
     }
-
 }
+
+
