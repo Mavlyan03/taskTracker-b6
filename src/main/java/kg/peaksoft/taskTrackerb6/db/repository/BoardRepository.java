@@ -11,5 +11,5 @@ import java.util.List;
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
     @Query("select b from Board b where b.isFavorite = true")
-    List<Board> findAllByFavorite();
+    List<Board> findAllByFavorites();
 }

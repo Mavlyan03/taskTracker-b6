@@ -14,17 +14,18 @@ import kg.peaksoft.taskTrackerb6.enums.Role;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.jdbc.Work;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class WorkspaceService {
 
@@ -34,12 +35,11 @@ public class WorkspaceService {
     private final JavaMailSender mailSender;
     private final BoardRepository boardRepository;
 
+
     public WorkspaceResponse createWorkspace(WorkspaceRequest workspaceRequest, User user) throws MessagingException {
         Workspace workspace = convertToEntity(workspaceRequest);
         User user1 = userRepository.findByEmail(user.getEmail()).orElseThrow(
-                () -> new NotFoundException(
-                        "user with email: " + user.getEmail() + " not found!"
-                )
+                () -> new NotFoundException("user with email: " + user.getEmail() + " not found!")
         );
 
         for (String email : workspaceRequest.getEmails()) {
@@ -91,7 +91,6 @@ public class WorkspaceService {
                 "workspace with id: " + id + " is deleted!",
                 "DELETE"
         );
-
     }
 
 
@@ -99,56 +98,47 @@ public class WorkspaceService {
         Workspace workspace = workspaceRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("workspace with id: " + id + " not found!")
         );
-        workspace.setIsFavorite(!workspace.getIsFavorite());
 
-        return convertToResponse(workspaceRepository.save(workspace));
+        workspace.setIsFavorite(!workspace.getIsFavorite());
+        Workspace workspace1 = workspaceRepository.save(workspace);
+        return convertToResponse(workspace1);
     }
 
 
-    public List<WorkspaceResponse> getAllWorkspace() {
-        List<WorkspaceResponse> workspaceResponses = new ArrayList<>();
-        List<Workspace> workspaces = workspaceRepository.findAll();
+    public List<WorkspaceResponse> getAllUserWorkspaces(User user) {
+        User user1 = userRepository.findByEmail(user.getEmail()).orElseThrow(
+                () -> new NotFoundException("user with email: " + user.getEmail() + " not found!")
+        );
 
+        List<WorkspaceResponse> workspaceResponses = new ArrayList<>();
+        List<Workspace> workspaces = user1.getWorkspaces();
         for (Workspace workspace : workspaces) {
             workspaceResponses.add(convertToResponse(workspace));
         }
-
         return workspaceResponses;
     }
 
-    public List<WorkspaceResponse> getAllWorkspaceByUserId(Long id) {
-        User user = userRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("user with id: " + id + " not found!")
-        );
 
-        List<WorkspaceResponse> allUserWorkspaces = new ArrayList<>();
-        List<Workspace> workspaces = workspaceRepository.findAll();
-
-        for (Workspace workspace : workspaces) {
-            if (workspace.getMembers().contains(user)){
-                allUserWorkspaces.add(convertToResponse(workspace));
-            }
-        }
-
-        return allUserWorkspaces;
+    public List<FavoritesResponse> getAllFavorites() {
+        List<FavoritesResponse> getFavorites = new ArrayList<>();
+        getFavorites.add(new FavoritesResponse(getFavoriteWorkspacesList(), getFavoriteBoardsList()));
+        return getFavorites;
     }
 
-    public FavoritesResponse getAllFavorites() {
-        return new FavoritesResponse(getFavoriteWorkspacesList(), getFavoriteBoardsList());
-    }
 
     private List<FavoriteWorkspaceResponse> getFavoriteWorkspacesList() {
         List<FavoriteWorkspaceResponse> favoriteWorkspaces = new ArrayList<>();
-        List<Workspace> workspaces = workspaceRepository.findAllByFavorite();
+        List<Workspace> workspaces = workspaceRepository.findAllByFavorites();
         for (Workspace workspace : workspaces) {
             favoriteWorkspaces.add(convertToFavoriteWorkspaceResponse(workspace));
         }
         return favoriteWorkspaces;
     }
 
+
     private List<FavoriteBoardResponse> getFavoriteBoardsList() {
         List<FavoriteBoardResponse> favoriteBoards = new ArrayList<>();
-        List<Board> boards = boardRepository.findAllByFavorite();
+        List<Board> boards = boardRepository.findAllByFavorites();
         for (Board board : boards) {
             favoriteBoards.add(convertToFavoriteBoardResponse(board));
         }
@@ -177,13 +167,12 @@ public class WorkspaceService {
 
 
     private WorkspaceResponse convertToResponse(Workspace workspace) {
-        WorkspaceResponse workspaceResponse = new WorkspaceResponse();
-        workspaceResponse.setId(workspace.getId());
-        workspaceResponse.setName(workspace.getName());
-        CreatorResponse creatorResponse = convertToResponseCreator(workspace.getLead());
-        workspaceResponse.setLead(creatorResponse);
-        workspace.setIsFavorite(workspace.getIsFavorite());
-        return workspaceResponse;
+        return new WorkspaceResponse(
+                workspace.getId(),
+                workspace.getName(),
+                convertToResponseCreator(workspace.getLead()),
+                workspace.getIsFavorite()
+        );
     }
 
 
@@ -204,6 +193,7 @@ public class WorkspaceService {
                 workspace.getIsFavorite()
         );
     }
+
 
     private FavoriteBoardResponse convertToFavoriteBoardResponse(Board board) {
         return new FavoriteBoardResponse(

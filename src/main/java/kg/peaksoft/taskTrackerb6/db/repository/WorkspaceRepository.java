@@ -11,6 +11,6 @@ import java.util.List;
 public interface WorkspaceRepository extends JpaRepository<Workspace, Long> {
 
     @Query("select w from Workspace w where w.isFavorite = true")
-    List<Workspace> findAllByFavorite();
+    List<Workspace> findAllByFavorites();
 
 }
