@@ -143,6 +143,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>tasktracker-b6</finalName>
 	</build>
 
 </project>

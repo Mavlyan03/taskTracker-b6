@@ -9,8 +9,8 @@ RUN mvn clean install -DskiptTests=true
 FROM openjdk:11.0.11-jre-slim
 WORKDIR /b6/app
 
-COPY --from=build /b6/build/target/tasktracker-b6-0.0.1-SNAPSHOT.jar /b6/app/
+COPY --from=build /b6/build/target/tasktracker-b6.jar /b6/app/
 
 EXPOSE 80
 
-ENTRYPOINT ["java","-jar","/b6/app/tasktracker-b6-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java","-jar","/b6/app/tasktracker-b6.jar"]
