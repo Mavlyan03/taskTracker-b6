@@ -13,5 +13,5 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @Query("select b from Board b where b.isFavorite = true")
     List<Board> findAllByFavorites();
 
-public interface BoardRepository extends JpaRepository<Board, Long> {
-}
+    @Query("SELECT b FROM Board b WHERE b.isArchive = true")
+    List<Board> findAllByIsArchive();

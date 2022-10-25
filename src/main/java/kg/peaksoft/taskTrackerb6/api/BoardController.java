@@ -4,11 +4,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.peaksoft.taskTrackerb6.db.service.BoardService;
 import kg.peaksoft.taskTrackerb6.dto.request.BoardRequest;
+import kg.peaksoft.taskTrackerb6.dto.response.ArchiveBoardResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.BoardResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.FavoritesResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/boards")
@@ -59,5 +63,11 @@ public class BoardController {
     @PutMapping("/isArchive/{id}")
     public BoardResponse isArchive(@PathVariable Long id) {
         return boardService.isArchive(id);
+    }
+
+    @Operation(summary = "All archive boards", description = "Get all archive boards")
+    @GetMapping("archive")
+    public List<ArchiveBoardResponse> getAllArchiveBoardsList() {
+        return boardService.getAllArchiveBoardsList();
     }
 }

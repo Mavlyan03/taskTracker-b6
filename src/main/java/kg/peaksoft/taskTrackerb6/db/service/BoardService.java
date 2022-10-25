@@ -5,11 +5,15 @@ import kg.peaksoft.taskTrackerb6.db.model.Workspace;
 import kg.peaksoft.taskTrackerb6.db.repository.BoardRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
 import kg.peaksoft.taskTrackerb6.dto.request.BoardRequest;
+import kg.peaksoft.taskTrackerb6.dto.response.ArchiveBoardResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.BoardResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.FavoriteBoardResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -87,6 +91,22 @@ public class BoardService {
                 board.getIsFavorite(),
                 board.getIsArchive(),
                 board.getBackground());
+    }
+
+    private ArchiveBoardResponse convertToArchiveBoardResponse(Board board) {
+        return new ArchiveBoardResponse(
+                board.getId(),
+                board.getTitle(),
+                board.getPhotoLink(),
+                board.getIsArchive());
+    }
+    public List<ArchiveBoardResponse> getAllArchiveBoardsList() {
+        List<ArchiveBoardResponse> archiveBoards = new ArrayList<>();
+        List<Board> boards = boardRepository.findAllByIsArchive();
+        for (Board board : boards) {
+            archiveBoards.add(convertToArchiveBoardResponse(board));
+        }
+        return archiveBoards;
     }
 
     public BoardResponse getAllBoardsByWorkspaceId(Long workspaceId, BoardRequest boardRequest) {
