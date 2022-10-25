@@ -26,7 +26,7 @@ insert into checklists (id, name, task_tracker, card_id)
 values (1, 'First Card', 1, 1);
 
 insert into estimations (id, created_date, deadline_date, reminder, text, card_id, user_id)
-values (1, '2022 / 02 / 01', '2022 / 12 / 12', 5, 'First Text', 1, 1);
+values (1, '2022-02-01', '2022-12-12', 5, 'First Text', 1, 1);
 
 insert into subtasks (id, description, is_done, checklist_id, estimation_id)
 values (1, 'Subtasks description ', false, 1, 1);
@@ -38,13 +38,13 @@ insert into labels (id, color, description, card_id)
 values (1, 'First Description', 'White', 1);
 
 insert into comments (id, created_date, text, user_id, card_id)
-values (1, '2022 / 10 / 23', 'First text', 1, 1);
+values (1, '2022-10-23', 'First text', 1, 1);
 
 insert into attachments (id, document_link, attached_date, card_id)
-values (1, 'link', '2022 / 10 / 12', 1);
+values (1, 'link', '2022-10-12', 1);
 
 insert into baskets (id, archive_date, board_id, card_id, line_id)
-values (1, '2000 / 04 / 30', 1, 1, 1);
+values (1, '2020-04-30', 1, 1, 1);
 
 insert into users_workspaces (members_id, workspaces_id)
 values (1, 1);
