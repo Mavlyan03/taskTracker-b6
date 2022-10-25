@@ -7,14 +7,13 @@ import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
 import kg.peaksoft.taskTrackerb6.dto.request.BoardRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.ArchiveBoardResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.BoardResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.FavoriteBoardResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
+import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class BoardService {
@@ -49,14 +48,19 @@ public class BoardService {
                 board.getBackground());
     }
 
-    public SimpleResponse deleteBoardById(Long id) {
-        Board board = boardRepository.findById(id).orElseThrow(
+    public SimpleResponse deleteBoardById(Long id, Board board) {
+        Board board1 = boardRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("board with id: " + id + " not found!")
         );
 
-        boardRepository.delete(board);
-        return new SimpleResponse(
-                "Board with id " + id + " is deleted successfully!", "DELETED");
+        if (!board1.getIsArchive().equals(board.getIsArchive())) {
+            throw new BadCredentialException("You can not delete this board!");
+        } else {
+
+            boardRepository.delete(board);
+            return new SimpleResponse(
+                    "Board with id " + id + " is deleted successfully!", "DELETED");
+        }
     }
 
     public BoardResponse makeFavorite(Long id) {

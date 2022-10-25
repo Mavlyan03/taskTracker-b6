@@ -2,6 +2,7 @@ package kg.peaksoft.taskTrackerb6.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import kg.peaksoft.taskTrackerb6.db.model.Board;
 import kg.peaksoft.taskTrackerb6.db.service.BoardService;
 import kg.peaksoft.taskTrackerb6.dto.request.BoardRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.ArchiveBoardResponse;
@@ -46,8 +47,8 @@ public class BoardController {
 
     @Operation(summary = "Delete board", description = "Delete board by board id")
     @DeleteMapping("{id}")
-    public SimpleResponse deleteById(@PathVariable Long id) {
-        return boardService.deleteBoardById(id);
+    public SimpleResponse deleteById(@PathVariable Long id, Board board) {
+        return boardService.deleteBoardById(id, board);
     }
 
     @Operation(summary = "Change background.", description = "Change background to a new one.")
