@@ -14,11 +14,11 @@ import java.util.List;
 @NoArgsConstructor
 public class AdminProfileResponse {
 
-    private Long userId;
-    private String photo;
+    private Long id;
     private String firstName;
     private String lastName;
     private String email;
+    private String photo;
     private List<ProjectResponse> projectResponses;
 
 
