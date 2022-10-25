@@ -33,10 +33,10 @@ public class ParticipantApi {
     }
 
 
-    @GetMapping("/{workspaceId}")
-    public List<ParticipantResponse> getAllParticipantFromWorkspace(@PathVariable Long workspaceId, Long boardId) {
-        return participantService.getAllParticipantFromWorkspace(workspaceId, boardId);
-    }
+//    @GetMapping("/{workspaceId}")
+//    public List<ParticipantResponse> getAllParticipantFromWorkspace(@PathVariable Long workspaceId, Long boardId) {
+//        return participantService.getAllParticipantFromWorkspace(workspaceId, boardId);
+//    }
 
     @PostMapping("/invite")
     public SimpleResponse inviteParticipant(@RequestParam String email, @RequestParam String link) throws MessagingException {

@@ -25,8 +25,8 @@ public class Workspace {
 
     private boolean isFavorite = false;
 
-    @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST}, mappedBy = "workspaces")
-    private List<User> members;
+    @OneToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    private List<UserWorkSpace> members;
 
     @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private List<Card> allIssues;

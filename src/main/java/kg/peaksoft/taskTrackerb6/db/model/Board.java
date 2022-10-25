@@ -43,7 +43,4 @@ public class Board {
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private Workspace workspace;
 
-    public void addUser(User user) {
-        this.members.add(user);
-    }
 }

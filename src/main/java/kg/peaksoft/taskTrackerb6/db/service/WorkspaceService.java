@@ -55,7 +55,7 @@ public class WorkspaceService {
         userWorkSpaceRepository.save(userWorkSpace);
         workspace.setUserWorkSpace(userWorkSpace);
         workspace.setLead(user1);
-        user.addWorkspace(workspace);
+//        user.addWorkspace(workspace);
         return convertToResponse(workspaceRepository.save(workspace));
     }
 

@@ -46,12 +46,15 @@ public class ParticipantService {
     public SimpleResponse deleteParticipantFromWorkspace(Long id, Long workspaceId) {
         User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User with this id " + id + " not found"));
         Workspace workspace = workspaceRepository.findById(workspaceId).orElseThrow(() -> new NotFoundException(" workspace with this id" + workspaceId + "not found"));
-        workspace.getMembers().remove(user);
         for (UserWorkSpace userWorkSpace : userWorkSpaceRepository.findAll()) {
             if (userWorkSpace.getUser().equals(user)) {
                 userWorkSpace.setUser(null);
             }
         }
+//        user.setWorkspaces(null);
+//        workspaceRepository.deleteAll(user.getWorkspaces());
+//        workspaceRepository.deleteParticipantFromWorkspace(workspaceId);
+        workspace.getMembers().remove(user);
         return new SimpleResponse("deleted", "ok");
     }
 
@@ -59,10 +62,7 @@ public class ParticipantService {
         User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User with  id" + id + " not found"));
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new NotFoundException("Board with id" + boardId + " not found"));
         board.getMembers().remove(user);
-        for (Board b : boardRepository.findAll()) {
-            user.setBoards(null);
-            b.addUser(null);
-        }
+        user.setBoards(null);
         return new SimpleResponse("deleted", "ok");
     }
 
@@ -74,17 +74,17 @@ public class ParticipantService {
         return participantResponse;
     }
 
-    public List<ParticipantResponse> getAllParticipantFromWorkspace(Long workspaceId, Long boardId) {
-        Workspace workspace = workspaceRepository.findById(workspaceId)
-                .orElseThrow(() -> new NotFoundException("Workspace with id " + workspaceId + " not found"));
-        List<User> members = workspace.getMembers();
-        List<ParticipantResponse> participantResponses = new ArrayList<>();
-        for (User member : members) {
-            participantResponses.add(new ParticipantResponse(member));
-        }
-
-        return participantResponses;
-    }
+//    public List<ParticipantResponse> getAllParticipantFromWorkspace(Long workspaceId, Long boardId) {
+//        Workspace workspace = workspaceRepository.findById(workspaceId)
+//                .orElseThrow(() -> new NotFoundException("Workspace with id " + workspaceId + " not found"));
+////        List<User> members = workspace.getMembers();
+//        List<ParticipantResponse> participantResponses = new ArrayList<>();
+//        for (User member : members) {
+//            participantResponses.add(new ParticipantResponse(member));
+//        }
+//
+//        return participantResponses;
+//    }
 
     public SimpleResponse inviteParticipant(String email, String link) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
