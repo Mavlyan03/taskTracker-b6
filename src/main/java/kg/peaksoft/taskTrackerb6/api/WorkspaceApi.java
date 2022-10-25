@@ -3,22 +3,14 @@ package kg.peaksoft.taskTrackerb6.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.peaksoft.taskTrackerb6.db.model.User;
+import kg.peaksoft.taskTrackerb6.db.service.WorkspaceService;
 import kg.peaksoft.taskTrackerb6.dto.request.WorkspaceRequest;
+import kg.peaksoft.taskTrackerb6.dto.response.FavoritesResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.WorkspaceResponse;
-import kg.peaksoft.taskTrackerb6.db.service.WorkspaceService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.mail.MessagingException;
 import java.util.List;
@@ -35,7 +27,7 @@ public class WorkspaceApi {
     @Operation(summary = "Save workspace", description = "Save new workspace")
     @PostMapping
     public WorkspaceResponse save(@RequestBody WorkspaceRequest request,
-                                    Authentication authentication) throws MessagingException {
+                                  Authentication authentication) throws MessagingException {
         User user = (User) authentication.getPrincipal();
         return service.createWorkspace(request, user);
     }
@@ -54,11 +46,22 @@ public class WorkspaceApi {
         return service.deleteWorkspaceById(id, user);
     }
 
-    @Operation(summary = "All workspaces", description = "Get all workspaces")
-    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
-    @GetMapping
-    public List<WorkspaceResponse> getAll() {
-        return service.getAllWorkspace();
+    @Operation(summary = "Change action", description = "Change workspace action by workspace id")
+    @PutMapping("action/{id}")
+    public WorkspaceResponse changeWorkspacesAction(@PathVariable Long id) {
+        return service.changeWorkspacesAction(id);
     }
 
+    @Operation(summary = "All favorite workspaces and boards", description = "Get all favorite workspaces and boards")
+    @GetMapping("favorites")
+    public List<FavoritesResponse> getAllFavoriteWorkspacesAndBoards() {
+        return service.getAllFavorites();
+    }
+
+    @Operation(summary = "Get user workspaces", description = "Get all user workspaces")
+    @GetMapping
+    public List<WorkspaceResponse> getWorkspacesByUserId(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        return service.getAllUserWorkspaces(user);
+    }
 }

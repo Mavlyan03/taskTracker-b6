@@ -24,7 +24,7 @@ public class Workspace {
 
     private String name;
 
-    private boolean isFavorite = false;
+    private Boolean isFavorite = false;
 
     @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST}, mappedBy = "workspaces")
     private List<User> members;
