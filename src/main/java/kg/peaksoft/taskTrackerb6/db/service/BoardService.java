@@ -41,6 +41,7 @@ public class BoardService {
         return new BoardResponse(board.getId(),
                 board.getTitle(),
                 board.getIsFavorite(),
+                board.getIsArchive(),
                 board.getBackground());
     }
 
@@ -62,6 +63,7 @@ public class BoardService {
         return new BoardResponse(board1.getId(),
                 board1.getTitle(),
                 board1.getIsFavorite(),
+                board1.getIsArchive(),
                 board1.getBackground());
     }
 
@@ -83,17 +85,35 @@ public class BoardService {
                 board.getId(),
                 board.getTitle(),
                 board.getIsFavorite(),
+                board.getIsArchive(),
+                board.getBackground());
+    }
+
+    public BoardResponse getAllBoardsByWorkspaceId(Long workspaceId, BoardRequest boardRequest) {
+
+        Workspace workspace = workspaceRepository.findById(boardRequest.getWorkspaceId()).orElseThrow(
+                () -> new NotFoundException("Workspace with id: " + boardRequest.getWorkspaceId() + " not found!"));
+
+        Board board = boardRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Board with id: " + id + " not found!"));
+
+        return new BoardResponse(
+                board.getId(),
+                board.getTitle(),
+                board.getIsFavorite(),
+                board.getIsArchive(),
                 board.getBackground());
     }
 
     public BoardResponse isArchive(Long id) {
         Board board = boardRepository.findById(id).orElseThrow(
                 () -> new NotFoundException(String.format("Board with id %s not found", id)));
-        board.setIsArchive(!board.getIsFavorite());
+        board.setIsArchive(!board.getIsArchive());
         Board board1 = boardRepository.save(board);
         return new BoardResponse(board1.getId(),
                 board1.getTitle(),
                 board1.getIsFavorite(),
+                board1.getIsArchive(),
                 board1.getBackground());
     }
 }

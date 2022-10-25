@@ -52,4 +52,12 @@ public class BoardController {
                                            @RequestBody BoardRequest boardRequest) {
         return boardService.changeBackground(id, boardRequest);
     }
+
+    @Operation(summary = "Board status",
+            description = "This endpoint returns board status to favorite" +
+                    "and not favorite for board further requests to the API")
+    @PutMapping("/isArchive/{id}")
+    public BoardResponse isArchive(@PathVariable Long id) {
+        return boardService.isArchive(id);
+    }
 }
