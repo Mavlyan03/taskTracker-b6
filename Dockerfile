@@ -1,18 +1,16 @@
-FROM maven:3.6.3 AS maven
+FROM maven:3.8.6-jdk-11-slim AS build
 
-# Create a workdir for our app
-WORKDIR /usr/src/app
-COPY . /usr/src/app
+WORKDIR /b6/build
 
-# Compile and package the application to an executable JAR
-RUN mvn clean package -DskipTests
+COPY . /b6/build
 
-# Using java 11
-FROM openjdk:11-jdk
+RUN mvn clean install -DskiptTests=true
 
-ARG JAR_FILE=/usr/src/app/target/*.jar
+FROM openjdk:11.0.11-jre-slim
+WORKDIR /b6/app
 
-# Copying JAR file
-COPY --from=maven ${JAR_FILE} taskTracker.jar
+COPY --from=build /b6/build/target/tasktracker-b6-0.0.1-SNAPSHOT.jar /b6/app/
 
-ENTRYPOINT ["java","-jar","/taskTracker.jar"]
+EXPOSE 80
+
+ENTRYPOINT ["java","-jar","/b6/app/tasktracker-b6-0.0.1-SNAPSHOT.jar"]
