@@ -14,7 +14,7 @@ insert into workspaces (id, name, is_favorite, lead_id)
 values (1, 'Workspace Name', false,  1);
 
 insert into boards(id, title, photo_link, is_archive, is_favorite, workspace_id)
-values (1, 'First Board', 'board_photo', false, false, 1, 1);
+values (1, 'First Board', 'board_photo', false, false,  1);
 
 insert into lines (id, title, board_id)
 values (1, 'First Line', 1);
