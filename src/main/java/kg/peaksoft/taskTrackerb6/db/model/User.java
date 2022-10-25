@@ -47,10 +47,7 @@ public class User implements UserDetails {
     @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST}, fetch = FetchType.EAGER)
     private List<Workspace> workspaces;
 
-    @OneToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
-    private List<Workspace> leadWorkspaces;
-
-    @ManyToMany(cascade = {ALL})
+    @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private List<Board> boards;
 
     @Enumerated(EnumType.STRING)
