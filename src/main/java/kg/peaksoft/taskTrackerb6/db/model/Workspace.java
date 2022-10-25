@@ -23,7 +23,7 @@ public class Workspace {
 
     private String name;
 
-    private boolean isFavorite = false;
+    private Boolean isFavorite = false;
 
     @OneToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private List<UserWorkSpace> members;

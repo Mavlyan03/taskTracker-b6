@@ -44,6 +44,10 @@ public class User implements UserDetails {
     @OneToMany(cascade = {ALL}, mappedBy = "user")
     private List<Notification> notifications;
 
+    @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST}, fetch = FetchType.EAGER)
+    private List<Workspace> workspaces;
+
+    @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     @OneToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private List<Workspace> leadWorkspaces;
 
@@ -61,6 +65,14 @@ public class User implements UserDetails {
         this.password = password;
         this.role = role;
     }
+
+    public void addWorkspace(Workspace workspace) {
+        if (workspaces == null) {
+            workspaces = new ArrayList<>();
+        }
+        workspaces.add(workspace);
+    }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

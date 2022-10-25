@@ -26,8 +26,8 @@ import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository repository;

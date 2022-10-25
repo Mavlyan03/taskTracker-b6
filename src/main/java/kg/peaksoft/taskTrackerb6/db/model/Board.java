@@ -34,9 +34,6 @@ public class Board {
     @OneToMany(cascade = ALL, mappedBy = "board")
     private List<Line> lines;
 
-    @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
-    private User creator;
-
     @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST}, mappedBy = "boards")
     private List<User> members;
 
