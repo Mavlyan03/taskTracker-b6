@@ -45,6 +45,7 @@ values (1, 'link', '2022-10-12', 1);
 
 insert into baskets (id, archive_date, board_id, card_id, line_id)
 values (1, '2000-04-30', 1, 1, 1);
+values (1, '2020-04-30', 1, 1, 1);
 
 insert into users_workspaces (members_id, workspaces_id)
 values (1, 1);
