@@ -1,0 +1,45 @@
+version: 2.1
+
+orbs:
+  aws-ecr: circleci/aws-ecr@7.0.0
+  aws-ecs: circleci/aws-ecs@3.2
+
+commands:
+  build-image: aws-ecr/build-image
+
+workflows:
+  deploy-to-development:
+    jobs:
+      - aws-ecr/build-and-push-image:
+          name: "build-and-push-image"
+          context:
+            - TASKTRACKER_CONTEXT
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          account-url: AWS_ECR_URL
+          create-repo: false
+          dockerfile: Dockerfile
+          no-output-timeout: 20m
+          path: ./
+          region: AWS_DEFAULT_REGION
+          repo: tasktracker-b6
+          skip-when-tags-exist: false
+          tag: $CIRCLE_SHA1
+          filters:
+            branches:
+              only:
+                - main
+#      - aws-ecs/deploy-service-update:
+#          context:
+#            - TASKTRACKER_CONTEXT
+#          cluster: tasktracker-b6
+#          container-image-name-updates: 'container=tasktracker-b6-container,tag=${CIRCLE_SHA1}'
+#          family: tasktracker-b6-task
+#          service-name: tasktracker-b6-service
+#          force-new-deployment: true
+#          filters:
+#            branches:
+#              only:
+#                - main
+#          requires:
+#            - build-and-push-image
