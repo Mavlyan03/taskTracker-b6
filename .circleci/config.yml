@@ -29,17 +29,17 @@ workflows:
             branches:
               only:
                 - main
-#      - aws-ecs/deploy-service-update:
-#          context:
-#            - TASKTRACKER_CONTEXT
-#          cluster: tasktracker-b6
-#          container-image-name-updates: 'container=tasktracker-b6-container,tag=${CIRCLE_SHA1}'
-#          family: tasktracker-b6-task
-#          service-name: tasktracker-b6-service
-#          force-new-deployment: true
-#          filters:
-#            branches:
-#              only:
-#                - main
-#          requires:
-#            - build-and-push-image
+      - aws-ecs/deploy-service-update:
+          context:
+            - TASKTRACKER_CONTEXT
+          cluster: tasktracker-b6
+          container-image-name-updates: 'container=tasktracker-b6-container,tag=${CIRCLE_SHA1}'
+          family: tasktracker-b6-task
+          service-name: tasktracker-b6-service
+          force-new-deployment: true
+          filters:
+            branches:
+              only:
+                - main
+          requires:
+            - build-and-push-image
