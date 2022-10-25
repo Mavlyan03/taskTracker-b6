@@ -29,9 +29,9 @@ public class Board {
 
     private String photoLink;
 
-    private boolean isArchive;
+    private Boolean isArchive = false;
 
-    private Boolean isFavorite;
+    private Boolean isFavorite = false;
 
     private String background;
 

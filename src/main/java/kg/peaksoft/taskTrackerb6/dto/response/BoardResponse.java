@@ -9,6 +9,8 @@ import lombok.*;
 @NoArgsConstructor
 public class BoardResponse {
 
+    private Long id;
+
     private String title;
 
     private Boolean isFavorite;

@@ -22,7 +22,7 @@ public class BoardController {
 
     @Operation(summary = "Create board", description = "Create new board by workspaceId")
     @PostMapping
-    public SimpleResponse createBoard(@RequestBody BoardRequest boardRequest) {
+    public BoardResponse createBoard(@RequestBody BoardRequest boardRequest) {
         return boardService.createBoard(boardRequest);
     }
 
@@ -30,8 +30,8 @@ public class BoardController {
             description = "This endpoint returns board status to favorite" +
                     "and not favorite for board further requests to the API")
     @PutMapping("/isFavorite/{id}")
-    public SimpleResponse isFavorite(@PathVariable Long id) {
-        return boardService.isFavorite(id);
+    public BoardResponse makeFavorite(@PathVariable Long id) {
+        return boardService.makeFavorite(id);
     }
 
     @Operation(summary = "Get board", description = "Get board by board id")
@@ -43,7 +43,7 @@ public class BoardController {
     @Operation(summary = "Delete board", description = "Delete board by board id")
     @DeleteMapping("{id}")
     public SimpleResponse deleteById(@PathVariable Long id) {
-        return boardService.deleteBoard(id);
+        return boardService.deleteBoardById(id);
     }
 
     @Operation(summary = "Change background.", description = "Change background to a new one.")

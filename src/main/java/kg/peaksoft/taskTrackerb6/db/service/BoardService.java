@@ -25,7 +25,7 @@ public class BoardService {
         this.workspaceRepository = workspaceRepository;
     }
 
-    public SimpleResponse createBoard(BoardRequest boardRequest) {
+    public BoardResponse createBoard(BoardRequest boardRequest) {
 
         Board board = new Board(boardRequest);
 
@@ -34,38 +34,35 @@ public class BoardService {
 
         workspace.addBoard(board);
 
+        board.setWorkspace(workspace);
+
         boardRepository.save(board);
 
-        return new SimpleResponse("Completed.", "New board is successfully saved to workspace.");
+        return new BoardResponse(board.getId(),
+                board.getTitle(),
+                board.getIsFavorite(),
+                board.getBackground());
     }
 
-    public SimpleResponse deleteBoard(Long id) {
-        Optional<Board> boardById = boardRepository.findById(id);
-        boardById.ifPresentOrElse(
-                (board -> boardRepository.deleteById(id)),
-                () -> {
-                    throw new NotFoundException(String.format(
-                            "Board with such id: %d , didn't found", id));
-                }
+    public SimpleResponse deleteBoardById(Long id) {
+        Board board = boardRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("board with id: " + id + " not found!")
         );
 
-        return new SimpleResponse("DELETED",
-                "Board with id " + id + " is successfully deleted.");
+        boardRepository.delete(board);
+        return new SimpleResponse(
+                "Board with id " + id + " is deleted successfully!", "DELETED");
     }
 
-    public SimpleResponse isFavorite(Long id) {
+    public BoardResponse makeFavorite(Long id) {
         Board board = boardRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("Board with =%s id not " +
-                        "found", id)));
+                () -> new NotFoundException(String.format("Board with id %s not found", id)));
         board.setIsFavorite(!board.getIsFavorite());
-        String a;
-        if (board.getIsFavorite()) {
-            a = "Favorite";
-        } else {
-            a = "Not favorite" +
-                    "";
-        }
-        return new SimpleResponse(String.format("Board with = %s id is = %s", id, a), "ok");
+        Board board1 = boardRepository.save(board);
+        return new BoardResponse(board1.getId(),
+                board1.getTitle(),
+                board1.getIsFavorite(),
+                board1.getBackground());
     }
 
     public SimpleResponse changeBackground(Long id, BoardRequest boardRequest) {
@@ -82,6 +79,21 @@ public class BoardService {
         Board board = boardRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Board with id: " + id + " not found!"));
 
-        return new BoardResponse();
+        return new BoardResponse(
+                board.getId(),
+                board.getTitle(),
+                board.getIsFavorite(),
+                board.getBackground());
+    }
+
+    public BoardResponse isArchive(Long id) {
+        Board board = boardRepository.findById(id).orElseThrow(
+                () -> new NotFoundException(String.format("Board with id %s not found", id)));
+        board.setIsArchive(!board.getIsFavorite());
+        Board board1 = boardRepository.save(board);
+        return new BoardResponse(board1.getId(),
+                board1.getTitle(),
+                board1.getIsFavorite(),
+                board1.getBackground());
     }
 }
