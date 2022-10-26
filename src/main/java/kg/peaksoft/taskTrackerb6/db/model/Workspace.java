@@ -31,19 +31,19 @@ public class Workspace {
     @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private List<Card> allIssues;
 
-    @ManyToOne(cascade = {ALL})
-    private User lead;
+//    @ManyToOne(cascade = {ALL})
+//    private User lead;
 
-    @OneToOne(cascade = {ALL}, mappedBy = "workspace")
-    private UserWorkSpace userWorkSpace;
+//    @OneToOne(cascade = {ALL})
+//    private UserWorkSpace userWorkSpace;
 
     @OneToMany(cascade = {ALL}, mappedBy = "workspace")
     private List<Board> boards;
 
-    public Workspace(String name, boolean isFavorite, User lead) {
+    public Workspace(String name, boolean isFavorite) {
         this.name = name;
         this.isFavorite = isFavorite;
-        this.lead = lead;
+
     }
 
 }
