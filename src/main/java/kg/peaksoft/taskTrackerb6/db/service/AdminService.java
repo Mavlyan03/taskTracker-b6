@@ -57,53 +57,16 @@ public class AdminService {
         return new ProjectResponse(workspace.getName());
     }
 
-
-    public AdminProfileResponse changePhoto(Long id,String photo) {
-        User user = getAuthenticatedUser();
-        User user1 = userRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("user with id: " + id + " not found!")
-        );
-
-        if (!user.getEmail().equals(user1.getEmail())) {
-            throw new BadRequestException("You can not change profile photo!");
-        }
-
-        user1.setPhotoLink(photo);
-        return new AdminProfileResponse(
-                user1.getId(),
-                user1.getFirstName(),
-                user1.getLastName(),
-                user1.getEmail(),
-                user1.getPhotoLink(),
-                getAllProjectResponse());
-    }
-
-    public AdminProfileResponse removePhoto(Long id) {
-        User user = getAuthenticatedUser();
-        User user1 = userRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("user with id: " + " not found!")
-        );
-
-        if (!user.getEmail().equals(user1.getEmail())) {
-            throw new BadRequestException("You can not delete this profile photo!");
-        }
-
-        user1.setPhotoLink(null);
-        return new AdminProfileResponse(
-                user1.getId(),
-                user1.getFirstName(),
-                user1.getLastName(),
-                user1.getEmail(),
-                user1.getPhotoLink(),
-                getAllProjectResponse());
-    }
-
     public AdminProfileResponse updateUserEntity(AdminProfileRequest adminProfileRequest) {
         User authenticatedUser = getAuthenticatedUser();
         authenticatedUser.setFirstName(adminProfileRequest.getFirstName());
         authenticatedUser.setLastName(adminProfileRequest.getLastName());
         authenticatedUser.setEmail(adminProfileRequest.getEmail());
-        authenticatedUser.setPhotoLink(authenticatedUser.getPhotoLink());
+        if (adminProfileRequest.getPhotoLink() == null) {
+            authenticatedUser.setPhotoLink(authenticatedUser.getPhotoLink());
+        }
+
+        authenticatedUser.setPhotoLink(adminProfileRequest.getPhotoLink());
         authenticatedUser.setPassword(passwordEncoder.encode(adminProfileRequest.getPassword()));
         return new AdminProfileResponse(
                 authenticatedUser.getId(),
@@ -114,13 +77,10 @@ public class AdminService {
                 getAllProjectResponse());
     }
 
-
     private User getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String login = authentication.getName();
         return userRepository.findByEmail(login).orElseThrow(() ->
                 new NotFoundException("User not found!"));
     }
-
-
 }

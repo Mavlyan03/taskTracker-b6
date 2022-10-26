@@ -24,21 +24,8 @@ public class AdminProfileApi {
     }
 
     @Operation(summary = "Update profile", description = "Update profile by profile id")
-    @PutMapping("update")
+    @PutMapping
     public AdminProfileResponse updateAdminProfile(@RequestBody AdminProfileRequest request) {
         return adminService.updateUserEntity(request);
-    }
-
-    @Operation(summary = "Change photo", description = "Change profile photo by profile id")
-    @PutMapping("change-photo/{id}")
-    public AdminProfileResponse changeProfilePhoto(@PathVariable Long id,
-                                                   @RequestBody String photo) {
-        return adminService.changePhoto(id, photo);
-    }
-
-    @Operation(summary = "Delete photo", description = "Delete profile photo by profile id")
-    @PutMapping("remove-photo/{id}")
-    public AdminProfileResponse removePhoto(@PathVariable Long id) {
-        return adminService.removePhoto(id);
     }
 }
