@@ -12,8 +12,7 @@ import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class BoardService {
@@ -53,7 +52,7 @@ public class BoardService {
                 () -> new NotFoundException("board with id: " + id + " not found!")
         );
 
-        if (!board1.getIsArchive().equals(board.getIsArchive())) {
+        if (board1.getIsArchive().equals(board.getIsArchive())) {
             throw new BadCredentialException("You can not delete this board!");
         } else {
 
@@ -104,6 +103,7 @@ public class BoardService {
                 board.getPhotoLink(),
                 board.getIsArchive());
     }
+
     public List<ArchiveBoardResponse> getAllArchiveBoardsList() {
         List<ArchiveBoardResponse> archiveBoards = new ArrayList<>();
         List<Board> boards = boardRepository.findAllByIsArchive();
@@ -111,22 +111,6 @@ public class BoardService {
             archiveBoards.add(convertToArchiveBoardResponse(board));
         }
         return archiveBoards;
-    }
-
-    public BoardResponse getAllBoardsByWorkspaceId(Long workspaceId, BoardRequest boardRequest) {
-
-        Workspace workspace = workspaceRepository.findById(boardRequest.getWorkspaceId()).orElseThrow(
-                () -> new NotFoundException("Workspace with id: " + boardRequest.getWorkspaceId() + " not found!"));
-
-        Board board = boardRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Board with id: " + id + " not found!"));
-
-        return new BoardResponse(
-                board.getId(),
-                board.getTitle(),
-                board.getIsFavorite(),
-                board.getIsArchive(),
-                board.getBackground());
     }
 
     public BoardResponse isArchive(Long id) {
@@ -139,5 +123,31 @@ public class BoardService {
                 board1.getIsFavorite(),
                 board1.getIsArchive(),
                 board1.getBackground());
+    }
+
+    public List<BoardResponse> getAllBoardsByWorkspaceId(Long id, BoardRequest boardRequest) {
+
+        Workspace workspace = workspaceRepository.findById(boardRequest.getWorkspaceId()).orElseThrow(
+                () -> new NotFoundException("Workspace with id: " + boardRequest.getWorkspaceId() + " not found!"));
+
+        Board board = boardRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Board with id: " + id + " not found!"));
+
+        if (board.getIsArchive().equals(board.getIsArchive())) {
+            throw new BadCredentialException("Board with this id not found!");
+        } else {
+
+            workspace.addBoard(board);
+
+            board.setWorkspace(workspace);
+
+            boardRepository.save(board);
+        }
+        return new List<BoardResponse>(
+                board.getId(),
+                board.getTitle(),
+                board.getIsFavorite(),
+                board.getIsArchive(),
+                board.getBackground();
     }
 }

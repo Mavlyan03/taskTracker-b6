@@ -200,7 +200,7 @@ public class WorkspaceService {
                 board.getId(),
                 board.getTitle(),
                 board.getPhotoLink(),
-                board.isFavorite(),
+                board.getIsFavorite()
         );
     }
 

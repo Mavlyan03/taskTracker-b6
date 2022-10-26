@@ -15,3 +15,4 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     @Query("SELECT b FROM Board b WHERE b.isArchive = true")
     List<Board> findAllByIsArchive();
+}

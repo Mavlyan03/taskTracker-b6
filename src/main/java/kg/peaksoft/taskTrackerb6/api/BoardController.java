@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -47,7 +48,8 @@ public class BoardController {
 
     @Operation(summary = "Delete board", description = "Delete board by board id")
     @DeleteMapping("{id}")
-    public SimpleResponse deleteById(@PathVariable Long id, Board board) {
+    public SimpleResponse deleteById(@PathVariable Long id,
+                                     @Valid Board board) {
         return boardService.deleteBoardById(id, board);
     }
 
