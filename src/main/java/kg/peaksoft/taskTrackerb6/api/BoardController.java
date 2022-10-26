@@ -35,7 +35,7 @@ public class BoardController {
     @Operation(summary = "Board status",
             description = "This endpoint returns board status to favorite" +
                     "and not favorite for board further requests to the API")
-    @PutMapping("/isFavorite/{id}")
+    @PutMapping("/makeFavorite/{id}")
     public BoardResponse makeFavorite(@PathVariable Long id) {
         return boardService.makeFavorite(id);
     }
@@ -55,22 +55,35 @@ public class BoardController {
 
     @Operation(summary = "Change background.", description = "Change background to a new one.")
     @PutMapping("/changeBackground/{id}")
-    public SimpleResponse changeBackground(@PathVariable Long id,
+    public BoardResponse changeBackground(@PathVariable Long id,
                                            @RequestBody BoardRequest boardRequest) {
         return boardService.changeBackground(id, boardRequest);
     }
 
+    @Operation(summary = "Change title.", description = "Change title to a new one.")
+    @PutMapping("/updateTitle/{id}")
+    public BoardResponse updateTitle(@PathVariable Long id,
+                                          @RequestBody BoardRequest boardRequest) {
+        return boardService.updateTitle(id, boardRequest);
+    }
+
     @Operation(summary = "Board status",
-            description = "This endpoint returns board status to favorite" +
-                    "and not favorite for board further requests to the API")
-    @PutMapping("/isArchive/{id}")
-    public BoardResponse isArchive(@PathVariable Long id) {
-        return boardService.isArchive(id);
+            description = "This endpoint returns board status to archive" +
+                    "and not archive for board further requests to the API")
+    @PutMapping("/sendToArchive/{id}")
+    public BoardResponse sendToArchive(@PathVariable Long id) {
+        return boardService.sendToArchive(id);
     }
 
     @Operation(summary = "All archive boards", description = "Get all archive boards")
     @GetMapping("archive")
     public List<ArchiveBoardResponse> getAllArchiveBoardsList() {
         return boardService.getAllArchiveBoardsList();
+    }
+
+    @Operation(summary = "Get all boards", description = "Get all boards by workspace id")
+    @GetMapping("list/{id}")
+    public List<BoardResponse> getAllBoardsByWorkspaceId(@PathVariable Long id) {
+        return boardService.getAllBoardsByWorkspaceId(id);
     }
 }

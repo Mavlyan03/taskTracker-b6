@@ -15,7 +15,5 @@ public class BoardResponse {
 
     private Boolean isFavorite;
 
-    private Boolean isArchive;
-
     private String background;
 }

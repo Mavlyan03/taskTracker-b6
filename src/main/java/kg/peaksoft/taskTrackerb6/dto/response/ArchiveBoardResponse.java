@@ -13,7 +13,7 @@ public class ArchiveBoardResponse {
 
     private String title;
 
-    private String photo;
+    private String background;
 
     private boolean isArchive;
 }

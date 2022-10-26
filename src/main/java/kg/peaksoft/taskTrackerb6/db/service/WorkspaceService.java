@@ -199,7 +199,7 @@ public class WorkspaceService {
         return new FavoriteBoardResponse(
                 board.getId(),
                 board.getTitle(),
-                board.getPhotoLink(),
+                board.getBackground(),
                 board.getIsFavorite()
         );
     }

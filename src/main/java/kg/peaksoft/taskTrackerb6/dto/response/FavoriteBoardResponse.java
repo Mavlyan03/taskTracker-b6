@@ -11,7 +11,7 @@ public class FavoriteBoardResponse {
 
     private Long id;
     private String title;
-    private String photo;
+    private String background;
     private boolean isFavorite;
 
 }

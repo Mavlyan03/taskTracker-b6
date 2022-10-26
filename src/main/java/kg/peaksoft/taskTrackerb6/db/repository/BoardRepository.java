@@ -1,6 +1,7 @@
 package kg.peaksoft.taskTrackerb6.db.repository;
 
 import kg.peaksoft.taskTrackerb6.db.model.Board;
+import kg.peaksoft.taskTrackerb6.dto.response.BoardResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -15,4 +16,11 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     @Query("SELECT b FROM Board b WHERE b.isArchive = true")
     List<Board> findAllByIsArchive();
+
+    @Query("SELECT NEW kg.peaksoft.taskTrackerb6.dto.response.BoardResponse(" +
+            "b.id," +
+            "b.title," +
+            "b.isFavorite," +
+            "b.background) FROM Board b WHERE b.workspace.id = ?1 AND b.isArchive = false")
+    List<BoardResponse> findAllBoards(Long id);
 }
