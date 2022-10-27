@@ -39,13 +39,19 @@ public class ParticipantService {
         participantResponse.setEmail(user.getEmail());
         participantResponse.setRole(user.getRole());
         return participantResponse;
-
-
     }
 
     public SimpleResponse deleteParticipantFromWorkspace(Long id, Long workspaceId) {
-        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User with this id " + id + " not found"));
-        Workspace workspace = workspaceRepository.findById(workspaceId).orElseThrow(() -> new NotFoundException(" workspace with this id" + workspaceId + "not found"));
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("User with this id " + id + " not found"
+                )
+        );
+
+        Workspace workspace = workspaceRepository.findById(workspaceId).orElseThrow(
+                () -> new NotFoundException(" workspace with this id" + workspaceId + "not found"
+                )
+        );
+
         for (UserWorkSpace userWorkSpace : userWorkSpaceRepository.findAll()) {
             if (userWorkSpace.getUser().equals(user)) {
                 userWorkSpace.setUser(null);
@@ -71,13 +77,18 @@ public class ParticipantService {
         for (User user : userRepository.getAllUserFromBoardId(boardId)) {
             participantResponse.add(mapToResponse(user));
         }
+
         return participantResponse;
     }
 
     public List<ParticipantResponse> getAllParticipantFromWorkspace(Long workspaceId, Long boardId) {
-        Workspace workspace = workspaceRepository.findById(workspaceId)
-                .orElseThrow(() -> new NotFoundException("Workspace with id " + workspaceId + " not found"));
-        List<User> members = workspace.getMembers();
+        Workspace workspace = workspaceRepository.findById(workspaceId).orElseThrow(
+                () -> new NotFoundException("Workspace with id " + workspaceId + " not found"
+                )
+        );
+
+        List<UserWorkSpace> userWorkSpaces = workspace.getUserWorkSpaces();
+//        List<User> members = workspace.getMembers();
         List<ParticipantResponse> participantResponses = new ArrayList<>();
         for (User member : members) {
             participantResponses.add(new ParticipantResponse(member));

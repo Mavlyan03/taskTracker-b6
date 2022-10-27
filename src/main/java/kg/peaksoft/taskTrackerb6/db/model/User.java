@@ -48,10 +48,6 @@ public class User implements UserDetails {
     private List<Workspace> workspaces;
 
     @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
-    @OneToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
-    private List<Workspace> leadWorkspaces;
-
-    @ManyToMany(cascade = {ALL})
     private List<Board> boards;
 
     @Enumerated(EnumType.STRING)
