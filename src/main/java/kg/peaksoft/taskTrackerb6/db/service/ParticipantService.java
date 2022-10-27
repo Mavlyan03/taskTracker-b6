@@ -74,17 +74,17 @@ public class ParticipantService {
         return participantResponse;
     }
 
-//    public List<ParticipantResponse> getAllParticipantFromWorkspace(Long workspaceId, Long boardId) {
-//        Workspace workspace = workspaceRepository.findById(workspaceId)
-//                .orElseThrow(() -> new NotFoundException("Workspace with id " + workspaceId + " not found"));
-////        List<User> members = workspace.getMembers();
-//        List<ParticipantResponse> participantResponses = new ArrayList<>();
-//        for (User member : members) {
-//            participantResponses.add(new ParticipantResponse(member));
-//        }
-//
-//        return participantResponses;
-//    }
+    public List<ParticipantResponse> getAllParticipantFromWorkspace(Long workspaceId, Long boardId) {
+        Workspace workspace = workspaceRepository.findById(workspaceId)
+                .orElseThrow(() -> new NotFoundException("Workspace with id " + workspaceId + " not found"));
+        List<User> members = workspace.getMembers();
+        List<ParticipantResponse> participantResponses = new ArrayList<>();
+        for (User member : members) {
+            participantResponses.add(new ParticipantResponse(member));
+        }
+
+        return participantResponses;
+    }
 
     public SimpleResponse inviteParticipant(String email, String link) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
