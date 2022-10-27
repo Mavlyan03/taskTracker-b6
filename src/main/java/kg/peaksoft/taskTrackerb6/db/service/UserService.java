@@ -37,9 +37,6 @@ public class UserService {
 
     public AuthResponse registration(SignUpRequest signUpRequest) {
 
-        if (signUpRequest.getPassword().isBlank()) {
-            throw new BadRequestException("password can not be empty!");
-        }
         if (repository.existsByEmail(signUpRequest.getEmail())) {
             throw new BadRequestException("this email: " + signUpRequest.getEmail() + " is already in use!");
         }
@@ -62,10 +59,6 @@ public class UserService {
     }
 
     public AuthResponse login(SignInRequest signInRequest) {
-
-        if (signInRequest.getPassword().isBlank()   ) {
-            throw new BadRequestException("password can not be empty!");
-        }
 
         User user = repository.findByEmail(signInRequest.getEmail()).orElseThrow(
                 () -> new NotFoundException("user with this email: " + signInRequest.getEmail() + " not found!"));

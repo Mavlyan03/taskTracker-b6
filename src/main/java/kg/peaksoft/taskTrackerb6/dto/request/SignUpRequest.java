@@ -1,6 +1,6 @@
 package kg.peaksoft.taskTrackerb6.dto.request;
 
-import kg.peaksoft.taskTrackerb6.validation.PasswordValid;
+import kg.peaksoft.taskTrackerb6.validations.PasswordValid;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
