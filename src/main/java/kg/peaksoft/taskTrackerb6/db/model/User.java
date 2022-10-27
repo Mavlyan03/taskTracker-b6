@@ -44,8 +44,8 @@ public class User implements UserDetails {
     @OneToMany(cascade = {ALL}, mappedBy = "user")
     private List<Notification> notifications;
 
-//    @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST}, fetch = FetchType.EAGER)
-//    private List<Workspace> workspaces;
+    @OneToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST}, fetch = FetchType.EAGER, mappedBy = "lead")
+    private List<Workspace> workspaces;
 
     @OneToMany(cascade = {ALL}, mappedBy = "user")
     public List<UserWorkSpace> userWorkSpaces;
@@ -71,13 +71,6 @@ public class User implements UserDetails {
         }
         userWorkSpaces.add(userWorkSpace);
     }
-
-//    public void addWorkspace(Workspace workspace) {
-//        if (workspaces == null) {
-//            workspaces = new ArrayList<>();
-//        }
-//        workspaces.add(workspace);
-//    }
 
 
     @Override

@@ -45,8 +45,8 @@ public class WorkspaceService {
     }
 
     public WorkspaceResponse createWorkspace(WorkspaceRequest workspaceRequest) throws MessagingException {
-        Workspace workspace = convertToEntity(workspaceRequest);
         User user = getAuthenticateUser();
+        Workspace workspace = convertToEntity(workspaceRequest);
 
         for (String email : workspaceRequest.getEmails()) {
             boolean exists = userRepository.existsByEmail(email);
@@ -60,9 +60,9 @@ public class WorkspaceService {
         userWorkSpace.setUser(user);
         userWorkSpace.setWorkspace(workspace);
         userWorkSpace.setRole(Role.ADMIN);
-        workspace.addUserWorkSpace(userWorkSpace);
-//        workspace.setLead(user1);
         user.addUserWorkSpace(userWorkSpace);
+        workspace.addUserWorkSpace(userWorkSpace);
+        workspace.setLead(user);
         userWorkSpaceRepository.save(userWorkSpace);
         return convertToResponse(workspaceRepository.save(workspace));
     }
@@ -78,21 +78,15 @@ public class WorkspaceService {
 
 
     public SimpleResponse deleteWorkspaceById(Long id) {
+        User user = getAuthenticateUser();
+
         Workspace workspace = workspaceRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("workspace with id: " + id + " not found!")
         );
 
-        User user = getAuthenticateUser();
-
-//        if (!user.getEmail().equals(workspace.getLead().getEmail())) {
-//            throw new BadCredentialException("You can not delete this workspace!");
-//        }
-
-        if (!user.getEmail().equals(user.getUserWorkSpace().getUser().getEmail())) {
+        if (!user.getEmail().equals(workspace.getLead().getEmail())) {
             throw new BadCredentialException("You can not delete this workspace!");
         }
-
-//        workspace.setLead(null);
 
         workspaceRepository.delete(workspace);
         return new SimpleResponse(
@@ -113,16 +107,23 @@ public class WorkspaceService {
     }
 
 
-//    public List<WorkspaceResponse> getAllUserWorkspaces() {
-//        User user = getAuthenticateUser();
-//
-//        List<WorkspaceResponse> workspaceResponses = new ArrayList<>();
-//        List<Workspace> workspaces = user.getWorkspaces();
-//        for (Workspace workspace : workspaces) {
-//            workspaceResponses.add(convertToResponse(workspace));
-//        }
-//        return workspaceResponses;
-//    }
+    public List<WorkspaceResponse> getAllUserWorkspaces() {
+        User user = getAuthenticateUser();
+
+        List<WorkspaceResponse> workspaceResponses = new ArrayList<>();
+        List<Workspace> workspaces = new ArrayList<>();
+
+        for (UserWorkSpace userWorkSpace : user.getUserWorkSpaces()) {
+            if (userWorkSpace.getUser().equals(user)) {
+                workspaces.add(userWorkSpace.getWorkspace());
+            }
+        }
+
+        for (Workspace workspace : workspaces) {
+            workspaceResponses.add(convertToResponse(workspace));
+        }
+        return workspaceResponses;
+    }
 
 
     public List<FavoritesResponse> getAllFavorites() {
@@ -176,7 +177,7 @@ public class WorkspaceService {
         return new WorkspaceResponse(
                 workspace.getId(),
                 workspace.getName(),
-                convertToResponseCreator(workspace.getUserWorkSpace().getUser()),
+                convertToResponseCreator(workspace.getLead()),
                 workspace.getIsFavorite()
         );
     }

@@ -63,12 +63,12 @@ public class UserService {
 
     public AuthResponse login(SignInRequest signInRequest) {
 
-        if (signInRequest.getPassword().isBlank()   ) {
-            throw new BadRequestException("password can not be empty!");
-        }
-
         User user = repository.findByEmail(signInRequest.getEmail()).orElseThrow(
                 () -> new NotFoundException("user with this email: " + signInRequest.getEmail() + " not found!"));
+
+        if (signInRequest.getPassword().isBlank()) {
+            throw new BadRequestException("password can not be empty!");
+        }
 
         if (!passwordEncoder.matches(signInRequest.getPassword(), user.getPassword())) {
             throw new BadCredentialException("incorrect password");

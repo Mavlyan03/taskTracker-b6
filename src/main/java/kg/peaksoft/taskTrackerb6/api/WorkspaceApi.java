@@ -2,14 +2,12 @@ package kg.peaksoft.taskTrackerb6.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kg.peaksoft.taskTrackerb6.db.model.User;
 import kg.peaksoft.taskTrackerb6.db.service.WorkspaceService;
 import kg.peaksoft.taskTrackerb6.dto.request.WorkspaceRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.FavoritesResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.WorkspaceResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
@@ -54,10 +52,9 @@ public class WorkspaceApi {
         return service.getAllFavorites();
     }
 
-//    @Operation(summary = "Get user workspaces", description = "Get all user workspaces")
-//    @GetMapping
-//    public List<WorkspaceResponse> getWorkspacesByUserId(Authentication authentication) {
-//        User user = (User) authentication.getPrincipal();
-//        return service.getAllUserWorkspaces(user);
-//    }
+    @Operation(summary = "Get user workspaces", description = "Get all user workspaces")
+    @GetMapping
+    public List<WorkspaceResponse> getWorkspacesByUserId() {
+        return service.getAllUserWorkspaces();
+    }
 }
