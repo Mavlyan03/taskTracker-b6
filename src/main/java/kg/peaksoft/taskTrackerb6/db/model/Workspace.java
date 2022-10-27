@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import static javax.persistence.CascadeType.*;
@@ -34,8 +35,8 @@ public class Workspace {
 //    @ManyToOne(cascade = {ALL})
 //    private User lead;
 
-//    @OneToOne(cascade = {ALL})
-//    private UserWorkSpace userWorkSpace;
+    @OneToMany(cascade = {ALL}, mappedBy = "workspace")
+    private List<UserWorkSpace> userWorkSpaces;
 
     @OneToMany(cascade = {ALL}, mappedBy = "workspace")
     private List<Board> boards;
@@ -44,6 +45,13 @@ public class Workspace {
         this.name = name;
         this.isFavorite = isFavorite;
 
+    }
+
+    public void addUserWorkSpace(UserWorkSpace userWorkSpace) {
+        if (userWorkSpaces == null) {
+            userWorkSpaces = new ArrayList<>();
+        }
+        userWorkSpaces.add(userWorkSpace);
     }
 
 }

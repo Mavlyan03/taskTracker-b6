@@ -47,6 +47,9 @@ public class User implements UserDetails {
 //    @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST}, fetch = FetchType.EAGER)
 //    private List<Workspace> workspaces;
 
+    @OneToMany(cascade = {ALL}, mappedBy = "user")
+    public List<UserWorkSpace> userWorkSpaces;
+
     @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private List<Board> boards;
 
@@ -60,6 +63,13 @@ public class User implements UserDetails {
         this.email = email;
         this.password = password;
         this.role = role;
+    }
+
+    public void addUserWorkSpace(UserWorkSpace userWorkSpace) {
+        if (userWorkSpaces == null) {
+            userWorkSpaces = new ArrayList<>();
+        }
+        userWorkSpaces.add(userWorkSpace);
     }
 
 //    public void addWorkspace(Workspace workspace) {
