@@ -1,10 +1,8 @@
 package kg.peaksoft.taskTrackerb6.validations;
 
-
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
-
 
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Documented
