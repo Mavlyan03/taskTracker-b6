@@ -14,13 +14,13 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @Query("select b from Board b where b.isFavorite = true")
     List<Board> findAllByFavorites();
 
-    @Query("SELECT b FROM Board b WHERE b.isArchive = true")
+    @Query("select b from Board b where b.isArchive = true")
     List<Board> findAllByIsArchive();
 
-    @Query("SELECT NEW kg.peaksoft.taskTrackerb6.dto.response.BoardResponse(" +
+    @Query("select new kg.peaksoft.taskTrackerb6.dto.response.BoardResponse(" +
             "b.id," +
             "b.title," +
             "b.isFavorite," +
-            "b.background) FROM Board b WHERE b.workspace.id = ?1 AND b.isArchive = false")
+            "b.background) from Board b where b.workspace.id = ?1 AND b.isArchive = false")
     List<BoardResponse> findAllBoards(Long id);
 }

@@ -7,7 +7,6 @@ import kg.peaksoft.taskTrackerb6.db.service.BoardService;
 import kg.peaksoft.taskTrackerb6.dto.request.BoardRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.ArchiveBoardResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.BoardResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.FavoritesResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,7 +34,7 @@ public class BoardController {
     @Operation(summary = "Board status",
             description = "This endpoint returns board status to favorite" +
                     "and not favorite for board further requests to the API")
-    @PutMapping("/makeFavorite/{id}")
+    @PutMapping("/make-favorite/{id}")
     public BoardResponse makeFavorite(@PathVariable Long id) {
         return boardService.makeFavorite(id);
     }
@@ -54,14 +53,14 @@ public class BoardController {
     }
 
     @Operation(summary = "Change background.", description = "Change background to a new one.")
-    @PutMapping("/changeBackground/{id}")
+    @PutMapping("/change-background/{id}")
     public BoardResponse changeBackground(@PathVariable Long id,
                                            @RequestBody BoardRequest boardRequest) {
         return boardService.changeBackground(id, boardRequest);
     }
 
     @Operation(summary = "Change title.", description = "Change title to a new one.")
-    @PutMapping("/updateTitle/{id}")
+    @PutMapping("/update-title/{id}")
     public BoardResponse updateTitle(@PathVariable Long id,
                                           @RequestBody BoardRequest boardRequest) {
         return boardService.updateTitle(id, boardRequest);
@@ -70,7 +69,7 @@ public class BoardController {
     @Operation(summary = "Board status",
             description = "This endpoint returns board status to archive" +
                     "and not archive for board further requests to the API")
-    @PutMapping("/sendToArchive/{id}")
+    @PutMapping("/send-to-archive/{id}")
     public BoardResponse sendToArchive(@PathVariable Long id) {
         return boardService.sendToArchive(id);
     }
