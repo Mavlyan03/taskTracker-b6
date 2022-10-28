@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/admin/profile")
+@RequestMapping("api/profile")
 @CrossOrigin(origins = "*", maxAge = 3600)
-@Tag(name = "Admin profile Api", description = "All endpoints of admin profile")
-public class AdminProfileApi {
+@Tag(name = "Profile API", description = "All endpoints of admin profile")
+public class ProfileApi {
 
     private final AdminService adminService;
 
