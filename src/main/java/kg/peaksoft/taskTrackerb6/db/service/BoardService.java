@@ -75,8 +75,9 @@ public class BoardService {
 
     public BoardResponse changeBackground(Long id, BoardRequest boardRequest) {
         Board board = boardRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("Board with %s id not " +
-                        "found", id)));
+                () -> new NotFoundException(String.format(
+                        "Board with %s id not found", id)));
+
         board.setBackground(boardRequest.getBackground());
         boardRepository.save(board);
 
