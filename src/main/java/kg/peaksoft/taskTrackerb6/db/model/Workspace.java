@@ -26,20 +26,23 @@ public class Workspace {
 
     private Boolean isFavorite = false;
 
-    @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST}, mappedBy = "workspaces")
-    private List<User> members;
-
-    @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    @ManyToMany(cascade = {ALL})
     private List<Card> allIssues;
 
-    @ManyToOne(cascade = {ALL})
+    @ManyToOne(cascade = {DETACH, MERGE, REFRESH})
     private User lead;
 
-    @OneToOne(cascade = {ALL}, mappedBy = "workspace")
-    private UserWorkSpace userWorkSpace;
+    @OneToMany(cascade = {ALL}, mappedBy = "workspace")
+    private List<UserWorkSpace> userWorkSpaces;
 
     @OneToMany(cascade = {ALL}, mappedBy = "workspace")
     private List<Board> boards;
+
+    public Workspace(String name, boolean isFavorite) {
+        this.name = name;
+        this.isFavorite = isFavorite;
+
+    }
 
     public void addBoard(Board board) {
         if (boards == null) {
@@ -48,10 +51,13 @@ public class Workspace {
         boards.add(board);
     }
 
-    public Workspace(String name, boolean isFavorite, User lead) {
-        this.name = name;
-        this.isFavorite = isFavorite;
-        this.lead = lead;
+    public void addUserWorkSpace(UserWorkSpace userWorkSpace) {
+        if (userWorkSpaces == null) {
+            userWorkSpaces = new ArrayList<>();
+        }
+        userWorkSpaces.add(userWorkSpace);
     }
+
+
 
 }
