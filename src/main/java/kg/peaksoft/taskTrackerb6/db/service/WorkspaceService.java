@@ -16,6 +16,8 @@ import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
@@ -35,12 +37,16 @@ public class WorkspaceService {
     private final JavaMailSender mailSender;
     private final BoardRepository boardRepository;
 
+    private User getAuthenticateUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String login = authentication.getName();
+        return userRepository.findByEmail(login).orElseThrow(() ->
+                new NotFoundException("User not found!"));
+    }
 
-    public WorkspaceResponse createWorkspace(WorkspaceRequest workspaceRequest, User user) throws MessagingException {
+    public WorkspaceResponse createWorkspace(WorkspaceRequest workspaceRequest) throws MessagingException {
+        User user = getAuthenticateUser();
         Workspace workspace = convertToEntity(workspaceRequest);
-        User user1 = userRepository.findByEmail(user.getEmail()).orElseThrow(
-                () -> new NotFoundException("user with email: " + user.getEmail() + " not found!")
-        );
 
         for (String email : workspaceRequest.getEmails()) {
             boolean exists = userRepository.existsByEmail(email);
@@ -51,13 +57,13 @@ public class WorkspaceService {
         }
 
         UserWorkSpace userWorkSpace = new UserWorkSpace();
-        userWorkSpace.setUser(user1);
+        userWorkSpace.setUser(user);
         userWorkSpace.setWorkspace(workspace);
         userWorkSpace.setRole(Role.ADMIN);
+        user.addUserWorkSpace(userWorkSpace);
+        workspace.addUserWorkSpace(userWorkSpace);
+        workspace.setLead(user);
         userWorkSpaceRepository.save(userWorkSpace);
-        workspace.setUserWorkSpace(userWorkSpace);
-        workspace.setLead(user1);
-//        user.addWorkspace(workspace);
         return convertToResponse(workspaceRepository.save(workspace));
     }
 
@@ -71,20 +77,16 @@ public class WorkspaceService {
     }
 
 
-    public SimpleResponse deleteWorkspaceById(Long id, User user) {
+    public SimpleResponse deleteWorkspaceById(Long id) {
+        User user = getAuthenticateUser();
+
         Workspace workspace = workspaceRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("workspace with id: " + id + " not found!")
         );
 
-        User user1 = userRepository.findByEmail(user.getEmail()).orElseThrow(
-                () -> new NotFoundException("user with email: " + user.getEmail() + " not found!")
-        );
-
-        if (!user1.getEmail().equals(workspace.getLead().getEmail())) {
+        if (!user.getEmail().equals(workspace.getLead().getEmail())) {
             throw new BadCredentialException("You can not delete this workspace!");
         }
-
-        workspace.setLead(null);
 
         workspaceRepository.delete(workspace);
         return new SimpleResponse(
@@ -105,13 +107,18 @@ public class WorkspaceService {
     }
 
 
-    public List<WorkspaceResponse> getAllUserWorkspaces(User user) {
-        User user1 = userRepository.findByEmail(user.getEmail()).orElseThrow(
-                () -> new NotFoundException("user with email: " + user.getEmail() + " not found!")
-        );
+    public List<WorkspaceResponse> getAllUserWorkspaces() {
+        User user = getAuthenticateUser();
 
         List<WorkspaceResponse> workspaceResponses = new ArrayList<>();
-        List<Workspace> workspaces = user1.getWorkspaces();
+        List<Workspace> workspaces = new ArrayList<>();
+
+        for (UserWorkSpace userWorkSpace : user.getUserWorkSpaces()) {
+            if (userWorkSpace.getUser().equals(user)) {
+                workspaces.add(userWorkSpace.getWorkspace());
+            }
+        }
+
         for (Workspace workspace : workspaces) {
             workspaceResponses.add(convertToResponse(workspace));
         }
