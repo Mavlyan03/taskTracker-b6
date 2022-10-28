@@ -23,6 +23,8 @@ public class Line {
 
     private String title;
 
+    private Boolean isArchive;
+
     @OneToMany(cascade = ALL, mappedBy = "line")
     private List<Card> cards;
 
