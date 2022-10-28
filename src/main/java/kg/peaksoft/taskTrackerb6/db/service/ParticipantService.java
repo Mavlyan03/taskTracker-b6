@@ -33,7 +33,6 @@ public class ParticipantService {
     private final UserRepository userRepository;
     private final WorkspaceRepository workspaceRepository;
     private final BoardRepository boardRepository;
-    private final UserWorkSpaceRepository userWorkSpaceRepository;
     private final JavaMailSender mailSender;
 
     private User getAuthenticateUser() {
@@ -74,13 +73,9 @@ public class ParticipantService {
         List<User> workspaceUsers = new ArrayList<>();
         for (UserWorkSpace userWorkSpace : workspace.getUserWorkSpaces()) {
             workspaceUsers.add(userWorkSpace.getUser());
-            if (userWorkSpace.getWorkspace().equals(workspace)) {
-                if (userWorkSpace.getUser().equals(corpse)) {
-                    workspaceUsers.remove(corpse);
-                }
-            }
         }
 
+        workspaceUsers.remove(corpse);
         return new SimpleResponse("deleted", "ok");
     }
 
@@ -93,10 +88,9 @@ public class ParticipantService {
     }
 
     public List<ParticipantResponse> getAllParticipantFromBoard(Long boardId) {
-        User user = getAuthenticateUser();
         List<ParticipantResponse> participantResponse = new ArrayList<>();
         for (User user1 : userRepository.getAllUserFromBoardId(boardId)) {
-            participantResponse.add(mapToResponse(user));
+            participantResponse.add(mapToResponse(user1));
         }
 
         return participantResponse;
@@ -104,12 +98,10 @@ public class ParticipantService {
 
     public List<ParticipantResponse> getAllParticipantFromWorkspace(Long workspaceId) {
         Workspace workspace = workspaceRepository.findById(workspaceId).orElseThrow(
-                () -> new NotFoundException("Workspace with id " + workspaceId + " not found"
-                )
+                () -> new NotFoundException("Workspace with id " + workspaceId + " not found")
         );
 
         List<User> members = new ArrayList<>();
-
         for (UserWorkSpace w : workspace.getUserWorkSpaces()) {
             members.add(w.getUser());
         }
