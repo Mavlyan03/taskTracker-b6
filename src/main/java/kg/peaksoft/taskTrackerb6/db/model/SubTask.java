@@ -27,7 +27,7 @@ public class SubTask {
 
     private boolean isDone = false;
 
-    @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST}, mappedBy = "workspaces")
+    @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private List<User> workspacesUsers;
 
     @OneToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})

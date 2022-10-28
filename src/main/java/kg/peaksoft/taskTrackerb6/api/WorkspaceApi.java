@@ -2,14 +2,12 @@ package kg.peaksoft.taskTrackerb6.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kg.peaksoft.taskTrackerb6.db.model.User;
 import kg.peaksoft.taskTrackerb6.db.service.WorkspaceService;
 import kg.peaksoft.taskTrackerb6.dto.request.WorkspaceRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.FavoritesResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.WorkspaceResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
@@ -26,10 +24,8 @@ public class WorkspaceApi {
 
     @Operation(summary = "Save workspace", description = "Save new workspace")
     @PostMapping
-    public WorkspaceResponse save(@RequestBody WorkspaceRequest request,
-                                  Authentication authentication) throws MessagingException {
-        User user = (User) authentication.getPrincipal();
-        return service.createWorkspace(request, user);
+    public WorkspaceResponse save(@RequestBody WorkspaceRequest request) throws MessagingException {
+        return service.createWorkspace(request);
     }
 
     @Operation(summary = "Get workspace", description = "Get workspace by workspace id")
@@ -40,10 +36,8 @@ public class WorkspaceApi {
 
     @Operation(summary = "Delete workspace", description = "Delete workspace by workspace id")
     @DeleteMapping("{id}")
-    public SimpleResponse deleteById(@PathVariable Long id,
-                                     Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        return service.deleteWorkspaceById(id, user);
+    public SimpleResponse deleteById(@PathVariable Long id) {
+        return service.deleteWorkspaceById(id);
     }
 
     @Operation(summary = "Change action", description = "Change workspace action by workspace id")
@@ -60,8 +54,7 @@ public class WorkspaceApi {
 
     @Operation(summary = "Get user workspaces", description = "Get all user workspaces")
     @GetMapping
-    public List<WorkspaceResponse> getWorkspacesByUserId(Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        return service.getAllUserWorkspaces(user);
+    public List<WorkspaceResponse> getWorkspacesByUserId() {
+        return service.getAllUserWorkspaces();
     }
 }
