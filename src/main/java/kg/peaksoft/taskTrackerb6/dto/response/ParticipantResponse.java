@@ -14,11 +14,8 @@ import lombok.Setter;
 public class ParticipantResponse {
 
     private String firstName;
-
     private String lastName;
-
     private String email;
-
     private Role role;
 
     public ParticipantResponse(User user) {

@@ -9,10 +9,7 @@ import lombok.Setter;
 public class InviteRequest {
 
     private String email;
-
     private Role role;
-
     private String boardId;
-
     private String link;
 }

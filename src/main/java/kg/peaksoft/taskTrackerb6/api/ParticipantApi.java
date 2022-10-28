@@ -34,8 +34,8 @@ public class ParticipantApi {
 
 
     @GetMapping("/{workspaceId}")
-    public List<ParticipantResponse> getAllParticipantFromWorkspace(@PathVariable Long workspaceId, Long boardId) {
-        return participantService.getAllParticipantFromWorkspace(workspaceId, boardId);
+    public List<ParticipantResponse> getAllParticipantFromWorkspace(@PathVariable Long workspaceId) {
+        return participantService.getAllParticipantFromWorkspace(workspaceId);
     }
 
     @PostMapping("/invite")

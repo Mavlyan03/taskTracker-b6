@@ -8,11 +8,15 @@ import kg.peaksoft.taskTrackerb6.db.model.Workspace;
 import kg.peaksoft.taskTrackerb6.db.repository.*;
 import kg.peaksoft.taskTrackerb6.dto.response.ParticipantResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
+import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
@@ -22,8 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
+@RequiredArgsConstructor
 public class ParticipantService {
 
     private final UserRepository userRepository;
@@ -31,6 +35,13 @@ public class ParticipantService {
     private final BoardRepository boardRepository;
     private final UserWorkSpaceRepository userWorkSpaceRepository;
     private final JavaMailSender mailSender;
+
+    private User getAuthenticateUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String login = authentication.getName();
+        return userRepository.findByEmail(login).orElseThrow(() ->
+                new NotFoundException("User not found!"));
+    }
 
     public ParticipantResponse mapToResponse(User user) {
         ParticipantResponse participantResponse = new ParticipantResponse();
@@ -41,26 +52,35 @@ public class ParticipantService {
         return participantResponse;
     }
 
-    public SimpleResponse deleteParticipantFromWorkspace(Long id, Long workspaceId) {
-        User user = userRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("User with this id " + id + " not found"
-                )
-        );
+    public SimpleResponse deleteParticipantFromWorkspace(Long userId, Long workspaceId) {
+        User killer = getAuthenticateUser();
 
         Workspace workspace = workspaceRepository.findById(workspaceId).orElseThrow(
-                () -> new NotFoundException(" workspace with this id" + workspaceId + "not found"
-                )
+                () -> new NotFoundException(" workspace with this id" + workspaceId + "not found")
         );
 
-        for (UserWorkSpace userWorkSpace : userWorkSpaceRepository.findAll()) {
-            if (userWorkSpace.getUser().equals(user)) {
-                userWorkSpace.setUser(null);
+        User corpse = userRepository.findById(userId).orElseThrow(
+                () -> new NotFoundException("User with this id " + userId + " not found")
+        );
+
+        if (corpse.equals(killer)) {
+            throw new BadCredentialException("You can not remove yourself!");
+        }
+
+        if (workspace.getLead().equals(corpse)) {
+            throw new BadCredentialsException("This user is lead of workspace, you can not delete!");
+        }
+
+        List<User> workspaceUsers = new ArrayList<>();
+        for (UserWorkSpace userWorkSpace : workspace.getUserWorkSpaces()) {
+            workspaceUsers.add(userWorkSpace.getUser());
+            if (userWorkSpace.getWorkspace().equals(workspace)) {
+                if (userWorkSpace.getUser().equals(corpse)) {
+                    workspaceUsers.remove(corpse);
+                }
             }
         }
-//        user.setWorkspaces(null);
-//        workspaceRepository.deleteAll(user.getWorkspaces());
-//        workspaceRepository.deleteParticipantFromWorkspace(workspaceId);
-        workspace.getMembers().remove(user);
+
         return new SimpleResponse("deleted", "ok");
     }
 
@@ -73,21 +93,27 @@ public class ParticipantService {
     }
 
     public List<ParticipantResponse> getAllParticipantFromBoard(Long boardId) {
+        User user = getAuthenticateUser();
         List<ParticipantResponse> participantResponse = new ArrayList<>();
-        for (User user : userRepository.getAllUserFromBoardId(boardId)) {
+        for (User user1 : userRepository.getAllUserFromBoardId(boardId)) {
             participantResponse.add(mapToResponse(user));
         }
 
         return participantResponse;
     }
 
-    public List<ParticipantResponse> getAllParticipantFromWorkspace(Long workspaceId, Long boardId) {
+    public List<ParticipantResponse> getAllParticipantFromWorkspace(Long workspaceId) {
         Workspace workspace = workspaceRepository.findById(workspaceId).orElseThrow(
                 () -> new NotFoundException("Workspace with id " + workspaceId + " not found"
                 )
         );
 
-        List<User> members = workspace.getMembers();
+        List<User> members = new ArrayList<>();
+
+        for (UserWorkSpace w : workspace.getUserWorkSpaces()) {
+            members.add(w.getUser());
+        }
+
         List<ParticipantResponse> participantResponses = new ArrayList<>();
         for (User member : members) {
             participantResponses.add(new ParticipantResponse(member));
