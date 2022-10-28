@@ -22,10 +22,10 @@ public class UserWorkSpace {
     @SequenceGenerator(name = "user_workspace_roles_gen", sequenceName = "user_workspace_roles_seq",allocationSize = 1, initialValue = 2)
     private Long id;
 
-    @OneToOne(cascade = {REFRESH, DETACH, PERSIST, MERGE})
+    @ManyToOne(cascade = {REFRESH, DETACH, PERSIST, MERGE})
     private User user;
 
-    @OneToOne(cascade = {REFRESH, DETACH, PERSIST, MERGE})
+    @ManyToOne(cascade = {REFRESH, DETACH, PERSIST, MERGE})
     private Workspace workspace;
 
     @Enumerated(EnumType.STRING)
