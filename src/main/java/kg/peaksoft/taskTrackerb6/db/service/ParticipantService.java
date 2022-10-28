@@ -87,13 +87,11 @@ public class ParticipantService {
                 )
         );
 
-        List<UserWorkSpace> userWorkSpaces = workspace.getUserWorkSpaces();
-//        List<User> members = workspace.getMembers();
+        List<User> members = workspace.getMembers();
         List<ParticipantResponse> participantResponses = new ArrayList<>();
         for (User member : members) {
             participantResponses.add(new ParticipantResponse(member));
         }
-
         return participantResponses;
     }
 
