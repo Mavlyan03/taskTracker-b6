@@ -46,7 +46,7 @@ public class UserService {
 
         User user = convertToRegisterEntity(signUpRequest);
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
-        user.setRole(Role.ADMIN);
+        user.setRole(Role.USER);
         repository.save(user);
 
         String jwt = jwtUtil.generateToken(user.getEmail());
