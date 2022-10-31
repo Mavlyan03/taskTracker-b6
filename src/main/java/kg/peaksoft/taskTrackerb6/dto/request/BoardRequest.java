@@ -10,8 +10,6 @@ import lombok.*;
 public class BoardRequest {
 
     private Long workspaceId;
-
     private String title;
-
     private String background;
 }
