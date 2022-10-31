@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import static javax.persistence.CascadeType.*;
@@ -38,4 +39,11 @@ public class Board {
 
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private Workspace workspace;
+
+    public void addLine(Line line){
+        if (lines == null){
+            lines = new ArrayList<>();
+        }
+        lines.add(line);
+    }
 }
