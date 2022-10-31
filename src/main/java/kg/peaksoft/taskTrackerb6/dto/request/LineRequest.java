@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class LineRequest {
+
     private String lineName;
     private Long boardId;
 }

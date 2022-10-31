@@ -26,7 +26,7 @@ public class LineService {
         Line line = new Line();
         line.setTitle(lineRequest.getLineName());
         Board board = boardRepository.findById(lineRequest.getBoardId()).orElseThrow(
-                () -> new NotAcceptableStatusException("Borad with id: " + line.getBoard().getId() + " not found")
+                () -> new NotFoundException("Board with id: " + line.getBoard().getId() + " not found")
         );
         board.addLine(line);
         line.setBoard(board);
