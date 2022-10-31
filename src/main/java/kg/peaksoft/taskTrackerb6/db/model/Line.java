@@ -20,10 +20,8 @@ public class Line {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "line_gen")
     @SequenceGenerator(name = "line_gen", sequenceName = "line_seq", allocationSize = 1, initialValue = 2)
     private Long id;
-
     private String title;
-
-    private Boolean isArchive;
+    private Boolean isArchive = false;
 
     @OneToMany(cascade = ALL, mappedBy = "line")
     private List<Card> cards;

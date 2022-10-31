@@ -53,7 +53,7 @@ public class LineApi {
     }
 
     @Operation(summary = "get all", description = "get all lines by board id")
-    @GetMapping("det-all/{id}")
+    @GetMapping("get-all/{id}")
     public List<LineResponse> findAllLinesByBoardId(@PathVariable Long id){
         return lineService.findAllLines(id);
     }
