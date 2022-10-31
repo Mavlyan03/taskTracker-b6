@@ -33,7 +33,7 @@ public class UserService {
     private final UserRepository repository;
     private final JWTUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
-    private final JavaMailSender mailSender;
+    private final JavaMailSender  mailSender;
 
     public AuthResponse registration(SignUpRequest signUpRequest) {
 

@@ -9,7 +9,7 @@ values (1, 'Esen', 'Niyazov', 'photoLink', 'esen@gmail.com',
         '$2a$12$oRaUgIHxClArpaNXqFIPD.xUSju4iSsGFGEwlQgSWV2aii/3LqYyW', 'USER');
 
 insert into workspaces (id, name, is_favorite, lead_id)
-values (1, 'Workspace Name', false, 1);
+values (1, 'Workspace Name', false,  1);
 
 insert into boards(id, title, photo_link, is_archive, is_favorite, workspace_id)
 values (1, 'First Board', 'board_photo', false, false,  1);
