@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.persistence.Column;
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -30,6 +31,11 @@ public class Card {
     private String description;
 
     private boolean isArchive = false;
+
+    private LocalDate createdAt;
+
+    @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    private User creator;
 
     @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private List<User> members;

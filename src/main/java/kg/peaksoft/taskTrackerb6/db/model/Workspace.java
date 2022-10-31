@@ -41,7 +41,6 @@ public class Workspace {
     public Workspace(String name, boolean isFavorite) {
         this.name = name;
         this.isFavorite = isFavorite;
-
     }
 
     public void addUserWorkSpace(UserWorkSpace userWorkSpace) {

@@ -6,14 +6,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import javax.persistence.Column;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import static javax.persistence.CascadeType.*;
-import static javax.persistence.CascadeType.ALL;
 
 @Entity
 @Table(name = "users")
@@ -52,6 +50,9 @@ public class User implements UserDetails {
 
     @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private List<Board> boards;
+
+    @OneToMany(cascade = {ALL}, mappedBy = "creator")
+    private List<Card> cards;
 
     @Enumerated(EnumType.STRING)
     private Role role;

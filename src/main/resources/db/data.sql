@@ -17,8 +17,8 @@ values (1, 'First Board', 'board_photo', false, false,  1);
 insert into lines (id, title, board_id)
 values (1, 'First Line', 1);
 
-insert into cards (id, title, description, is_archive, board_id, line_id)
-values (1, 'First Card', 'First Description', false, 1, 1);
+insert into cards (id, title, description, is_archive, created_at, creator_id, board_id, line_id)
+values (1, 'First Card', 'First Description', false, '2022-10-31',  1, 1, 1);
 
 insert into checklists (id, name, task_tracker, card_id)
 values (1, 'First Card', 1, 1);
@@ -48,7 +48,7 @@ values (1, '2000-04-30', 1, 1, 1),
 insert into users_boards (members_id, boards_id)
 values (1, 1);
 
-insert into user_workspace_roles (id, user_id, workspace_id, role)
+insert into user_workspace_roles (id, user_id, workspace_id, role)  
 values (1, 1, 1, 'SUPER_ADMIN');
 
 insert into workspaces_all_issues (workspace_id, all_issues_id)
