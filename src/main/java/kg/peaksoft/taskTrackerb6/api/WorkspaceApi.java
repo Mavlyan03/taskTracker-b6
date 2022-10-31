@@ -8,7 +8,16 @@ import kg.peaksoft.taskTrackerb6.dto.response.FavoritesResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.WorkspaceResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.mail.MessagingException;
 import java.util.List;
@@ -17,7 +26,7 @@ import java.util.List;
 @RequestMapping("api/workspace")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*", maxAge = 3600)
-@Tag(name = "Workspace Api", description = "All endpoints of workspace")
+@Tag(name = "Workspace API", description = "All endpoints of workspace")
 public class WorkspaceApi {
 
     private final WorkspaceService service;
