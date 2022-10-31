@@ -3,6 +3,7 @@ package kg.peaksoft.taskTrackerb6.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.peaksoft.taskTrackerb6.db.service.ParticipantService;
+import kg.peaksoft.taskTrackerb6.dto.request.InviteRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.ParticipantResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import lombok.RequiredArgsConstructor;
@@ -46,8 +47,8 @@ public class ParticipantApi {
 
     @Operation(summary = "Invite member", description = "Invite member")
     @PostMapping("/invite")
-    public SimpleResponse inviteParticipant(@RequestParam String email, @RequestParam String link) throws MessagingException {
-        return participantService.inviteParticipant(email,link);
+    public SimpleResponse inviteParticipant(InviteRequest request) throws MessagingException {
+        return participantService.inviteParticipant(request);
     }
 }
 

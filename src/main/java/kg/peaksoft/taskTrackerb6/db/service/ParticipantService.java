@@ -6,6 +6,7 @@ import kg.peaksoft.taskTrackerb6.db.model.User;
 import kg.peaksoft.taskTrackerb6.db.model.UserWorkSpace;
 import kg.peaksoft.taskTrackerb6.db.model.Workspace;
 import kg.peaksoft.taskTrackerb6.db.repository.*;
+import kg.peaksoft.taskTrackerb6.dto.request.InviteRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.ParticipantResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
@@ -113,16 +114,16 @@ public class ParticipantService {
         return participantResponses;
     }
 
-    public SimpleResponse inviteParticipant(String email, String link) throws MessagingException {
+    public SimpleResponse inviteParticipant(InviteRequest request) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
         helper.setSubject("[task_tracker] registry new member");
-        helper.setTo(email);
-        helper.setText(link, true);
+        helper.setTo(request.getEmail());
+        if (request.getRole().toString().equals("ADMIN")) {
+            helper.setText(request.getLink() + request.getRole());
+        }
+        helper.setText(request.getLink() + request.getRole());
         mailSender.send(mimeMessage);
         return new SimpleResponse("Email send", "ok");
     }
 }
-
-
-
