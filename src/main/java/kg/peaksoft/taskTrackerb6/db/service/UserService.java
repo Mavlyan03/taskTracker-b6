@@ -33,13 +33,10 @@ public class UserService {
     private final UserRepository repository;
     private final JWTUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
-    private final JavaMailSender mailSender;
+    private final JavaMailSender  mailSender;
 
     public AuthResponse registration(SignUpRequest signUpRequest) {
 
-        if (signUpRequest.getPassword().isBlank()) {
-            throw new BadRequestException("password can not be empty!");
-        }
         if (repository.existsByEmail(signUpRequest.getEmail())) {
             throw new BadRequestException("this email: " + signUpRequest.getEmail() + " is already in use!");
         }

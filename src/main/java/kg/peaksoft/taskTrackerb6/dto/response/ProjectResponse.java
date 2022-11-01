@@ -7,10 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class SimpleResponse {
+public class ProjectResponse {
 
-    private String message;
-
-    private String status;
-
+    private String name;
 }
