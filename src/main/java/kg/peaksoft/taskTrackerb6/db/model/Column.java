@@ -14,7 +14,7 @@ import static javax.persistence.CascadeType.*;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Line {
+public class Column {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "line_gen")
@@ -23,7 +23,7 @@ public class Line {
     private String title;
     private Boolean isArchive = false;
 
-    @OneToMany(cascade = ALL, mappedBy = "line")
+    @OneToMany(cascade = ALL, mappedBy = "column")
     private List<Card> cards;
 
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})

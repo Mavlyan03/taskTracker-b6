@@ -32,7 +32,7 @@ public class Board {
     private boolean isFavorite = false;
 
     @OneToMany(cascade = ALL, mappedBy = "board")
-    private List<Line> lines;
+    private List<Column> columns;
 
     @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST}, mappedBy = "boards")
     private List<User> members;
@@ -40,10 +40,10 @@ public class Board {
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private Workspace workspace;
 
-    public void addLine(Line line){
-        if (lines == null){
-            lines = new ArrayList<>();
+    public void addLine(Column column){
+        if (columns== null){
+            columns = new ArrayList<>();
         }
-        lines.add(line);
+        columns.add(column);
     }
 }
