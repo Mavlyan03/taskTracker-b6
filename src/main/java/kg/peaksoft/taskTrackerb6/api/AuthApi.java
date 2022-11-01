@@ -25,7 +25,7 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @RequestMapping("api/public")
 @CrossOrigin(origins = "*", maxAge = 3600)
-@Tag(name = "Auth Api", description = "Authorization and Authentication")
+@Tag(name = "Auth API", description = "Registration and authentication")
 public class AuthApi {
 
     private final UserService userService;
@@ -57,7 +57,7 @@ public class AuthApi {
 
     @Operation(summary = "Google authentication", description = "Any user can authenticate with Google")
     @PostMapping("authenticate/google")
-    public AuthResponse authWithGoogleAccount(@RequestBody String tokenId) throws FirebaseAuthException {
-        return userService.authWithGoogle(tokenId);
+    public AuthResponse authWithGoogleAccount(@RequestParam String token) throws FirebaseAuthException {
+        return userService.authWithGoogle(token);
     }
 }
