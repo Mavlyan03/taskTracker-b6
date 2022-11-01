@@ -10,10 +10,7 @@ import lombok.Setter;
 public class ArchiveBoardResponse {
 
     private Long id;
-
     private String title;
-
     private String background;
-
     private boolean isArchive;
 }

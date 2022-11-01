@@ -19,7 +19,6 @@ import java.util.List;
 public class BoardService {
 
     private final BoardRepository boardRepository;
-
     private final WorkspaceRepository workspaceRepository;
 
     public BoardService(BoardRepository boardRepository,
