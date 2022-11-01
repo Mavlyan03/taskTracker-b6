@@ -15,7 +15,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("api/file")
 @CrossOrigin(origins = "*", maxAge = 3600)
-@Tag(name = "Storage Api", description = "Upload and delete files")
+@Tag(name = "Storage API", description = "Upload and delete files")
 public class StorageFileApi {
 
     private final StorageService storageService;

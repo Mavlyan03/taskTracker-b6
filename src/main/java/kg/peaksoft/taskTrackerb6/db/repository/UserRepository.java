@@ -6,6 +6,7 @@ import org.apache.catalina.LifecycleState;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,4 +20,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("select case when count(u)>0 then true else false end from User u where u.email like :email")
     boolean existsByEmail(@Param(value = "email") String email);
+
+    @Query("select u from User u inner join Board b on u.id = b.id")
+    List<User> getAllUserFromBoardId(@Param("boardId") Long id);
 }
