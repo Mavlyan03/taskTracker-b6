@@ -1,11 +1,11 @@
 package kg.peaksoft.taskTrackerb6.db.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import static javax.persistence.CascadeType.*;
@@ -32,7 +32,7 @@ public class Board {
     private boolean isFavorite = false;
 
     @OneToMany(cascade = ALL, mappedBy = "board")
-    private List<Line> lines;
+    private List<Column> columns;
 
     @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST}, mappedBy = "boards")
     private List<User> members;
@@ -40,4 +40,11 @@ public class Board {
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private Workspace workspace;
 
+
+    public void addColumn(Column column){
+        if (columns== null){
+            columns = new ArrayList<>();
+        }
+        columns.add(column);
+    }
 }

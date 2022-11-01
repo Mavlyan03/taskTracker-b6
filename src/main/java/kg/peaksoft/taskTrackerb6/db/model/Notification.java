@@ -1,14 +1,14 @@
 package kg.peaksoft.taskTrackerb6.db.model;
 
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
 import javax.persistence.Column;
+import javax.persistence.*;
 
 import static javax.persistence.CascadeType.*;
-import static javax.persistence.CascadeType.PERSIST;
 
 @Entity
 @Table(name = "notifications")
@@ -37,7 +37,7 @@ public class Notification {
     private Card card;
 
     @OneToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
-    private Line line;
+    private kg.peaksoft.taskTrackerb6.db.model.Column column;
 
     @OneToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private Estimation estimation;
