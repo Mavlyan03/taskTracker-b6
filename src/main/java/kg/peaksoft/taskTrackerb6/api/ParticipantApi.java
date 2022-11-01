@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping("api/participant")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*", maxAge = 3600)
-@Tag(name = "Participant Api", description = "All endpoints of participant")
+@Tag(name = "Participant API", description = "All endpoints of participant")
 public class ParticipantApi {
 
     private final ParticipantService participantService;

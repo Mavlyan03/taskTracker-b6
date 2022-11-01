@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/column")
 @RequiredArgsConstructor
+@RequestMapping("api/column")
 @CrossOrigin(origins = "*", maxAge = 3600)
-@Tag(name = "Column Api", description = "All endpoints of column")
+@Tag(name = "Column API", description = "All endpoints of column")
 public class ColumnApi {
 
     private final ColumnService columnService;
