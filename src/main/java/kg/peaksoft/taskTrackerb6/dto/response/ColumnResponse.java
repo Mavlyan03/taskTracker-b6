@@ -7,9 +7,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class LineResponse {
+public class ColumnResponse {
 
     private Long id;
-    private String lineName;
+    private String columnName;
     private Long boardId;
 }

@@ -1,6 +1,5 @@
 package kg.peaksoft.taskTrackerb6.db.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -42,7 +41,7 @@ public class Board {
     private Workspace workspace;
 
 
-    public void addLine(Column column){
+    public void addColumn(Column column){
         if (columns== null){
             columns = new ArrayList<>();
         }

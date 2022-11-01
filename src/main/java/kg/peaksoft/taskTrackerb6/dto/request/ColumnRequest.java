@@ -5,8 +5,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class LineRequest {
+public class ColumnRequest {
 
-    private String lineName;
+    private String columnName;
     private Long boardId;
 }

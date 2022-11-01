@@ -4,8 +4,8 @@ import kg.peaksoft.taskTrackerb6.db.model.Board;
 import kg.peaksoft.taskTrackerb6.db.model.Column;
 import kg.peaksoft.taskTrackerb6.db.repository.BoardRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.ColumnRepository;
-import kg.peaksoft.taskTrackerb6.dto.request.LineRequest;
-import kg.peaksoft.taskTrackerb6.dto.response.LineResponse;
+import kg.peaksoft.taskTrackerb6.dto.request.ColumnRequest;
+import kg.peaksoft.taskTrackerb6.dto.response.ColumnResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -21,84 +21,78 @@ public class ColumnService {
     private final BoardRepository boardRepository;
     private final ColumnRepository columnRepository;
 
-    public LineResponse createLine(LineRequest lineRequest) {
-        Column line = new Column();
-        line.setTitle(lineRequest.getLineName());
-        Board board = boardRepository.findById(lineRequest.getBoardId()).orElseThrow(
-                () -> new NotFoundException("Board with id: " + line.getBoard().getId() + " not found")
+    public ColumnResponse createColumn(ColumnRequest columnRequest) {
+        Column column = new Column();
+        column.setTitle(columnRequest.getColumnName());
+        Board board = boardRepository.findById(columnRequest.getBoardId()).orElseThrow(
+                () -> new NotFoundException("Board with id: " + column.getBoard().getId() + " not found")
         );
 
-        board.addLine(line);
-        line.setBoard(board);
-        Column line1 = columnRepository.save(line);
-        return new LineResponse(line1.getId(), line1.getTitle(), line1.getBoard().getId());
+        board.addColumn(column);
+        column.setBoard(board);
+        Column column1 = columnRepository.save(column);
+        return new ColumnResponse(column1.getId(), column1.getTitle(), column1.getBoard().getId());
     }
 
-    public LineResponse updateLine(Long id, LineRequest lineRequest) {
-        Column line = columnRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Line with id: " + id + " not found")
+    public ColumnResponse updateColumn(Long id, String newTitle) {
+        Column column = columnRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Column with id: " + id + " not found")
         );
 
-        line.setTitle(lineRequest.getLineName());
-        Board board = boardRepository.findById(line.getBoard().getId()).orElseThrow(
-                () -> new NotFoundException("Board with id: " + line.getBoard().getId() + " not found")
-        );
-
-        board.addLine(line);
-        line.setBoard(board);
-        Column line1 = columnRepository.save(line);
-        return new LineResponse(line1.getId(), line1.getTitle(), line1.getBoard().getId());
+        column.setTitle(newTitle);
+        Column column1 = columnRepository.save(column);
+        return new ColumnResponse(column1.getId(), column1.getTitle(), column1.getBoard().getId());
     }
 
-    public SimpleResponse deleteLine(Long id) {
-        Column line = columnRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Line with id: " + id + " not found")
+    public SimpleResponse deleteColumn(Long id) {
+        Column column = columnRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Column with id: " + id + " not found")
         );
 
-        columnRepository.delete(line);
-        return new SimpleResponse("Line with id: " + id + " successfully deleted", "DELETED");
+        columnRepository.delete(column);
+        return new SimpleResponse("Column with id: " + id + " successfully deleted", "DELETE");
     }
 
-    public List<LineResponse> findAllLines(Long id) {
-        List<Column> lines = columnRepository.findAllColumns(id);
-        List<LineResponse> lineResponses = new ArrayList<>();
-        for (Column line : lines) {
-            lineResponses.add(convertToResponse(line));
+    public List<ColumnResponse> findAllColumns(Long id) {
+        List<Column> columns = columnRepository.findAllColumns(id);
+        List<ColumnResponse> columnResponses = new ArrayList<>();
+        for (Column column : columns) {
+            columnResponses.add(convertToResponse(column));
         }
 
-        return lineResponses;
+        return columnResponses;
     }
 
-    public LineResponse convertToResponse(Column line) {
-        return new LineResponse(line.getId(), line.getTitle(), line.getBoard().getId());
+    private ColumnResponse convertToResponse(Column column) {
+        return new ColumnResponse(column.getId(), column.getTitle(), column.getBoard().getId());
     }
 
-    public LineResponse addToArchive(Long id) {
-        Column line = columnRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Line with id: " + id + " not found")
+    public ColumnResponse addToArchive(Long id) {
+        Column column = columnRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Column with id: " + id + " not found")
         );
 
-        line.setIsArchive(true);
-        Column line1 = columnRepository.save(line);
+        column.setIsArchive(true);
+        Column line1 = columnRepository.save(column);
         return convertToResponse(line1);
     }
 
-    public List<LineResponse> findAllLinesByArchive() {
-        List<Column> lines = columnRepository.findAllArchivedColumns();
-        List<LineResponse> lineResponses = new ArrayList<>();
-        for (Column line : lines) {
-            lineResponses.add(convertToResponse(line));
+    public List<ColumnResponse> findAllArchivedColumns() {
+        List<Column> columns = columnRepository.findAllArchivedColumns();
+        List<ColumnResponse> columnResponses = new ArrayList<>();
+        for (Column column : columns) {
+            columnResponses.add(convertToResponse(column));
         }
 
-        return lineResponses;
+        return columnResponses;
     }
 
-    public LineResponse sendToBoard(Long id) {
-        Column line = columnRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Line with id: " + id + " not found")
+    public ColumnResponse sendToBoard(Long id) {
+        Column column = columnRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Column with id: " + id + " not found")
         );
 
-        line.setIsArchive(false);
-        return convertToResponse(columnRepository.save(line));
+        column.setIsArchive(false);
+        return convertToResponse(columnRepository.save(column));
     }
 }
