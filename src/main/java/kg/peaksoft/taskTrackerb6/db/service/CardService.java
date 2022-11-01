@@ -8,6 +8,7 @@ import kg.peaksoft.taskTrackerb6.db.repository.LineRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import kg.peaksoft.taskTrackerb6.dto.request.CardRequest1;
 import kg.peaksoft.taskTrackerb6.dto.response.CardResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.CardResponse1;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
@@ -51,7 +52,7 @@ public class CardService {
         );
     }
 
-    public CardResponse createCard(CardRequest1 request1) {
+    public CardResponse1 createCard(CardRequest1 request1) {
         User user = getAuthenticateUser();
         Line line = lineRepository.findById(request1.getColumnId()).get();
         Card card = new Card();
@@ -63,42 +64,42 @@ public class CardService {
         card.setLine(line);
         line.setCards(List.of(card));
         cardRepository.save(card);
-        return new CardResponse(card.getId(), card.getTitle());
+        return new CardResponse1(card.getId(), card.getTitle());
     }
 
-    public CardResponse updateCardTitle(CardRequest1 cardRequest1) {
+    public CardResponse1 updateCardTitle(CardRequest1 cardRequest1) {
         Card card = cardRepository.findById(cardRequest1.getColumnId()).get();
         card.setTitle(cardRequest1.getTitle());
         cardRepository.save(card);
-        return new CardResponse(card.getId(), card.getTitle());
+        return new CardResponse1(card.getId(), card.getTitle());
     }
 
-    public List<CardResponse> getAllCardByLineId(Long id) {
+    public List<CardResponse1> getAllCardByLineId(Long id) {
         Line line = lineRepository.findById(id).get();
-        List<CardResponse> cardResponses = new ArrayList<>();
+        List<CardResponse1> cardResponses = new ArrayList<>();
         for (Card card : line.getCards()) {
-            cardResponses.add(new CardResponse(card));
+            cardResponses.add(new CardResponse1(card));
         }
         return cardResponses;
     }
 
-    public CardResponse sendToArchive(Long id) {
+    public CardResponse1 sendToArchive(Long id) {
         Card card = cardRepository.findById(id).get();
         card.setIsArchive(!card.getIsArchive());
         Card archivedCard = cardRepository.save(card);
-        return new CardResponse(archivedCard);
+        return new CardResponse1(archivedCard);
     }
 
-    public CardResponse getCardById(Long id) {
+    public CardResponse1 getCardById(Long id) {
         Card card = cardRepository.findById(id).get();
-        return new CardResponse(card);
+        return new CardResponse1(card);
     }
 
-    public List<CardResponse> getAllCardsByColumnIdWithQuery(Long id) {
+    public List<CardResponse1> getAllCardsByColumnIdWithQuery(Long id) {
         return cardRepository.findAllCardResponse(id);
     }
 
-    public List<CardResponse> getAllArchivedCards(Long boardId) {
+    public List<CardResponse1> getAllArchivedCards(Long boardId) {
         return cardRepository.findAllArchivedCards(boardId);
     }
 }
