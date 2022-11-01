@@ -20,9 +20,9 @@ public class CardRequest {
 
     private String title;
     private String description;
-    private List<Label> labels;
-    private EstimationResponse estimationResponse;
-    private List<MemberResponse> memberResponses;
-    private ChecklistResponse checklistResponse;
-    private List<CommentResponse> commentResponses;
+    private List<LabelRequest> labelRequests;
+    private EstimationRequest estimationRequest;
+    private List<MemberRequest> memberRequests;
+    private ChecklistRequest checklistRequest;
+    private List<CommentRequest> commentRequests;
 }

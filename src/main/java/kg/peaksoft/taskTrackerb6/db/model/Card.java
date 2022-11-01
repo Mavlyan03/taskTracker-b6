@@ -30,7 +30,7 @@ public class Card {
     @Column(length = 10000)
     private String description;
 
-    private boolean isArchive = false;
+    private Boolean isArchive = false;
 
     private LocalDate createdAt;
 
@@ -60,4 +60,12 @@ public class Card {
 
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private Board board;
+
+    public Card(String title, String description, Boolean isArchive, LocalDate createdAt, User creator) {
+        this.title = title;
+        this.description = description;
+        this.isArchive = isArchive;
+        this.createdAt = createdAt;
+        this.creator = creator;
+    }
 }
