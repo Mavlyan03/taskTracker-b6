@@ -28,5 +28,5 @@ public class Basket {
     private Card card;
 
     @OneToOne(cascade = CascadeType.ALL)
-    private Line line;
+    private Column column;
 }
