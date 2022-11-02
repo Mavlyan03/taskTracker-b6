@@ -20,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @PreAuthorize("hasAnyAuthority('ADMIN')")
 @CrossOrigin(origins = "*", maxAge = 3600)
-@Tag(name = "Board API", description = "The board CRUD methods (for manipulation)")
+@Tag(name = "Board API", description = "All board endpoints for Admin")
 public class BoardController {
 
     private final BoardService boardService;
@@ -32,43 +32,41 @@ public class BoardController {
     }
 
     @Operation(summary = "Board status",
-            description = "This endpoint returns board status to favorite" +
-                    "and not favorite for board further requests to the API")
+            description = "This endpoint returns board status to favorite")
     @PutMapping("/make-favorite/{id}")
     public BoardResponse makeFavorite(@PathVariable Long id) {
         return boardService.makeFavorite(id);
     }
 
-    @Operation(summary = "Get board", description = "Get board by board id")
+    @Operation(summary = "Get board", description = "Get board by id")
     @GetMapping("{id}")
     public BoardResponse getById(@PathVariable Long id) {
         return boardService.getBoardById(id);
     }
 
-    @Operation(summary = "Delete board", description = "Delete board by board id")
+    @Operation(summary = "Delete board", description = "Delete board by id")
     @DeleteMapping("{id}")
     public SimpleResponse deleteById(@PathVariable Long id,
                                      @Valid Board board) {
         return boardService.deleteBoardById(id, board);
     }
 
-    @Operation(summary = "Change background.", description = "Change background to a new one.")
+    @Operation(summary = "Change background", description = "Change background to a new one")
     @PutMapping("/change-background/{id}")
     public BoardResponse changeBackground(@PathVariable Long id,
-                                           @RequestBody BoardRequest boardRequest) {
+                                          @RequestBody BoardRequest boardRequest) {
         return boardService.changeBackground(id, boardRequest);
     }
 
-    @Operation(summary = "Change title.", description = "Change title to a new one.")
-    @PutMapping("/update-title/{id}")
+    @Operation(summary = "Change title", description = "Change title to a new one")
+    @PutMapping("/title/{id}")
     public BoardResponse updateTitle(@PathVariable Long id,
-                                          @RequestBody BoardRequest boardRequest) {
+                                     @RequestBody BoardRequest boardRequest) {
         return boardService.updateTitle(id, boardRequest);
     }
 
     @Operation(summary = "Board status",
-            description = "This endpoint returns board status to archive" +
-                    "and not archive for board further requests to the API")
+            description = "This endpoint returns board status to archive")
     @PutMapping("/send-to-archive/{id}")
     public BoardResponse sendToArchive(@PathVariable Long id) {
         return boardService.sendToArchive(id);

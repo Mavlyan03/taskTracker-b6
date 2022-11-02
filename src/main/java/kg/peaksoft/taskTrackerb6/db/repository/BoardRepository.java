@@ -21,6 +21,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             "b.id," +
             "b.title," +
             "b.isFavorite," +
-            "b.background) from Board b where b.workspace.id = ?1 AND b.isArchive = false")
+            "b.background) from Board b where b.workspace.id = ?1 and b.isArchive = false")
     List<BoardResponse> findAllBoards(Long id);
 }

@@ -56,6 +56,7 @@ values (1, 1);
 
 insert into cards_members (card_id, members_id)
 values (1, 1);
+
 insert into users (id, first_name, last_name, photo_link, email, password, role)
 values (1, 'Esen', 'Niyazov', 'photoLink', 'esen@gmail.com',
         '$2a$12$CfCkLOcM6zwdxxryeGF6tuqiaSlWpDxdFaUXpBPjNMPwSoMfA8nMa','SUPER_ADMIN'),

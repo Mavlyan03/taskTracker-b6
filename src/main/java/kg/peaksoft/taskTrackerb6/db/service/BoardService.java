@@ -10,36 +10,30 @@ import kg.peaksoft.taskTrackerb6.dto.response.BoardResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
+@RequiredArgsConstructor
 public class BoardService {
 
     private final BoardRepository boardRepository;
     private final WorkspaceRepository workspaceRepository;
 
-    public BoardService(BoardRepository boardRepository,
-                        WorkspaceRepository workspaceRepository) {
-        this.boardRepository = boardRepository;
-        this.workspaceRepository = workspaceRepository;
-    }
-
     public BoardResponse createBoard(BoardRequest boardRequest) {
-
         Board board = new Board(boardRequest);
-
         Workspace workspace = workspaceRepository.findById(boardRequest.getWorkspaceId()).orElseThrow(
-                () -> new NotFoundException("Workspace with id: " + boardRequest.getWorkspaceId() + " not found!"));
+                () -> new NotFoundException("Workspace with id: " + boardRequest.getWorkspaceId() + " not found!")
+        );
 
         workspace.addBoard(board);
-
         board.setWorkspace(workspace);
-
         boardRepository.save(board);
-
         return new BoardResponse(board.getId(),
                 board.getTitle(),
                 board.getIsFavorite(),
@@ -54,16 +48,17 @@ public class BoardService {
         if (board1.getIsArchive().equals(board.getIsArchive())) {
             throw new BadCredentialException("You can not delete this board!");
         } else {
-
             boardRepository.delete(board);
             return new SimpleResponse(
-                    "Board with id " + id + " is deleted successfully!", "DELETED");
+                    "Board with id " + id + " is deleted successfully!", "DELETE");
         }
     }
 
     public BoardResponse makeFavorite(Long id) {
         Board board = boardRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("Board with id %s not found", id)));
+                () -> new NotFoundException(String.format("Board with id %s not found", id))
+        );
+
         board.setIsFavorite(!board.getIsFavorite());
         Board board1 = boardRepository.save(board);
         return new BoardResponse(board1.getId(),
@@ -74,26 +69,26 @@ public class BoardService {
 
     public BoardResponse changeBackground(Long id, BoardRequest boardRequest) {
         Board board = boardRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format(
-                        "Board with %s id not found", id)));
+                () -> new NotFoundException(String.format("Board with %s id not found", id))
+        );
 
         board.setBackground(boardRequest.getBackground());
         boardRepository.save(board);
-
         return new BoardResponse(
                 board.getId(),
                 board.getTitle(),
                 board.getIsFavorite(),
-                board.getBackground());
+                board.getBackground()
+        );
     }
 
     public BoardResponse updateTitle(Long id, BoardRequest boardRequest) {
         Board board = boardRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("Board with %s id not " +
-                        "found", id)));
+                () -> new NotFoundException(String.format("Board with %s id not found", id))
+        );
+
         board.setTitle(boardRequest.getTitle());
         boardRepository.save(board);
-
         return new BoardResponse(
                 board.getId(),
                 board.getTitle(),
@@ -102,15 +97,16 @@ public class BoardService {
     }
 
     public BoardResponse getBoardById(Long id) {
-
         Board board = boardRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Board with id: " + id + " not found!"));
+                () -> new NotFoundException("Board with id: " + id + " not found!")
+        );
 
         return new BoardResponse(
                 board.getId(),
                 board.getTitle(),
                 board.getIsFavorite(),
-                board.getBackground());
+                board.getBackground()
+        );
     }
 
     private ArchiveBoardResponse convertToArchiveBoardResponse(Board board) {
@@ -118,7 +114,8 @@ public class BoardService {
                 board.getId(),
                 board.getTitle(),
                 board.getBackground(),
-                board.getIsArchive());
+                board.getIsArchive()
+        );
     }
 
     public List<ArchiveBoardResponse> getAllArchiveBoardsList() {
@@ -127,22 +124,25 @@ public class BoardService {
         for (Board board : boards) {
             archiveBoards.add(convertToArchiveBoardResponse(board));
         }
+
         return archiveBoards;
     }
 
     public BoardResponse sendToArchive(Long id) {
         Board board = boardRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("Board with id %s not found", id)));
+                () -> new NotFoundException(String.format("Board with id %s not found", id))
+        );
+
         board.setIsArchive(!board.getIsArchive());
         Board board1 = boardRepository.save(board);
         return new BoardResponse(board1.getId(),
                 board1.getTitle(),
                 board1.getIsFavorite(),
-                board1.getBackground());
+                board1.getBackground()
+        );
     }
 
     public List<BoardResponse> getAllBoardsByWorkspaceId(Long id) {
-
             return boardRepository.findAllBoards(id);
         }
 }
