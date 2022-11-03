@@ -7,11 +7,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class FavoriteBoardResponse {
+public class ArchiveBoardResponse {
 
     private Long id;
     private String title;
     private String background;
-    private boolean isFavorite;
-
+    private boolean isArchive;
 }

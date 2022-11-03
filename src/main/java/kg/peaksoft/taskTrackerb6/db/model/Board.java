@@ -1,5 +1,7 @@
 package kg.peaksoft.taskTrackerb6.db.model;
 
+import kg.peaksoft.taskTrackerb6.dto.request.BoardRequest;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +18,7 @@ import static javax.persistence.CascadeType.PERSIST;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class Board {
 
     @Id
@@ -25,11 +28,16 @@ public class Board {
 
     private String title;
 
-    private String photoLink;
+    private Boolean isArchive = false;
 
-    private boolean isArchive = false;
+    private Boolean isFavorite = false;
 
-    private boolean isFavorite = false;
+    private String background;
+
+    public Board(BoardRequest boardRequest) {
+        this.title = boardRequest.getTitle();
+        this.background = boardRequest.getBackground();
+    }
 
     @OneToMany(cascade = ALL, mappedBy = "board")
     private List<Column> columns;
