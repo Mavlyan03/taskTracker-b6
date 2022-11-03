@@ -43,11 +43,17 @@ public class Workspace {
         this.isFavorite = isFavorite;
     }
 
+    public void addBoard(Board board) {
+        if (boards == null) {
+            boards = new ArrayList<>();
+        }
+        boards.add(board);
+    }
+
     public void addUserWorkSpace(UserWorkSpace userWorkSpace) {
         if (userWorkSpaces == null) {
             userWorkSpaces = new ArrayList<>();
         }
         userWorkSpaces.add(userWorkSpace);
     }
-
 }

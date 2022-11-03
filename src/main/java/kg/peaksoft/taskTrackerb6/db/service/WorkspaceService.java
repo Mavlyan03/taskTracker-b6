@@ -206,8 +206,8 @@ public class WorkspaceService {
         return new FavoriteBoardResponse(
                 board.getId(),
                 board.getTitle(),
-                board.getPhotoLink(),
-                board.isFavorite()
+                board.getBackground(),
+                board.getIsFavorite()
         );
     }
 
