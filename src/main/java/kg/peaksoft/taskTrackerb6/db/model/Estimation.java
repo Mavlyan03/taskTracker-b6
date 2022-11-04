@@ -23,7 +23,7 @@ public class Estimation {
     @SequenceGenerator(name = "estimation_gen", sequenceName = "estimation_seq", allocationSize = 1, initialValue = 2)
     private Long id;
 
-    private LocalDateTime createdDate;
+    private LocalDateTime startDate;
 
     private LocalDateTime deadlineDate;
 
@@ -40,4 +40,11 @@ public class Estimation {
 
     @OneToOne(cascade = {DETACH, REFRESH, PERSIST, MERGE})
     private User user;
+
+    public Estimation(LocalDateTime startDate, LocalDateTime deadlineDate, int reminder) {
+        this.startDate = startDate;
+        this.deadlineDate = deadlineDate;
+        this.reminder = reminder;
+    }
+
 }

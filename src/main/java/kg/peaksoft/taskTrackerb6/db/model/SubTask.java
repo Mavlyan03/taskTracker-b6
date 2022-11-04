@@ -36,4 +36,9 @@ public class SubTask {
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private Checklist checklist;
 
+    public SubTask(String description, Boolean isDone) {
+        this.description = description;
+        this.isDone = isDone;
+    }
+
 }

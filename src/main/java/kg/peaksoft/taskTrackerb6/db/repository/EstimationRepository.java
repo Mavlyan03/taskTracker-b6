@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EstimationRepository extends JpaRepository<Estimation, Long> {
 
-    @Query("select new kg.peaksoft.taskTrackerb6.dto.response.EstimationResponse(e.id, e.createdDate, e.deadlineDate, e.reminder)" +
+    @Query("select new kg.peaksoft.taskTrackerb6.dto.response.EstimationResponse(e.id, e.startDate, e.deadlineDate, e.reminder)" +
             " from Estimation e where e.card.id = ?1")
     EstimationResponse getEstimationByCardId(Long cardId);
 }

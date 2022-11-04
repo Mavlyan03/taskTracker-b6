@@ -5,6 +5,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.peaksoft.taskTrackerb6.db.service.CardService;
 import kg.peaksoft.taskTrackerb6.dto.request.CardRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.UpdateCardRequest;
+import kg.peaksoft.taskTrackerb6.dto.request.UpdateCardTitleRequest;
+import kg.peaksoft.taskTrackerb6.dto.response.CardResponseForGetAllCard;
+import kg.peaksoft.taskTrackerb6.dto.response.CardResponseForGetById;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -20,45 +23,45 @@ public class CardApi {
 
     private final CardService cardService;
 
-    @Operation(summary = "Save card", description = "Save new card")
+    @Operation(summary = "Create card", description = "Create new card")
     @PostMapping
-    public CardResponse saveCard(@RequestBody CardRequest cardRequest) {
-        return cardService.createCard(cardRequest);
+    public CardResponseForGetById createCard(@RequestBody CardRequest request) {
+             return cardService.createCard(request);
     }
 
-    @Operation(summary = "Get card", description = "Get card by card id")
+    @Operation(summary = "Get card", description = "Get card by id")
     @GetMapping("{id}")
-    public CardResponse getCardById(@PathVariable Long id) {
-        return cardService.getCardById(id);
+    public CardResponseForGetById getCardById(@PathVariable Long id) {
+        return cardService.getCard(id);
     }
 
-    @Operation(summary = "Update title", description = "Update card title by card id")
+    @Operation(summary = "Update card title", description = "Update card title by id")
     @PutMapping
-    public CardResponse updateCardTitle(@RequestBody UpdateCardRequest request) {
-        return cardService.updateCardTitle(request);
+    public CardResponseForGetById updateCardTitle(@RequestBody UpdateCardTitleRequest request) {
+        return cardService.updateTitle(request);
     }
 
-    @Operation(summary = "Delete card", description = "Delete card by card id")
+    @Operation(summary = "Delete card", description = "Delete card by id")
     @DeleteMapping("{id}")
     public SimpleResponse deleteCard(@PathVariable Long id) {
         return cardService.deleteCard(id);
     }
 
-    @Operation(summary = "Get all cards with query", description = "Get all cards by column id")
-    @GetMapping("cards-with-query/{id}")
-    public List<CardResponse> getAllCardsByColumnId(@PathVariable Long id) {
-        return cardService.getAllCardsByColumnIdWithQuery(id);
+    @Operation(summary = "Sent to archive", description = "Sent to archive by id")
+    @PutMapping("archive/{id}")
+    public CardResponseForGetById sentToArchive(@PathVariable Long id) {
+        return cardService.sentToArchive(id);
     }
 
-    @Operation(summary = "Send to archive", description = "Sent card to archive by card id")
-    @PutMapping("send-to-archive/{id}")
-    public CardResponse sentToArchive(@PathVariable Long id) {
-        return cardService.sendToArchive(id);
+    @Operation(summary = "Get all cards", description = "Get all cards by column id")
+    @GetMapping("cards/{columnId}")
+    public List<CardResponseForGetAllCard> getAllCardsByColumnId(@PathVariable Long columnId) {
+        return cardService.getAllCardsByColumnId(columnId);
     }
 
-    @Operation(summary = "Get archived cards", description = "Get all archived cards by board id")
-    @GetMapping("archived-cards/{id}")
-    public List<CardResponse> getAllArchivedCardsByBoardId(@PathVariable Long id) {
-        return cardService.getAllArchivedCards(id);
+    @Operation(summary = "Get all archived cards", description = "Get all archived cards by board id")
+    @GetMapping("archive-cards/{boardId}")
+    public List<CardResponseForGetAllCard> getAllArchivedCardsByBoardId(@PathVariable Long boardId) {
+        return cardService.getAllArchivedCardsByBoardId(boardId);
     }
 }

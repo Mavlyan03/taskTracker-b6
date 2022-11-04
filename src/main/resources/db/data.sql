@@ -20,10 +20,10 @@ values (1, 'First Column', false, 1);
 insert into cards (id, title, description, is_archive, created_at, creator_id, board_id, column_id)
 values (1, 'First Card', 'First Description', false, '2022-10-31',  1, 1, 1);
 
-insert into checklists (id, name, task_tracker, card_id)
-values (1, 'First Card', 1, 1);
+insert into checklists (id, title, task_tracker, card_id)
+values (1, 'First Checklist', 1, 1);
 
-insert into estimations (id, created_date, deadline_date, reminder, text, card_id, user_id)
+insert into estimations (id, start_date, deadline_date, reminder, text, card_id, user_id)
 values (1, '2022-02-01', '2022-12-12', 5, 'First Text', 1, 1);
 
 insert into subtasks (id, description, is_done, checklist_id, estimation_id)
@@ -33,7 +33,7 @@ insert into notifications (id, text, is_read, user_id, sub_task_id, card_id, col
 values (1, 'First Text', false, 1, 1, 1, 1, 1);
 
 insert into labels (id, color, description, card_id)
-values (1, 'First Description', 'White', 1);
+values (1, 'RED', 'White', 1);
 
 insert into comments (id, created_date, text, user_id, card_id)
 values (1, '2022-10-23', 'First text', 1, 1);
