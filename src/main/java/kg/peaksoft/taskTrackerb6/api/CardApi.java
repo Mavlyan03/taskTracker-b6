@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.peaksoft.taskTrackerb6.db.service.CardService;
 import kg.peaksoft.taskTrackerb6.dto.request.CardRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.UpdateCardRequest;
-import kg.peaksoft.taskTrackerb6.dto.response.CardResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

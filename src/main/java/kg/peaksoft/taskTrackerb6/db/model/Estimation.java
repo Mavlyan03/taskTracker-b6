@@ -7,6 +7,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import javax.persistence.Column;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static javax.persistence.CascadeType.*;
 
@@ -22,9 +23,9 @@ public class Estimation {
     @SequenceGenerator(name = "estimation_gen", sequenceName = "estimation_seq", allocationSize = 1, initialValue = 2)
     private Long id;
 
-    private LocalDate createdDate;
+    private LocalDateTime createdDate;
 
-    private LocalDate deadlineDate;
+    private LocalDateTime deadlineDate;
 
     private int reminder;
 
