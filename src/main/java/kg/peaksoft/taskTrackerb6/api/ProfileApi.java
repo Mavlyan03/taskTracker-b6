@@ -24,10 +24,10 @@ public class ProfileApi {
 
     private final AdminService adminService;
 
-    @Operation(summary = "Get profile", description = "Get profile by id")
-    @GetMapping("{id}")
-    public AdminProfileResponse getProfile(@PathVariable Long id) {
-        return adminService.adminProfile(id);
+    @Operation(summary = "Get profile", description = "Get profile for me")
+    @GetMapping("/me")
+    public AdminProfileResponse getProfile() {
+        return adminService.adminProfile();
     }
 
     @Operation(summary = "Update profile", description = "Update profile by profile id")

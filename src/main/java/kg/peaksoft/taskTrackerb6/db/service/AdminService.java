@@ -29,11 +29,8 @@ public class AdminService {
     private final WorkspaceRepository workspaceRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public AdminProfileResponse adminProfile(Long id) {
-        User user = userRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("user with id: " + id + " not found!" )
-        );
-
+    public AdminProfileResponse adminProfile() {
+        User user = getAuthenticatedUser();
         return new AdminProfileResponse(
                 user.getId(),
                 user.getFirstName(),
