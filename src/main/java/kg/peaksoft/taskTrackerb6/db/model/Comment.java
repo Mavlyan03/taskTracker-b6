@@ -37,6 +37,4 @@ public class Comment {
         this.text = text;
         this.createdDate = createdDate;
     }
-
-
 }

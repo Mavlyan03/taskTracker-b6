@@ -23,8 +23,12 @@ values (1, 'First Card', 'First Description', false, '2022-10-31',  1, 1, 1);
 insert into checklists (id, title, task_tracker, card_id)
 values (1, 'First Checklist', 1, 1);
 
-insert into estimations (id, start_date, start_time, due_date, deadline_time, reminder, text, card_id, user_id)
-values (1, '2022-02-01', '14:07:07.845341800', '2022-12-12', '14:09:07.845341800', 5, 'First Text', 1, 1);
+insert into times (id, hour, minute)
+values (1, 10, 20),
+       (2, 12,20);
+
+insert into estimations (id, start_date, start_time_id, due_date, deadline_time_id, reminder, text, card_id, user_id)
+values (1, '2022-02-01', 1, '2022-12-12', 2, 5, 'First Text', 1, 1);
 
 insert into subtasks (id, description, is_done, checklist_id, estimation_id)
 values (1, 'Subtasks description ', false, 1, 1);

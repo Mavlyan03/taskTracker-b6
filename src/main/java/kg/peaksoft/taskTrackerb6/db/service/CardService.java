@@ -68,7 +68,6 @@ public class CardService {
         List<CardResponseForGetAllCard> getAllCards = new ArrayList<>();
         for (Card card : column.getCards()) {
             if (card.getIsArchive().equals(false)) {
-//                getAllCards.add(new CardResponseForGetAllCard(card));
                 getAllCards.add(converter.convertToResponseForGetAll(card));
             }
         }
@@ -120,13 +119,10 @@ public class CardService {
         for (Column column : board.getColumns()) {
             for (Card c : column.getCards()) {
                 if (c.getIsArchive().equals(true)) {
-//                    responses.add(new CardResponseForGetAllCard(c));
                     responses.add(converter.convertToResponseForGetAll(c));
                 }
             }
         }
         return responses;
     }
-
-
 }

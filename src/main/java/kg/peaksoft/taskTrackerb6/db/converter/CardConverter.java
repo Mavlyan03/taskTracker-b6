@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,9 +55,15 @@ public class CardConverter {
             card.addLabel(label);
         }
 
-        Estimation estimation = new Estimation(request.getEstimationRequest().getStartDate(), request.getEstimationRequest().getStartTime(), request.getEstimationRequest().getDueDate(), request.getEstimationRequest().getDeadlineTime(), request.getEstimationRequest().getReminder());
-        card.setEstimation(estimation);
+        Estimation estimation = new Estimation(
+                request.getEstimationRequest().getStartDate(),
+                request.getEstimationRequest().getDueDate(),
+                request.getEstimationRequest().getReminder());
+
         estimation.setUser(user);
+        estimation.setStartTime(convertTimeToEntity(request.getEstimationRequest().getStartTime()));
+        estimation.setDeadlineTime(convertTimeToEntity(request.getEstimationRequest().getDeadlineTime()));
+        card.setEstimation(estimation);
         estimation.setCard(card);
 
         List<MemberResponse> workspaceMember = new ArrayList<>();
@@ -103,10 +110,15 @@ public class CardConverter {
         response.setTitle(card.getTitle());
         response.setDescription(card.getDescription());
         response.setLabelResponses(labelRepository.getAllLabelResponses(card.getId()));
-        response.setEstimationResponse(estimationRepository.getEstimationByCardId(card.getId()));
-        if (card.getMembers() != null){
+        if (card.getEstimation() != null) {
+            response.setEstimationResponse(getEstimationByCardId(card.getId()));
+
+        }
+
+        if (card.getMembers() != null) {
             response.setMemberResponses(getAllCardMembers(card.getMembers()));
         }
+
         response.setChecklistResponses(getChecklistResponses(card.getChecklists()));
         response.setCommentResponses(getCommentResponses(card.getComments()));
         return response;
@@ -117,20 +129,23 @@ public class CardConverter {
         response.setId(card.getId());
         response.setTitle(card.getTitle());
         response.setLabelResponses(labelRepository.getAllLabelResponses(card.getId()));
-//        int between = Period.between(card.getEstimation().getStartDate(), card.getEstimation().getDeadlineDate())
-//        response.setDuration();
-        response.setNumberOfMembers(card.getMembers().size() + 1);
-        int subTask = 0;
-        for (Checklist checklist : card.getChecklists()) {
-          subTask = checklist.getSubTasks().size();
+        if (card.getEstimation() != null) {
+            int between = Period.between(card.getEstimation().getStartDate(), card.getEstimation().getDueDate()).getDays();
+            response.setDuration("" + between + " days");
         }
 
-        response.setNumberOfSubTasks(subTask + 1);
+        response.setNumberOfMembers(card.getMembers().size());
+        int subTask = 0;
+        for (Checklist checklist : card.getChecklists()) {
+            subTask = checklist.getSubTasks().size();
+        }
+
+        response.setNumberOfSubTasks(subTask);
         int completedSubTasks = 0;
         for (Checklist c : card.getChecklists()) {
             for (SubTask task : c.getSubTasks()) {
                 if (task.getIsDone().equals(true)) {
-                    completedSubTasks ++;
+                    completedSubTasks++;
                 }
             }
         }
@@ -139,7 +154,7 @@ public class CardConverter {
         return response;
     }
 
-    public List<CommentResponse> getCommentResponses(List<Comment> comments) {
+    private List<CommentResponse> getCommentResponses(List<Comment> comments) {
         List<CommentResponse> commentResponses = new ArrayList<>();
         for (Comment c : comments) {
             commentResponses.add(convertCommentToResponse(c));
@@ -148,20 +163,20 @@ public class CardConverter {
         return commentResponses;
     }
 
-    public CommentResponse convertCommentToResponse(Comment comment) {
+    private CommentResponse convertCommentToResponse(Comment comment) {
         User user = getAuthenticateUser();
         return new CommentResponse(comment.getId(), comment.getText(), comment.getCreatedDate(), convertToCommentedUserResponse(user));
     }
 
-    public CommentedUserResponse convertToCommentedUserResponse(User user) {
+    private CommentedUserResponse convertToCommentedUserResponse(User user) {
         return new CommentedUserResponse(user.getId(), user.getFirstName(), user.getPhotoLink());
     }
 
-    public ChecklistResponse convertChecklistToResponse(Checklist checklist) {
+    private ChecklistResponse convertChecklistToResponse(Checklist checklist) {
         return new ChecklistResponse(checklist.getId(), checklist.getTitle(), checklist.getTaskTracker(), subTaskRepository.getSubTaskResponseByChecklistId(checklist.getId()));
     }
 
-    public List<ChecklistResponse> getChecklistResponses(List<Checklist> checklists) {
+    private List<ChecklistResponse> getChecklistResponses(List<Checklist> checklists) {
         List<ChecklistResponse> responses = new ArrayList<>();
         for (Checklist c : checklists) {
             responses.add(convertChecklistToResponse(c));
@@ -170,7 +185,7 @@ public class CardConverter {
         return responses;
     }
 
-    public List<MemberResponse> getAllCardMembers(List<User> users) {
+    private List<MemberResponse> getAllCardMembers(List<User> users) {
         List<MemberResponse> memberResponses = new ArrayList<>();
         for (User user : users) {
             memberResponses.add(convertToMemberResponse(user));
@@ -178,7 +193,7 @@ public class CardConverter {
         return memberResponses;
     }
 
-    public MemberResponse convertToMemberResponse(User user) {
+    private MemberResponse convertToMemberResponse(User user) {
         return new MemberResponse(
                 user.getId(),
                 user.getFirstName(),
@@ -187,8 +202,30 @@ public class CardConverter {
         );
     }
 
-    public User convertMemberToUser(MemberRequest request) {
+    private User convertMemberToUser(MemberRequest request) {
         return userRepository.findByEmail(request.getEmail()).get();
+    }
+
+    private EstimationResponse getEstimationByCardId(Long cardId) {
+        Card card = cardRepository.findById(cardId).orElseThrow(
+                () -> new NotFoundException("Card with id: " + cardId + " not found!")
+        );
+
+        Estimation estimation = estimationRepository.findById(card.getEstimation().getId()).orElseThrow(
+                () -> new NotFoundException("Estimation not found!")
+        );
+
+        return new EstimationResponse(estimation.getId(), estimation.getStartDate(), convertStartTimeToResponse(estimation.getStartTime()), estimation.getDueDate(), convertStartTimeToResponse(estimation.getDeadlineTime()), estimation.getReminder());
+    }
+
+    private MyTimeClass convertTimeToEntity(MyTimeClassRequest startClass) {
+        MyTimeClass myTimeClass = new MyTimeClass();
+        myTimeClass.setTime(startClass.getHour(), startClass.getMinute());
+        return myTimeClass;
+    }
+
+    private MyTimeClassResponse convertStartTimeToResponse(MyTimeClass timeClass) {
+        return new MyTimeClassResponse(timeClass.getId(), String.format("%02d:%02d", timeClass.getHour(), timeClass.getMinute()));
     }
 
 }

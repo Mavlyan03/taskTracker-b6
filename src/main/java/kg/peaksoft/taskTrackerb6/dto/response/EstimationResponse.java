@@ -4,8 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 @Getter
 @Setter
@@ -13,12 +11,12 @@ public class EstimationResponse {
 
     private Long id;
     private LocalDate startDate;
-    private LocalTime startTime;
+    private MyTimeClassResponse startTime;
     private LocalDate dueDate;
-    private LocalTime deadlineTime;
+    private MyTimeClassResponse deadlineTime;
     private int reminder;
 
-    public EstimationResponse(Long id, LocalDate startDate, LocalTime startTime, LocalDate dueDate, LocalTime deadlineTime, int reminder) {
+    public EstimationResponse(Long id, LocalDate startDate, MyTimeClassResponse startTime, LocalDate dueDate, MyTimeClassResponse deadlineTime, int reminder) {
         this.id = id;
         this.startDate = startDate;
         this.startTime = startTime;

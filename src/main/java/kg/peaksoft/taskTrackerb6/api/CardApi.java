@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping("api/card")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*", maxAge = 3600)
-@Tag(name = "Card Api", description = "All endpoints of card")
+@Tag(name = "Card API", description = "All endpoints of card")
 public class CardApi {
 
     private final CardService cardService;
@@ -25,7 +25,7 @@ public class CardApi {
     @Operation(summary = "Create card", description = "Create new card")
     @PostMapping
     public CardResponseForGetById createCard(@RequestBody CardRequest request) {
-             return cardService.createCard(request);
+        return cardService.createCard(request);
     }
 
     @Operation(summary = "Get card", description = "Get card by id")
