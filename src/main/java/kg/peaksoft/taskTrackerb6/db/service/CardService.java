@@ -1,5 +1,6 @@
 package kg.peaksoft.taskTrackerb6.db.service;
 
+import kg.peaksoft.taskTrackerb6.db.converter.CardConverter;
 import kg.peaksoft.taskTrackerb6.db.model.*;
 import kg.peaksoft.taskTrackerb6.db.repository.*;
 import kg.peaksoft.taskTrackerb6.dto.request.*;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,10 +26,7 @@ public class CardService {
     private final UserRepository userRepository;
     private final ColumnRepository columnRepository;
     private final BoardRepository boardRepository;
-    private final LabelRepository labelRepository;
-    private final EstimationRepository estimationRepository;
-    private final SubTaskRepository subTaskRepository;
-    private final WorkspaceRepository workspaceRepository;
+    private final CardConverter converter;
 
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -59,7 +56,7 @@ public class CardService {
                 () -> new NotFoundException("Card with id: " + id + " not found!")
         );
 
-        return convertToCardResponse(card);
+        return converter.convertToCardResponseForGetById(card);
     }
 
 
@@ -71,7 +68,8 @@ public class CardService {
         List<CardResponseForGetAllCard> getAllCards = new ArrayList<>();
         for (Card card : column.getCards()) {
             if (card.getIsArchive().equals(false)) {
-                getAllCards.add(new CardResponseForGetAllCard(card));
+//                getAllCards.add(new CardResponseForGetAllCard(card));
+                getAllCards.add(converter.convertToResponseForGetAll(card));
             }
         }
 
@@ -85,16 +83,16 @@ public class CardService {
         );
 
         card.setTitle(request.getNewTitle());
-        return convertToCardResponse(card);
+        return converter.convertToCardResponseForGetById(card);
     }
 
 
     public CardResponseForGetById createCard(CardRequest request) {
         User user = getAuthenticateUser();
-        Card card = convertToEntity(request);
+        Card card = converter.convertToEntity(request);
         card.setCreator(user);
         card.setCreatedAt(LocalDate.now());
-        return convertToCardResponse(cardRepository.save(card));
+        return converter.convertToCardResponseForGetById(cardRepository.save(card));
     }
 
 
@@ -109,17 +107,21 @@ public class CardService {
             basket.setCard(card);
         }
 
-        return convertToCardResponse(card);
+        return converter.convertToCardResponseForGetById(card);
     }
 
 
     public List<CardResponseForGetAllCard> getAllArchivedCardsByBoardId(Long id) {
-        Board board = boardRepository.findById(id).get();
+        Board board = boardRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Board with id: " + id + " not found!")
+        );
+
         List<CardResponseForGetAllCard> responses = new ArrayList<>();
         for (Column column : board.getColumns()) {
             for (Card c : column.getCards()) {
                 if (c.getIsArchive().equals(true)) {
-                    responses.add(new CardResponseForGetAllCard(c));
+//                    responses.add(new CardResponseForGetAllCard(c));
+                    responses.add(converter.convertToResponseForGetAll(c));
                 }
             }
         }
@@ -127,133 +129,4 @@ public class CardService {
     }
 
 
-    private Card convertToEntity(CardRequest request) {
-        User user = getAuthenticateUser();
-        Column column = columnRepository.findById(request.getColumnId()).orElseThrow(
-                () -> new NotFoundException("Column with id: " + request.getColumnId() + " not found!")
-        );
-
-        Board board = boardRepository.findById(column.getBoard().getId()).get();
-        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).get();
-        Card card = new Card(request.getTitle(), request.getDescription());
-        card.setColumn(column);
-        card.setBoard(board);
-        column.addCard(card);
-
-
-        for (LabelRequest l : request.getLabelRequests()) {
-            Label label = new Label(l.getDescription(), l.getColor());
-            label.setCard(card);
-            card.addLabel(label);
-        }
-
-        Estimation estimation = new Estimation(request.getEstimationRequest().getStartDate(), request.getEstimationRequest().getDeadlineDate(), request.getEstimationRequest().getReminder());
-        card.setEstimation(estimation);
-        estimation.setUser(user);
-        estimation.setCard(card);
-
-        List<MemberResponse> workspaceMember = new ArrayList<>();
-        for (UserWorkSpace u : workspace.getUserWorkSpaces()) {
-            if (!user.equals(u.getUser())) {
-                workspaceMember.add(convertToMemberResponse(u.getUser()));
-            }
-
-        }
-
-        for (MemberResponse memberResponse : workspaceMember) {
-            for (MemberRequest m : request.getMemberRequests()) {
-                if (memberResponse.getEmail().equals(m.getEmail())) {
-                    card.addMember(convertMemberToUser(m));
-                }
-            }
-        }
-
-        for (ChecklistRequest c : request.getChecklistRequests()) {
-            Checklist checklist = new Checklist(c.getTitle(), c.getTaskTracker());
-
-            for (SubTaskRequest s : c.getSubTaskRequests()) {
-                SubTask subTask = new SubTask(s.getDescription(), s.getIsDone());
-                checklist.addSubTaskToChecklist(subTask);
-                subTask.setChecklist(checklist);
-            }
-            card.addChecklist(checklist);
-            checklist.setCard(card);
-        }
-
-        for (CommentRequest commentRequest : request.getCommentRequests()) {
-            Comment comment = new Comment(commentRequest.getText(), LocalDateTime.now());
-            comment.setUser(user);
-            comment.setCard(card);
-            card.addComment(comment);
-        }
-
-        return card;
-    }
-
-    private CardResponseForGetById convertToCardResponse(Card card) {
-        CardResponseForGetById response = new CardResponseForGetById();
-        response.setId(card.getId());
-        response.setTitle(card.getTitle());
-        response.setDescription(card.getDescription());
-        response.setLabelResponses(labelRepository.getAllLabelResponses(card.getId()));
-        response.setEstimationResponse(estimationRepository.getEstimationByCardId(card.getId()));
-        if (card.getMembers()!= null){
-            response.setMemberResponses(getAllCardMembers(card.getMembers()));
-        }
-        response.setChecklistResponses(getChecklistResponses(card.getChecklists()));
-        response.setCommentResponses(getCommentResponses(card.getComments()));
-        return response;
-    }
-
-    private List<CommentResponse> getCommentResponses(List<Comment> comments) {
-        List<CommentResponse> commentResponses = new ArrayList<>();
-        for (Comment c : comments) {
-            commentResponses.add(convertCommentToResponse(c));
-        }
-
-        return commentResponses;
-    }
-
-    private CommentResponse convertCommentToResponse(Comment comment) {
-        User user = getAuthenticateUser();
-        return new CommentResponse(comment.getId(), comment.getText(), comment.getCreatedDate(), convertToCommentedUserResponse(user));
-    }
-
-    private CommentedUserResponse convertToCommentedUserResponse(User user) {
-        return new CommentedUserResponse(user.getId(), user.getFirstName(), user.getPhotoLink());
-    }
-
-    private ChecklistResponse convertChecklistToResponse(Checklist checklist) {
-        return new ChecklistResponse(checklist.getId(), checklist.getTitle(), checklist.getTaskTracker(), subTaskRepository.getSubTaskResponseByChecklistId(checklist.getId()));
-    }
-
-    private List<ChecklistResponse> getChecklistResponses(List<Checklist> checklists) {
-        List<ChecklistResponse> responses = new ArrayList<>();
-        for (Checklist c : checklists) {
-            responses.add(convertChecklistToResponse(c));
-        }
-
-        return responses;
-    }
-
-    private List<MemberResponse> getAllCardMembers(List<User> users) {
-        List<MemberResponse> memberResponses = new ArrayList<>();
-        for (User user : users) {
-            memberResponses.add(convertToMemberResponse(user));
-        }
-        return memberResponses;
-    }
-
-    private MemberResponse convertToMemberResponse(User user) {
-        return new MemberResponse(
-                user.getId(),
-                user.getFirstName(),
-                user.getEmail(),
-                user.getPhotoLink()
-        );
-    }
-
-    private User convertMemberToUser(MemberRequest request) {
-        return userRepository.findByEmail(request.getEmail()).get();
-    }
 }

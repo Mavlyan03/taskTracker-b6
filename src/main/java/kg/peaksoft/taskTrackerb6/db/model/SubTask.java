@@ -25,7 +25,7 @@ public class SubTask {
     @Column(length = 10000)
     private String description;
 
-    private boolean isDone = false;
+    private Boolean isDone = false;
 
     @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private List<User> workspacesUsers;

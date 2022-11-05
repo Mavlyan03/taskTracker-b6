@@ -5,12 +5,15 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 @Setter
 public class EstimationRequest {
 
-    private LocalDateTime startDate;
-    private LocalDateTime deadlineDate;
+    private LocalDate startDate;
+    private LocalTime startTime;
+    private LocalDate dueDate;
+    private LocalTime deadlineTime;
     private int reminder;
 }
