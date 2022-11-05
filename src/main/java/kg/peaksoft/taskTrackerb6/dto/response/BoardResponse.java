@@ -1,17 +1,16 @@
 package kg.peaksoft.taskTrackerb6.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
-public class FavoriteBoardResponse {
+@NoArgsConstructor
+public class BoardResponse {
 
     private Long id;
     private String title;
+    private Boolean isFavorite;
     private String background;
-    private boolean isFavorite;
-
 }
