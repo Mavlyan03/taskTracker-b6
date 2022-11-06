@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.persistence.Column;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -54,4 +55,11 @@ public class Card {
 
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private Board board;
+
+    public void addComment(Comment comment){
+        if (comments == null){
+            comments = new ArrayList<>();
+        }
+        comments.add(comment);
+    }
 }

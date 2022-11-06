@@ -37,6 +37,7 @@ public class CommentService {
         comment.setCard(card);
         comment.setText(request.getText());
         comment.setCreatedDate(LocalDateTime.now());
+        card.addComment(comment);
         commentRepository.save(comment);
         return convertToResponse(comment);
     }
