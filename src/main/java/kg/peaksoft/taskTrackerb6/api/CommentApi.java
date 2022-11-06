@@ -41,7 +41,7 @@ public class CommentApi {
     }
 
     @Operation(summary = "Get all comments", description = "Get all comments by card id")
-    @GetMapping("get-all/{id}")
+    @GetMapping("/get-all/{id}")
     public List<CommentResponse> findAllCommentsByCardId(@PathVariable Long id){
         return commentService.findAllComments(id);
     }

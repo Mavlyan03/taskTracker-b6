@@ -8,6 +8,7 @@ import kg.peaksoft.taskTrackerb6.db.repository.CommentRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import kg.peaksoft.taskTrackerb6.dto.request.CommentRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.CommentResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.CommentedUserResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -37,9 +38,7 @@ public class CommentService {
         comment.setText(request.getText());
         comment.setCreatedDate(LocalDateTime.now());
         commentRepository.save(comment);
-        return new CommentResponse (comment.getUser().getPhotoLink(),
-                                    comment.getUser().getFirstName(),
-                                    comment.getText(), comment.getCreatedDate());
+        return convertToResponse(comment);
     }
 
     public CommentResponse editComment(Long id, CommentRequest request){
@@ -49,9 +48,8 @@ public class CommentService {
         comment.setText(request.getText());
         comment.setCreatedDate(LocalDateTime.now());
         Comment comment1 = commentRepository.save(comment);
-        return new CommentResponse (comment1.getUser().getPhotoLink(),
-                                    comment1.getUser().getFirstName(),
-                                    comment1.getText(), comment1.getCreatedDate());
+
+        return convertToResponse(comment1);
     }
 
     public SimpleResponse deleteComment(Long id){
@@ -66,9 +64,7 @@ public class CommentService {
         List<Comment> comments = commentRepository.findAllComments(id);
         List<CommentResponse> commentResponses = new ArrayList<>();
         for (Comment comment : comments) {
-            commentResponses.add(new CommentResponse(comment.getUser().getPhotoLink(),
-                                                     comment.getUser().getFirstName(),
-                                                     comment.getText(), comment.getCreatedDate()));
+            commentResponses.add(convertToResponse(comment));
         }
         return commentResponses;
     }
@@ -79,5 +75,16 @@ public class CommentService {
         return userRepository.findByEmail(login).orElseThrow(
                 ()-> new NotFoundException("User not found")
         );
+    }
+
+    public CommentResponse convertToResponse(Comment comment){
+        CommentedUserResponse commentedUserResponse =
+                new CommentedUserResponse(comment.getUser().getId(),
+                                          comment.getUser().getFirstName(),
+                                          comment.getUser().getPhotoLink());
+        return new CommentResponse (comment.getId(),
+                                    comment.getText(),
+                                    comment.getCreatedDate(),
+                                    commentedUserResponse);
     }
 }

@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CommentResponse {
 
-    private String userPhoto;
-    private String userName;
+    private Long id;
     private String text;
     private LocalDateTime createdDate;
+    private CommentedUserResponse commentedUserResponse;
 }
