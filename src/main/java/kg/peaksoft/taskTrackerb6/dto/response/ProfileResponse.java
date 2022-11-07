@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AdminProfileResponse {
+public class ProfileResponse {
 
     private Long id;
     private String firstName;
