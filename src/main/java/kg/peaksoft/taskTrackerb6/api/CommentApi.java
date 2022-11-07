@@ -21,10 +21,10 @@ public class CommentApi {
     private final CommentService commentService;
 
     @Operation(summary = "Save comment", description = "Save new comment")
-    @PostMapping("{cardId}")
-    public CommentResponse saveComment(@PathVariable Long cardId,
+    @PostMapping("card/{id}")
+    public CommentResponse saveComment(@PathVariable Long id,
                                        @RequestBody CommentRequest request){
-        return commentService.saveComment(cardId, request);
+        return commentService.saveComment(id, request);
     }
 
     @Operation(summary = "Edit comment", description = "Edit comment by id")
@@ -41,7 +41,7 @@ public class CommentApi {
     }
 
     @Operation(summary = "Get all comments", description = "Get all comments by card id")
-    @GetMapping("{id}")
+    @GetMapping("card/{id}")
     public List<CommentResponse> findAllCommentsByCardId(@PathVariable Long id){
         return commentService.findAllComments(id);
     }
