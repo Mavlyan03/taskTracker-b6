@@ -91,6 +91,7 @@ public class CommentService {
         CommentedUserResponse commentedUserResponse =
                 new CommentedUserResponse(comment.getUser().getId(),
                                           comment.getUser().getFirstName(),
+                                          comment.getUser().getLastName(),
                                           comment.getUser().getPhotoLink());
         return new CommentResponse (comment.getId(),
                                     comment.getText(),

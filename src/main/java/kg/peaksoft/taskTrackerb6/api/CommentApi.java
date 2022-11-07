@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/comment")
+@RequestMapping("api/comments")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @Tag(name = "Comment API", description = "All endpoints of comment")
 public class CommentApi {
@@ -41,7 +41,7 @@ public class CommentApi {
     }
 
     @Operation(summary = "Get all comments", description = "Get all comments by card id")
-    @GetMapping("comments/{id}")
+    @GetMapping("{id}")
     public List<CommentResponse> findAllCommentsByCardId(@PathVariable Long id){
         return commentService.findAllComments(id);
     }
