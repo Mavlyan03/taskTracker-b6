@@ -5,9 +5,8 @@ import kg.peaksoft.taskTrackerb6.db.model.Workspace;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
 import kg.peaksoft.taskTrackerb6.dto.request.AdminProfileRequest;
-import kg.peaksoft.taskTrackerb6.dto.response.AdminProfileResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.ProfileResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.ProjectResponse;
-import kg.peaksoft.taskTrackerb6.exceptions.BadRequestException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -29,9 +28,9 @@ public class AdminService {
     private final WorkspaceRepository workspaceRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public AdminProfileResponse adminProfile() {
+    public ProfileResponse getProfile() {
         User user = getAuthenticatedUser();
-        return new AdminProfileResponse(
+        return new ProfileResponse(
                 user.getId(),
                 user.getFirstName(),
                 user.getLastName(),
@@ -54,7 +53,7 @@ public class AdminService {
         return new ProjectResponse(workspace.getName());
     }
 
-    public AdminProfileResponse updateUserEntity(AdminProfileRequest adminProfileRequest) {
+    public ProfileResponse updateUserEntity(AdminProfileRequest adminProfileRequest) {
         User authenticatedUser = getAuthenticatedUser();
         authenticatedUser.setFirstName(adminProfileRequest.getFirstName());
         authenticatedUser.setLastName(adminProfileRequest.getLastName());
@@ -65,7 +64,7 @@ public class AdminService {
 
         authenticatedUser.setPhotoLink(adminProfileRequest.getPhotoLink());
         authenticatedUser.setPassword(passwordEncoder.encode(adminProfileRequest.getPassword()));
-        return new AdminProfileResponse(
+        return new ProfileResponse(
                 authenticatedUser.getId(),
                 authenticatedUser.getFirstName(),
                 authenticatedUser.getLastName(),
