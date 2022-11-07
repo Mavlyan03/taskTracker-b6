@@ -11,13 +11,13 @@ public class CommentResponse {
 
     private Long id;
     private String text;
-    private LocalDateTime createdDate;
+    private LocalDateTime createdAt;
     private CommentedUserResponse commentedUserResponse;
 
-    public CommentResponse(Long id, String text, LocalDateTime createdDate, CommentedUserResponse commentedUserResponse) {
+    public CommentResponse(Long id, String text, LocalDateTime createdAt, CommentedUserResponse commentedUserResponse) {
         this.id = id;
         this.text = text;
-        this.createdDate = createdDate;
+        this.createdAt = createdAt;
         this.commentedUserResponse = commentedUserResponse;
     }
 }

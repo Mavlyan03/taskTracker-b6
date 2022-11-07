@@ -169,11 +169,11 @@ public class CardConverter {
     }
 
     private CommentedUserResponse convertToCommentedUserResponse(User user) {
-        return new CommentedUserResponse(user.getId(), user.getFirstName(), user.getPhotoLink());
+        return new CommentedUserResponse(user.getId(), user.getFirstName(), user.getLastName(), user.getPhotoLink());
     }
 
     private ChecklistResponse convertChecklistToResponse(Checklist checklist) {
-        return new ChecklistResponse(checklist.getId(), checklist.getTitle(), checklist.getTaskTracker(), subTaskRepository.getSubTaskResponseByChecklistId(checklist.getId()));
+        return new ChecklistResponse(checklist.getId(), checklist.getTitle(), checklist.getCount(), subTaskRepository.getSubTaskResponseByChecklistId(checklist.getId()));
     }
 
     private List<ChecklistResponse> getChecklistResponses(List<Checklist> checklists) {
@@ -197,6 +197,7 @@ public class CardConverter {
         return new MemberResponse(
                 user.getId(),
                 user.getFirstName(),
+                user.getLastName(),
                 user.getEmail(),
                 user.getPhotoLink()
         );

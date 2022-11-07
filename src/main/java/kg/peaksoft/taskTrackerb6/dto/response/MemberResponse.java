@@ -11,12 +11,14 @@ public class MemberResponse {
 
     private Long id;
     private String firstName;
+    private String lastName;
     private String email;
     private String photoLink;
 
-    public MemberResponse(Long id, String firstName, String email, String photoLink) {
+    public MemberResponse(Long id, String firstName, String lastName, String email, String photoLink) {
         this.id = id;
         this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
         this.photoLink = photoLink;
     }

@@ -24,7 +24,7 @@ public class Checklist {
 
     private String title;
 
-    private int taskTracker;
+    private int count;
 
     @OneToMany(cascade = {ALL}, mappedBy = "checklist")
     private List<SubTask> subTasks;
@@ -32,9 +32,9 @@ public class Checklist {
     @ManyToOne(cascade = {DETACH, MERGE, PERSIST, REFRESH})
     private Card card;
 
-    public Checklist(String title, int taskTracker) {
+    public Checklist(String title, int count) {
         this.title = title;
-        this.taskTracker = taskTracker;
+        this.count = count;
     }
 
     public void addSubTaskToChecklist(SubTask subTask) {

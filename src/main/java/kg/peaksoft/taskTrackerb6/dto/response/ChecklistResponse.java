@@ -13,6 +13,6 @@ public class ChecklistResponse {
 
     private Long id;
     private String title;
-    private int taskTracker;
+    private int count;
     private List<SubTaskResponse> subTaskResponses;
 }
