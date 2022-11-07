@@ -21,7 +21,7 @@ public class CommentApi {
     private final CommentService commentService;
 
     @Operation(summary = "Save comment", description = "Save new comment")
-    @PostMapping("save-comment/{cardId}")
+    @PostMapping("{cardId}")
     public CommentResponse saveComment(@PathVariable Long cardId,
                                        @RequestBody CommentRequest request){
         return commentService.saveComment(cardId, request);
