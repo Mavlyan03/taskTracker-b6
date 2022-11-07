@@ -104,8 +104,8 @@ public class CardConverter {
         return card;
     }
 
-    public CardResponseForGetById convertToCardResponseForGetById(Card card) {
-        CardResponseForGetById response = new CardResponseForGetById();
+    public CardInnerPageResponse convertToCardInnerPageResponse(Card card) {
+        CardInnerPageResponse response = new CardInnerPageResponse();
         response.setId(card.getId());
         response.setTitle(card.getTitle());
         response.setDescription(card.getDescription());
@@ -124,8 +124,8 @@ public class CardConverter {
         return response;
     }
 
-    public CardResponseForGetAllCard convertToResponseForGetAll(Card card) {
-        CardResponseForGetAllCard response = new CardResponseForGetAllCard();
+    public CardResponse convertToResponseForGetAll(Card card) {
+        CardResponse response = new CardResponse();
         response.setId(card.getId());
         response.setTitle(card.getTitle());
         response.setLabelResponses(labelRepository.getAllLabelResponses(card.getId()));

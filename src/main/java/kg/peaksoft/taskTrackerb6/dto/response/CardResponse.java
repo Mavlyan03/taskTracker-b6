@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class CardResponseForGetAllCard {
+public class CardResponse {
 
     private Long id;
     private String title;
@@ -20,7 +20,7 @@ public class CardResponseForGetAllCard {
     private int numberOfSubTasks;
     private int numberOfCompletedSubTask;
 
-    public CardResponseForGetAllCard(Card card) {
+    public CardResponse(Card card) {
         this.id = card.getId();
         this.title = card.getTitle();
     }

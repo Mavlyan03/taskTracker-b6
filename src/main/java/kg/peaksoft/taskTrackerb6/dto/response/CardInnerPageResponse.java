@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CardResponseForGetById {
+public class CardInnerPageResponse {
 
     private Long id;
     private String title;

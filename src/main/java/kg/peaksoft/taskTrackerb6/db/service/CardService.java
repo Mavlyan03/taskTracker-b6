@@ -51,21 +51,21 @@ public class CardService {
     }
 
 
-    public CardResponseForGetById getCard(Long id) {
+    public CardInnerPageResponse getCard(Long id) {
         Card card = cardRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Card with id: " + id + " not found!")
         );
 
-        return converter.convertToCardResponseForGetById(card);
+        return converter.convertToCardInnerPageResponse(card);
     }
 
 
-    public List<CardResponseForGetAllCard> getAllCardsByColumnId(Long id) {
+    public List<CardResponse> getAllCardsByColumnId(Long id) {
         Column column = columnRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Column with id: " + id + " not found!")
         );
 
-        List<CardResponseForGetAllCard> getAllCards = new ArrayList<>();
+        List<CardResponse> getAllCards = new ArrayList<>();
         for (Card card : column.getCards()) {
             if (card.getIsArchive().equals(false)) {
                 getAllCards.add(converter.convertToResponseForGetAll(card));
@@ -76,26 +76,26 @@ public class CardService {
     }
 
 
-    public CardResponseForGetById updateTitle(UpdateCardTitleRequest request) {
+    public CardInnerPageResponse updateTitle(UpdateCardTitleRequest request) {
         Card card = cardRepository.findById(request.getId()).orElseThrow(
                 () -> new NotFoundException("Card with id: " + request.getId() + " not found!")
         );
 
         card.setTitle(request.getNewTitle());
-        return converter.convertToCardResponseForGetById(card);
+        return converter.convertToCardInnerPageResponse(card);
     }
 
 
-    public CardResponseForGetById createCard(CardRequest request) {
+    public CardInnerPageResponse createCard(CardRequest request) {
         User user = getAuthenticateUser();
         Card card = converter.convertToEntity(request);
         card.setCreator(user);
         card.setCreatedAt(LocalDate.now());
-        return converter.convertToCardResponseForGetById(cardRepository.save(card));
+        return converter.convertToCardInnerPageResponse(cardRepository.save(card));
     }
 
 
-    public CardResponseForGetById sentToArchive(Long id) {
+    public CardInnerPageResponse sentToArchive(Long id) {
         Card card = cardRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Card with id: " + id + " not found!")
         );
@@ -106,16 +106,16 @@ public class CardService {
             basket.setCard(card);
         }
 
-        return converter.convertToCardResponseForGetById(card);
+        return converter.convertToCardInnerPageResponse(card);
     }
 
 
-    public List<CardResponseForGetAllCard> getAllArchivedCardsByBoardId(Long id) {
+    public List<CardResponse> getAllArchivedCardsByBoardId(Long id) {
         Board board = boardRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Board with id: " + id + " not found!")
         );
 
-        List<CardResponseForGetAllCard> responses = new ArrayList<>();
+        List<CardResponse> responses = new ArrayList<>();
         for (Column column : board.getColumns()) {
             for (Card c : column.getCards()) {
                 if (c.getIsArchive().equals(true)) {
