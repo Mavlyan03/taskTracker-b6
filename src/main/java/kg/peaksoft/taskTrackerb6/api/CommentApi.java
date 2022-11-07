@@ -28,14 +28,14 @@ public class CommentApi {
     }
 
     @Operation(summary = "Edit comment", description = "Edit comment by id")
-    @PutMapping("update/{id}")
+    @PutMapping("{id}")
     public CommentResponse updateComment(@PathVariable Long id,
                                          @RequestBody CommentRequest request){
         return commentService.editComment(id, request);
     }
 
     @Operation(summary = "Delete comment", description = "Delete comment by id")
-    @DeleteMapping("delete/{id}")
+    @DeleteMapping("{id}")
     public SimpleResponse deleteComment(@PathVariable Long id){
         return commentService.deleteComment(id);
     }
