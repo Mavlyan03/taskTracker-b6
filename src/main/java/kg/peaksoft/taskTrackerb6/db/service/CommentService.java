@@ -10,6 +10,7 @@ import kg.peaksoft.taskTrackerb6.dto.request.CommentRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.CommentResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.CommentedUserResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
+import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -33,7 +34,7 @@ public class CommentService {
                 ()-> new NotFoundException("Card with id: "+cardId+" not found")
         );
         Comment comment = new Comment();
-        comment.setUser(getUser());
+        comment.setUser(getAuthenticatedUser());
         comment.setCard(card);
         comment.setText(request.getText());
         comment.setCreatedDate(LocalDateTime.now());
@@ -46,6 +47,10 @@ public class CommentService {
         Comment comment = commentRepository.findById(id).orElseThrow(
                 ()-> new NotFoundException("Comment with id "+id+" not found")
         );
+
+        if (!getAuthenticatedUser().equals(comment.getUser())){
+            throw new BadCredentialException("You cannot edit this comment");
+        }
         comment.setText(request.getText());
         comment.setCreatedDate(LocalDateTime.now());
         Comment comment1 = commentRepository.save(comment);
@@ -57,6 +62,10 @@ public class CommentService {
         Comment comment = commentRepository.findById(id).orElseThrow(
                 ()-> new NotFoundException("Comment with id: "+id+" not found")
         );
+
+        if (!getAuthenticatedUser().equals(comment.getUser())){
+            throw new BadCredentialException("You can not delete this comment");
+        }
         commentRepository.delete(comment);
         return new SimpleResponse("Comment with id: "+id+" successfully deleted", "DELETED");
     }
@@ -70,7 +79,7 @@ public class CommentService {
         return commentResponses;
     }
 
-    private User getUser(){
+    private User getAuthenticatedUser(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String login = authentication.getName();
         return userRepository.findByEmail(login).orElseThrow(
