@@ -7,6 +7,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.persistence.Column;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -29,7 +31,12 @@ public class Card {
     @Column(length = 10000)
     private String description;
 
-    private boolean isArchive = false;
+    private Boolean isArchive = false;
+
+    private LocalDate createdAt;
+
+    @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    private User creator;
 
     @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private List<User> members;
@@ -54,4 +61,45 @@ public class Card {
 
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private Board board;
+
+    public Card(String title, String description, Boolean isArchive, LocalDate createdAt, User creator) {
+        this.title = title;
+        this.description = description;
+        this.isArchive = isArchive;
+        this.createdAt = createdAt;
+        this.creator = creator;
+    }
+
+    public Card(String title, String description) {
+        this.title = title;
+        this.description = description;
+    }
+
+    public void addLabel(Label label) {
+        if (labels == null) {
+            labels = new ArrayList<>();
+        }
+        labels.add(label);
+    }
+
+    public void addMember(User user) {
+        if (members == null) {
+            members = new ArrayList<>();
+        }
+        members.add(user);
+    }
+
+    public void addChecklist(Checklist checklist) {
+        if (checklists == null) {
+            checklists = new ArrayList<>();
+        }
+        checklists.add(checklist);
+    }
+
+    public void addComment(Comment comment) {
+        if (comments == null) {
+            comments = new ArrayList<>();
+        }
+        comments.add(comment);
+    }
 }
