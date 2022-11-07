@@ -20,8 +20,8 @@ values (1, 'First Column', false, 1);
 insert into cards (id, title, description, is_archive, board_id, column_id)
 values (1, 'First Card', 'First Description', false, 1, 1);
 
-insert into checklists (id, name, task_tracker, card_id)
-values (1, 'First Card', 1, 1);
+-- insert into checklists (id, name, task_tracker, card_id)
+-- values (1, 'First Card', 1, 1);
 
 insert into estimations (id, created_date, deadline_date, reminder, text, card_id, user_id)
 values (1, '2022-02-01', '2022-12-12', 5, 'First Text', 1, 1);
