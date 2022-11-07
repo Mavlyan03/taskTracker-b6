@@ -31,7 +31,7 @@ public class WorkspaceApi {
 
     private final WorkspaceService service;
 
-    @Operation(summary = "Save workspace", description = "Save new workspace")
+    @Operation(summary = "Create workspace", description = "Create new workspace")
     @PostMapping
     public WorkspaceResponse save(@RequestBody WorkspaceRequest request) throws MessagingException {
         return service.createWorkspace(request);

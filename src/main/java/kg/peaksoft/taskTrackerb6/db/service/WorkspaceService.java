@@ -89,10 +89,7 @@ public class WorkspaceService {
         }
 
         workspaceRepository.delete(workspace);
-        return new SimpleResponse(
-                "workspace with id: " + id + " is deleted!",
-                "DELETE"
-        );
+        return new SimpleResponse("workspace with id: " + id + " is deleted!", "DELETE");
     }
 
 

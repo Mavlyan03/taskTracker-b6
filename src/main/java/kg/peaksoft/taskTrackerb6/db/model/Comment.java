@@ -33,5 +33,8 @@ public class Comment {
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private Card card;
 
-
+    public Comment(String text, LocalDateTime createdDate) {
+        this.text = text;
+        this.createdDate = createdDate;
+    }
 }
