@@ -83,7 +83,7 @@ public class CardConverter {
         }
 
         for (ChecklistRequest c : request.getChecklistRequests()) {
-            Checklist checklist = new Checklist(c.getTitle(), c.getTaskTracker());
+            Checklist checklist = new Checklist(c.getTitle(), c.getCount());
 
             for (SubTaskRequest s : c.getSubTaskRequests()) {
                 SubTask subTask = new SubTask(s.getDescription(), s.getIsDone());

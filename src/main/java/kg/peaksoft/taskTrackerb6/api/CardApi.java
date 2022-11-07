@@ -53,7 +53,7 @@ public class CardApi {
     }
 
     @Operation(summary = "Get all cards", description = "Get all cards by column id")
-    @GetMapping("cards/{columnId}")
+    @GetMapping("{columnId}")
     public List<CardResponse> getAllCardsByColumnId(@PathVariable Long columnId) {
         return cardService.getAllCardsByColumnId(columnId);
     }
