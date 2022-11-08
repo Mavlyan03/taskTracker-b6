@@ -1,5 +1,7 @@
 package kg.peaksoft.taskTrackerb6.db.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import kg.peaksoft.taskTrackerb6.enums.LabelsColor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,7 +33,8 @@ public class Label {
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private Card card;
 
-    public Label(String description, LabelsColor color) {
+    @JsonCreator
+    public Label(@JsonProperty("description") String description,@JsonProperty("color") LabelsColor color) {
         this.description = description;
         this.color = color;
     }
