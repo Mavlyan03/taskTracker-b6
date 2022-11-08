@@ -3,9 +3,8 @@ package kg.peaksoft.taskTrackerb6.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.peaksoft.taskTrackerb6.db.service.LabelService;
-import kg.peaksoft.taskTrackerb6.dto.request.LabelUpdateRequest;
+import kg.peaksoft.taskTrackerb6.dto.request.LabelRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.LabelResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +26,8 @@ public class LabelController {
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/update/{id}")
     public LabelResponse update(@PathVariable Long id,
-                                            @RequestBody LabelUpdateRequest labelUpdateRequest) {
-        return labelService.updateLabel(id, labelUpdateRequest);
+                                @RequestBody LabelRequest labelRequest) {
+        return labelService.updateLabel(id, labelRequest);
     }
 
     @Operation(summary = "Get label", description = "Get label by id")
