@@ -17,7 +17,7 @@ import java.util.List;
 @PreAuthorize("hasAnyAuthority('ADMIN')")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @Tag(name = "Label API", description = "Label endpoints for Admin")
-public class LabelController {
+public class LabelApi {
 
     private final LabelService labelService;
 
