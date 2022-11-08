@@ -19,7 +19,7 @@ public class LabelService {
 
     private final LabelRepository labelRepository;
 
-    public SimpleResponse updateLabel(Long id, LabelUpdateRequest labelUpdateRequest) {
+    public LabelResponse updateLabel(Long id, LabelUpdateRequest labelUpdateRequest) {
         Label label = labelRepository.findById(id).orElseThrow(
                 () -> new NotFoundException(String.format("Label with id %s not found", id))
         );
@@ -27,7 +27,11 @@ public class LabelService {
         label.setDescription(labelUpdateRequest.getDescription());
         labelRepository.save(label);
         
-        return new SimpleResponse("Updated", "OK");
+        return new LabelResponse(
+                label.getId(),
+                label.getDescription(),
+                label.getColor()
+        );
     }
 
     public LabelResponse getLabelById(Long id) {

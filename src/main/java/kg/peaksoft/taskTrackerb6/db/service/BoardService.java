@@ -89,6 +89,7 @@ public class BoardService {
 
         board.setTitle(boardRequest.getTitle());
         boardRepository.save(board);
+
         return new BoardResponse(
                 board.getId(),
                 board.getTitle(),

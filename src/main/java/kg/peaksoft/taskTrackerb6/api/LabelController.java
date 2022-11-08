@@ -25,8 +25,8 @@ public class LabelController {
     @Operation(summary = "Update abel",
             description = "Update label by id")
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping("/{id}")
-    public SimpleResponse updateDescription(@PathVariable Long id,
+    @PutMapping("/update/{id}")
+    public LabelResponse update(@PathVariable Long id,
                                             @RequestBody LabelUpdateRequest labelUpdateRequest) {
         return labelService.updateLabel(id, labelUpdateRequest);
     }
@@ -39,7 +39,7 @@ public class LabelController {
 
     @Operation(summary = "Get all labels", description = "Get all labels by card id")
     @GetMapping("list/{id}")
-    public List<LabelResponse> getAllLabelsByCardId(@PathVariable Long cardId) {
-        return labelService.getAllLabelsByCardId(cardId);
+    public List<LabelResponse> getAllLabelsByCardId(@PathVariable Long id) {
+        return labelService.getAllLabelsByCardId(id);
     }
 }
