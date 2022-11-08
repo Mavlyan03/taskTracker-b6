@@ -21,7 +21,7 @@ import java.util.List;
 @PreAuthorize("hasAnyAuthority('ADMIN')")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @Tag(name = "Board API", description = "All board endpoints for Admin")
-public class BoardController {
+public class BoardApi {
 
     private final BoardService boardService;
 

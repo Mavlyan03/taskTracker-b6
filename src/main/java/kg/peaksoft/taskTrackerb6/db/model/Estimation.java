@@ -22,9 +22,15 @@ public class Estimation {
     @SequenceGenerator(name = "estimation_gen", sequenceName = "estimation_seq", allocationSize = 1, initialValue = 2)
     private Long id;
 
-    private LocalDate createdDate;
+    private LocalDate startDate;
 
-    private LocalDate deadlineDate;
+    @OneToOne(cascade = {ALL})
+    private MyTimeClass startTime;
+
+    private LocalDate dueDate;
+
+    @OneToOne(cascade = {ALL})
+    private MyTimeClass deadlineTime;
 
     private int reminder;
 
@@ -39,4 +45,10 @@ public class Estimation {
 
     @OneToOne(cascade = {DETACH, REFRESH, PERSIST, MERGE})
     private User user;
+
+    public Estimation(LocalDate startDate, LocalDate dueDate, int reminder) {
+        this.startDate = startDate;
+        this.dueDate = dueDate;
+        this.reminder = reminder;
+    }
 }

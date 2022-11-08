@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static javax.persistence.CascadeType.*;
-import static javax.persistence.CascadeType.ALL;
 
 @Entity
 @Table(name = "users")
@@ -52,6 +51,9 @@ public class User implements UserDetails {
 
     @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private List<Board> boards;
+
+    @OneToMany(cascade = {ALL}, mappedBy = "creator")
+    private List<Card> cards;
 
     @Enumerated(EnumType.STRING)
     private Role role;

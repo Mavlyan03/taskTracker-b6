@@ -32,6 +32,14 @@ public class StorageService {
         PutObjectRequest por = PutObjectRequest
                 .builder()
                 .bucket(bucketName)
+                .contentType("jpeg")
+                .contentType("png")
+                .contentType("pdf")
+                .contentType("gif")
+                .contentType("tiff")
+                .contentType("psd")
+                .contentType("ai")
+                .contentType("eps")
                 .key(key)
                 .build();
 
