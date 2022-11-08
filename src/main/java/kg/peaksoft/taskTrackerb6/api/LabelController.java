@@ -21,10 +21,9 @@ public class LabelController {
 
     private final LabelService labelService;
 
-    @Operation(summary = "Update abel",
-            description = "Update label by id")
+    @Operation(summary = "Update label", description = "Update label by id")
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping("/update/{id}")
+    @PutMapping("{id}")
     public LabelResponse update(@PathVariable Long id,
                                 @RequestBody LabelRequest labelRequest) {
         return labelService.updateLabel(id, labelRequest);
@@ -37,7 +36,7 @@ public class LabelController {
     }
 
     @Operation(summary = "Get all labels", description = "Get all labels by card id")
-    @GetMapping("list/{id}")
+    @GetMapping("card/{id}")
     public List<LabelResponse> getAllLabelsByCardId(@PathVariable Long id) {
         return labelService.getAllLabelsByCardId(id);
     }
