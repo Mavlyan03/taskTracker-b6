@@ -1,5 +1,8 @@
 package kg.peaksoft.taskTrackerb6.db.service;
 
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
@@ -16,37 +19,38 @@ import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import kg.peaksoft.taskTrackerb6.config.security.JWTUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.w3c.dom.stylesheets.LinkStyle;
 
+import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
-import java.util.List;
+import java.io.IOException;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final UserRepository repository;
     private final JWTUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
-    private final JavaMailSender  mailSender;
+    private final JavaMailSender mailSender;
 
     public AuthResponse registration(SignUpRequest signUpRequest) {
 
-        if (userRepository.existsUserByEmail(signUpRequest.getEmail())) {
+        if (repository.existsByEmail(signUpRequest.getEmail())) {
             throw new BadRequestException("this email: " + signUpRequest.getEmail() + " is already in use!");
         }
 
         User user = convertToRegisterEntity(signUpRequest);
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
         user.setRole(Role.ADMIN);
-        userRepository.save(user);
+        repository.save(user);
 
         String jwt = jwtUtil.generateToken(user.getEmail());
 
@@ -60,9 +64,21 @@ public class UserService {
         );
     }
 
+    @PostConstruct
+    public void init() throws IOException {
+        GoogleCredentials googleCredentials =
+                GoogleCredentials.fromStream(new ClassPathResource("tasktracker.json")
+                        .getInputStream());
+
+        FirebaseOptions firebaseOptions = FirebaseOptions.builder()
+                .setCredentials(googleCredentials).build();
+
+        FirebaseApp.initializeApp(firebaseOptions);
+    }
+
     public AuthResponse login(SignInRequest signInRequest) {
 
-        User user = userRepository.findUserByEmail(signInRequest.getEmail()).orElseThrow(
+        User user = repository.findByEmail(signInRequest.getEmail()).orElseThrow(
                 () -> new NotFoundException("user with this email: " + signInRequest.getEmail() + " not found!"));
 
         if (signInRequest.getPassword().isBlank()) {
@@ -86,7 +102,7 @@ public class UserService {
     }
 
     public SimpleResponse forgotPassword(String email, String link) throws MessagingException {
-        User user = userRepository.findUserByEmail(email).orElseThrow(
+        User user = repository.findByEmail(email).orElseThrow(
                 () -> new NotFoundException("User with email: " + email + " not found!")
         );
 
@@ -101,7 +117,7 @@ public class UserService {
     }
 
     public SimpleResponse resetPassword(ResetPasswordRequest request) {
-        User user = userRepository.findById(request.getUserId()).orElseThrow(
+        User user = repository.findById(request.getUserId()).orElseThrow(
                 () -> new NotFoundException("user with id: " + request.getUserId() + " not found")
         );
 
@@ -121,15 +137,17 @@ public class UserService {
     public AuthResponse authWithGoogle(String tokenId) throws FirebaseAuthException {
         FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdToken(tokenId);
         User user;
-        if (!userRepository.existsUserByEmail(firebaseToken.getEmail())) {
+        if (!repository.existsByEmail(firebaseToken.getEmail())) {
             User newUser = new User();
-            newUser.setFirstName(firebaseToken.getName());
+            String[] name = firebaseToken.getName().split(" ");
+            newUser.setFirstName(name[0]);
+            newUser.setLastName(name[1]);
             newUser.setEmail(firebaseToken.getEmail());
             newUser.setPassword(firebaseToken.getEmail());
             newUser.setRole(Role.ADMIN);
-            user = userRepository.save(newUser);
+            user = repository.save(newUser);
         }
-        user = userRepository.findUserByEmail(firebaseToken.getEmail()).orElseThrow(
+        user = repository.findByEmail(firebaseToken.getEmail()).orElseThrow(
                 () -> new NotFoundException("user with this email not found!"));
         String token = jwtUtil.generateToken(user.getPassword());
         return new AuthResponse(
@@ -139,10 +157,5 @@ public class UserService {
                 user.getEmail(),
                 user.getRole(),
                 token);
-    }
-
-    private List<User> searchUsersByName(String name) {
-        String text = name == null ? "" : name;
-        return userRepository.searchUserByFirstNameAndLastName(text.toUpperCase());
     }
 }
