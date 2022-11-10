@@ -1,5 +1,8 @@
 package kg.peaksoft.taskTrackerb6.db.service;
 
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
@@ -16,14 +19,17 @@ import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import kg.peaksoft.taskTrackerb6.config.security.JWTUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
+import java.io.IOException;
 
 @Service
 @Transactional
@@ -33,7 +39,7 @@ public class UserService {
     private final UserRepository repository;
     private final JWTUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
-    private final JavaMailSender  mailSender;
+    private final JavaMailSender mailSender;
 
     public AuthResponse registration(SignUpRequest signUpRequest) {
 
@@ -56,6 +62,18 @@ public class UserService {
                 user.getRole(),
                 jwt
         );
+    }
+
+    @PostConstruct
+    public void init() throws IOException {
+        GoogleCredentials googleCredentials =
+                GoogleCredentials.fromStream(new ClassPathResource("tasktracker.json")
+                        .getInputStream());
+
+        FirebaseOptions firebaseOptions = FirebaseOptions.builder()
+                .setCredentials(googleCredentials).build();
+
+        FirebaseApp.initializeApp(firebaseOptions);
     }
 
     public AuthResponse login(SignInRequest signInRequest) {
@@ -121,7 +139,9 @@ public class UserService {
         User user;
         if (!repository.existsByEmail(firebaseToken.getEmail())) {
             User newUser = new User();
-            newUser.setFirstName(firebaseToken.getName());
+            String[] name = firebaseToken.getName().split(" ");
+            newUser.setFirstName(name[0]);
+            newUser.setLastName(name[1]);
             newUser.setEmail(firebaseToken.getEmail());
             newUser.setPassword(firebaseToken.getEmail());
             newUser.setRole(Role.ADMIN);
