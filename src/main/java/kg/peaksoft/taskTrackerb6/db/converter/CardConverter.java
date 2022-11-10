@@ -31,7 +31,7 @@ public class CardConverter {
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String login = authentication.getName();
-        return userRepository.findByEmail(login).orElseThrow(() ->
+        return userRepository.findUserByEmail(login).orElseThrow(() ->
                 new NotFoundException("User not found!"));
     }
 
@@ -204,7 +204,7 @@ public class CardConverter {
     }
 
     private User convertMemberToUser(MemberRequest request) {
-        return userRepository.findByEmail(request.getEmail()).get();
+        return userRepository.findUserByEmail(request.getEmail()).get();
     }
 
     private EstimationResponse getEstimationByCardId(Long cardId) {

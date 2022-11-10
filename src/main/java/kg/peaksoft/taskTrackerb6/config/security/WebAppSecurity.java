@@ -33,7 +33,7 @@ public class WebAppSecurity {
     @Bean
     AuthenticationProvider authenticationProvider(UserRepository userRepository) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService((email) -> userRepository.findByEmail(email)
+        provider.setUserDetailsService((email) -> userRepository.findUserByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("user with email: " + email + " not found!")));
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
