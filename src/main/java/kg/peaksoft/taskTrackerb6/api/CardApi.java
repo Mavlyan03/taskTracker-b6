@@ -29,7 +29,7 @@ public class CardApi {
     }
 
     @Operation(summary = "Get card", description = "Get card by id")
-    @GetMapping("{id}")
+    @GetMapping("card/{id}")
     public CardInnerPageResponse getCardById(@PathVariable Long id) {
         return cardService.getCard(id);
     }

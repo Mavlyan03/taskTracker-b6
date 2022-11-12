@@ -2,6 +2,7 @@ package kg.peaksoft.taskTrackerb6.db.converter;
 
 import kg.peaksoft.taskTrackerb6.db.model.*;
 import kg.peaksoft.taskTrackerb6.db.repository.*;
+import kg.peaksoft.taskTrackerb6.db.service.ChecklistService;
 import kg.peaksoft.taskTrackerb6.dto.request.*;
 import kg.peaksoft.taskTrackerb6.dto.response.*;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
@@ -27,6 +28,7 @@ public class CardConverter {
     private final WorkspaceRepository workspaceRepository;
     private final SubTaskRepository subTaskRepository;
     private final CardRepository cardRepository;
+    private final ChecklistService checklistService;
 
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -156,11 +158,14 @@ public class CardConverter {
 
     private List<CommentResponse> getCommentResponses(List<Comment> comments) {
         List<CommentResponse> commentResponses = new ArrayList<>();
-        for (Comment c : comments) {
-            commentResponses.add(convertCommentToResponse(c));
+        if (comments == null){
+            return commentResponses;
+        }else {
+            for (Comment c : comments) {
+                commentResponses.add(convertCommentToResponse(c));
+            }
+            return commentResponses;
         }
-
-        return commentResponses;
     }
 
     private CommentResponse convertCommentToResponse(Comment comment) {
@@ -172,14 +177,15 @@ public class CardConverter {
         return new CommentedUserResponse(user.getId(), user.getFirstName(), user.getLastName(), user.getPhotoLink());
     }
 
-    private ChecklistResponse convertChecklistToResponse(Checklist checklist) {
-        return new ChecklistResponse(checklist.getId(), checklist.getTitle(), checklist.getCount(), subTaskRepository.getSubTaskResponseByChecklistId(checklist.getId()));
-    }
+//    private ChecklistResponse convertChecklistToResponse(Checklist checklist) {
+//        return new ChecklistResponse(checklist.getId(), checklist.getTitle(), checklist.getCount(), subTaskRepository.getSubTaskResponseByChecklistId(checklist.getId()));
+//    }
 
     private List<ChecklistResponse> getChecklistResponses(List<Checklist> checklists) {
         List<ChecklistResponse> responses = new ArrayList<>();
         for (Checklist c : checklists) {
-            responses.add(convertChecklistToResponse(c));
+            responses.add(checklistService.convertToResponse(c));
+//            responses.add(convertChecklistToResponse(c));
         }
 
         return responses;
