@@ -127,7 +127,6 @@ public class CardConverter {
         return response;
     }
 
-
     public CardResponse convertToResponseForGetAll(Card card) {
         CardResponse response = new CardResponse();
         response.setId(card.getId());
