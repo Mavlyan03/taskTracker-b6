@@ -29,18 +29,24 @@ public class ChecklistService {
         );
         Checklist checklist = new Checklist();
         checklist.setTitle(request.getTitle());
-        checklist.setCard(card);
+        checklist.setCount(request.getCount());
         List<SubTask> subTasks = new ArrayList<>();
         for (SubTaskRequest subTaskRequest : request.getSubTaskRequests()) {
-            subTasks.add(new SubTask(subTaskRequest.getDescription(), subTaskRequest.getIsDone()));
+            SubTask subTask = new SubTask(subTaskRequest.getDescription(), subTaskRequest.getIsDone());
+            subTask.setChecklist(checklist);
+            checklist.addSubTaskToChecklist(subTask);
+            subTasks.add(subTask);
         }
-        checklist.setSubTasks(subTasks);
-        checklist.setCount(request.getCount());
+        checklist.setCard(card);
+        card.addChecklist(checklist);
         return convertToResponse(checklistRepository.save(checklist));
     }
 
     public ChecklistResponse convertToResponse(Checklist checklist){
-        List<SubTask> allSubTasks = checklist.getSubTasks();
+        List<SubTask> allSubTasks = new ArrayList<>();
+        if (checklist.getSubTasks() != null){
+            allSubTasks = checklist.getSubTasks();
+        }
         List<SubTaskResponse> subTaskResponses = new ArrayList<>();
 
         int countOfSubTasks = 0;
@@ -48,6 +54,9 @@ public class ChecklistService {
         if (allSubTasks == null){
             countOfSubTasks = 0;
             countOfCompletedSubTask = 0;
+            return new ChecklistResponse(checklist.getId(), checklist.getTitle(),
+                    countOfCompletedSubTask, countOfSubTasks,
+                    checklist.getCount(), subTaskResponses);
         }else {
             List<Boolean> subTasks = new ArrayList<>();
             for (SubTask subTask : allSubTasks) {
@@ -60,7 +69,6 @@ public class ChecklistService {
             for (SubTask subTask : allSubTasks) {
                 subTaskResponses.add(new SubTaskResponse(subTask.getId(), subTask.getDescription(), subTask.getIsDone()));
             }
-        }
         Integer count;
         if (countOfCompletedSubTask <= 0){
             count = 0;
@@ -73,4 +81,5 @@ public class ChecklistService {
                                      countOfCompletedSubTask, countOfSubTasks,
                                      checklist.getCount(), subTaskResponses);
     }
+        }
 }

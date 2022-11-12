@@ -28,6 +28,7 @@ public class CardConverter {
     private final WorkspaceRepository workspaceRepository;
     private final SubTaskRepository subTaskRepository;
     private final CardRepository cardRepository;
+    private final ChecklistRepository checklistRepository;
     private final ChecklistService checklistService;
 
     private User getAuthenticateUser() {
@@ -121,10 +122,11 @@ public class CardConverter {
             response.setMemberResponses(getAllCardMembers(card.getMembers()));
         }
 
-        response.setChecklistResponses(getChecklistResponses(card.getChecklists()));
+        response.setChecklistResponses(getChecklistResponses(checklistRepository.findAllChecklists(card.getId())));
         response.setCommentResponses(getCommentResponses(card.getComments()));
         return response;
     }
+
 
     public CardResponse convertToResponseForGetAll(Card card) {
         CardResponse response = new CardResponse();
@@ -152,7 +154,7 @@ public class CardConverter {
             }
         }
 
-        response.setNumberOfCompletedSubTask(completedSubTasks + 1);
+        response.setNumberOfCompletedSubTask(completedSubTasks);
         return response;
     }
 
@@ -177,18 +179,16 @@ public class CardConverter {
         return new CommentedUserResponse(user.getId(), user.getFirstName(), user.getLastName(), user.getPhotoLink());
     }
 
-//    private ChecklistResponse convertChecklistToResponse(Checklist checklist) {
-//        return new ChecklistResponse(checklist.getId(), checklist.getTitle(), checklist.getCount(), subTaskRepository.getSubTaskResponseByChecklistId(checklist.getId()));
-//    }
-
     private List<ChecklistResponse> getChecklistResponses(List<Checklist> checklists) {
         List<ChecklistResponse> responses = new ArrayList<>();
-        for (Checklist c : checklists) {
-            responses.add(checklistService.convertToResponse(c));
-//            responses.add(convertChecklistToResponse(c));
+        if (checklists == null){
+            return responses;
+        }else {
+            for (Checklist c : checklists) {
+                responses.add(checklistService.convertToResponse(c));
+            }
+            return responses;
         }
-
-        return responses;
     }
 
     private List<MemberResponse> getAllCardMembers(List<User> users) {
