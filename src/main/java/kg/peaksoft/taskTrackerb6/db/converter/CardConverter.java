@@ -140,7 +140,9 @@ public class CardConverter {
         response.setNumberOfMembers(card.getMembers().size());
         int subTask = 0;
         for (Checklist checklist : checklistRepository.findAllChecklists(card.getId())) {
+            for (int i = 0; i < checklist.getSubTasks().size(); i++) {
             subTask++;
+            }
         }
 
         response.setNumberOfSubTasks(subTask);
