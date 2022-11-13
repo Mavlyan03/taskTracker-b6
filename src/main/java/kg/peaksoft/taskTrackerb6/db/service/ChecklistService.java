@@ -1,5 +1,6 @@
 package kg.peaksoft.taskTrackerb6.db.service;
 
+import kg.peaksoft.taskTrackerb6.db.converter.CardConverter;
 import kg.peaksoft.taskTrackerb6.db.model.Card;
 import kg.peaksoft.taskTrackerb6.db.model.Checklist;
 import kg.peaksoft.taskTrackerb6.db.model.SubTask;
@@ -7,6 +8,7 @@ import kg.peaksoft.taskTrackerb6.db.repository.CardRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.ChecklistRepository;
 import kg.peaksoft.taskTrackerb6.dto.request.ChecklistRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SubTaskRequest;
+import kg.peaksoft.taskTrackerb6.dto.request.UpdateChecklistTitleRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.ChecklistResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SubTaskResponse;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
@@ -41,6 +43,17 @@ public class ChecklistService {
         card.addChecklist(checklist);
         return convertToResponse(checklistRepository.save(checklist));
     }
+
+    public ChecklistResponse updateTitle(UpdateChecklistTitleRequest request){
+        Checklist checklist = checklistRepository.findById(request.getChecklistId()).orElseThrow(
+                ()-> new NotFoundException("Checklist with id: "+request.getChecklistId()+" not found!")
+        );
+        checklist.setTitle(request.getNewTitle());
+
+        return convertToResponse(checklistRepository.save(checklist));
+    }
+
+
 
     public ChecklistResponse convertToResponse(Checklist checklist){
         List<SubTask> allSubTasks = new ArrayList<>();
@@ -80,6 +93,6 @@ public class ChecklistService {
         return new ChecklistResponse(checklist.getId(), checklist.getTitle(),
                                      countOfCompletedSubTask, countOfSubTasks,
                                      checklist.getCount(), subTaskResponses);
-    }
         }
+    }
 }

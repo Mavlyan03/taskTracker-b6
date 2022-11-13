@@ -3,6 +3,8 @@ package kg.peaksoft.taskTrackerb6.api;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.peaksoft.taskTrackerb6.db.service.ChecklistService;
 import kg.peaksoft.taskTrackerb6.dto.request.ChecklistRequest;
+import kg.peaksoft.taskTrackerb6.dto.request.UpdateChecklistTitleRequest;
+import kg.peaksoft.taskTrackerb6.dto.response.CardInnerPageResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.ChecklistResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -20,5 +22,10 @@ public class ChecklistApi {
     public ChecklistResponse createChecklist(@PathVariable Long id,
                                              @RequestBody ChecklistRequest request){
         return checklistService.createChecklist(id, request);
+    }
+
+    @PutMapping()
+    public ChecklistResponse updateTitle(@RequestBody UpdateChecklistTitleRequest request){
+        return checklistService.updateTitle(request);
     }
 }
