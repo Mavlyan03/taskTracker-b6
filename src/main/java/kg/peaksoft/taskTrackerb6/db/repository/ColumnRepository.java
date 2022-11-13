@@ -15,4 +15,6 @@ public interface ColumnRepository extends JpaRepository<Column, Long> {
 
     @Query("select c from Column c where c.isArchive = true")
     List<Column> findAllArchivedColumns();
+
+
 }

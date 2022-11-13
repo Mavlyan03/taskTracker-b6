@@ -4,6 +4,7 @@ import kg.peaksoft.taskTrackerb6.db.model.*;
 import kg.peaksoft.taskTrackerb6.db.repository.*;
 import kg.peaksoft.taskTrackerb6.dto.request.*;
 import kg.peaksoft.taskTrackerb6.dto.response.*;
+import kg.peaksoft.taskTrackerb6.enums.NotificationType;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -27,6 +28,7 @@ public class CardConverter {
     private final WorkspaceRepository workspaceRepository;
     private final SubTaskRepository subTaskRepository;
     private final CardRepository cardRepository;
+    private final NotificationRepository notificationRepository;
 
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -36,7 +38,7 @@ public class CardConverter {
     }
 
 
-    public Card convertToEntity(CardRequest request) {
+    public Card convertToEntity(CardRequest request) throws InterruptedException {
         User user = getAuthenticateUser();
         Column column = columnRepository.findById(request.getColumnId()).orElseThrow(
                 () -> new NotFoundException("Column with id: " + request.getColumnId() + " not found!")
@@ -64,6 +66,8 @@ public class CardConverter {
         estimation.setStartTime(convertTimeToEntity(request.getEstimationRequest().getStartTime()));
         estimation.setDeadlineTime(convertTimeToEntity(request.getEstimationRequest().getDeadlineTime()));
         card.setEstimation(estimation);
+
+
         estimation.setCard(card);
 
         List<MemberResponse> workspaceMember = new ArrayList<>();
@@ -90,8 +94,10 @@ public class CardConverter {
                 checklist.addSubTaskToChecklist(subTask);
                 subTask.setChecklist(checklist);
             }
+
             card.addChecklist(checklist);
             checklist.setCard(card);
+
         }
 
         for (CommentRequest commentRequest : request.getCommentRequests()) {

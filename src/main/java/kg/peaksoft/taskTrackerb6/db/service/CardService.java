@@ -5,6 +5,7 @@ import kg.peaksoft.taskTrackerb6.db.model.*;
 import kg.peaksoft.taskTrackerb6.db.repository.*;
 import kg.peaksoft.taskTrackerb6.dto.request.*;
 import kg.peaksoft.taskTrackerb6.dto.response.*;
+import kg.peaksoft.taskTrackerb6.enums.NotificationType;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -12,8 +13,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +30,7 @@ public class CardService {
     private final ColumnRepository columnRepository;
     private final BoardRepository boardRepository;
     private final CardConverter converter;
+    private final NotificationRepository notificationRepository;
 
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -35,6 +39,43 @@ public class CardService {
                 new NotFoundException("User not found!"));
     }
 
+    public List<CardResponse> moveCard(Long cardId, Long columnId) {
+        User user = getAuthenticateUser();
+        Card card = cardRepository.findById(cardId).orElseThrow(
+                () -> new NotFoundException("Card with id: " + cardId + " not found!")
+        );
+
+        Column changedColumn = columnRepository.findById(columnId).orElseThrow(
+                () -> new NotFoundException("Column with id: " + columnId + " not found!")
+        );
+
+        List<CardResponse> cardResponses = new ArrayList<>();
+        for (Card c : changedColumn.getCards()) {
+            cardResponses.add(converter.convertToResponseForGetAll(c));
+        }
+
+        if (!card.getColumn().equals(changedColumn)) {
+            card.setMovedUser(user);
+            changedColumn.addCard(card);
+            card.setColumn(changedColumn);
+            Notification notification = new Notification();
+            notification.setCard(card);
+            notification.setIsRead(false);
+            notification.setNotificationType(NotificationType.CHANGE_STATUS);
+            notification.setFromUser(user);
+            notification.setUser(card.getCreator());
+            notification.setCreatedAt(LocalDateTime.now());
+            notification.setMessage("Status has changed by " + user.getFirstName() + " " + user.getLastName());
+            notificationRepository.save(notification);
+            User recipient = card.getCreator();
+            User workspaceCreator = card.getBoard().getWorkspace().getLead();
+            workspaceCreator.setNotifications(List.of(notification));
+            recipient.setNotifications(List.of(notification));
+            cardResponses.add(converter.convertToResponseForGetAll(card));
+        }
+
+        return cardResponses;
+    }
 
     public SimpleResponse deleteCard(Long id) {
         User user = getAuthenticateUser();
@@ -86,10 +127,11 @@ public class CardService {
     }
 
 
-    public CardInnerPageResponse createCard(CardRequest request) {
+    public CardInnerPageResponse createCard(CardRequest request) throws MessagingException, InterruptedException {
         User user = getAuthenticateUser();
         Card card = converter.convertToEntity(request);
         card.setCreator(user);
+        card.setColumn(card.getColumn());
         card.setCreatedAt(LocalDate.now());
         return converter.convertToCardInnerPageResponse(cardRepository.save(card));
     }

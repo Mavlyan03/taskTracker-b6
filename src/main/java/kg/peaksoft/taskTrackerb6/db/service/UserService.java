@@ -43,7 +43,7 @@ public class UserService {
 
         User user = convertToRegisterEntity(signUpRequest);
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
-        user.setRole(Role.ADMIN);
+        user.setRole(Role.USER);
         repository.save(user);
 
         String jwt = jwtUtil.generateToken(user.getEmail());
@@ -90,7 +90,7 @@ public class UserService {
 
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-        helper.setSubject("[task_tracker] reset password link");
+        helper.setSubject("[task_tracker] reset password link , user id: " + user);
         helper.setFrom("tasktracker.b6@gmail.com");
         helper.setTo(email);
         helper.setText(link + "/" + user.getId(), true);
