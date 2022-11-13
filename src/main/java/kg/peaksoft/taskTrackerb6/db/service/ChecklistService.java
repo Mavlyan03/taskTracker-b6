@@ -10,6 +10,7 @@ import kg.peaksoft.taskTrackerb6.dto.request.ChecklistRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SubTaskRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.UpdateChecklistTitleRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.ChecklistResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SubTaskResponse;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -53,7 +54,22 @@ public class ChecklistService {
         return convertToResponse(checklistRepository.save(checklist));
     }
 
+    public SimpleResponse deleteChecklist(Long id){
+        Checklist checklist = checklistRepository.findById(id).orElseThrow(
+                ()-> new NotFoundException("Checklist with id: "+id+" not found!")
+        );
+        checklistRepository.delete(checklist);
+        return new SimpleResponse("Checklist with id "+id+" cucessfully deleted", "DELETED");
+    }
 
+    public List<ChecklistResponse> findAllChecklistsByCardId(Long id){
+        List<Checklist> checklists = checklistRepository.findAllChecklists(id);
+        List<ChecklistResponse> checklistResponses = new ArrayList<>();
+        for (Checklist checklist : checklists) {
+            checklistResponses.add(convertToResponse(checklist));
+        }
+        return checklistResponses;
+    }
 
     public ChecklistResponse convertToResponse(Checklist checklist){
         List<SubTask> allSubTasks = new ArrayList<>();
