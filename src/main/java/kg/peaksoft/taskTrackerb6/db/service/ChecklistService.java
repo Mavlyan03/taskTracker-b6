@@ -1,8 +1,8 @@
 package kg.peaksoft.taskTrackerb6.db.service;
 
-import kg.peaksoft.taskTrackerb6.db.converter.CardConverter;
 import kg.peaksoft.taskTrackerb6.db.model.Card;
 import kg.peaksoft.taskTrackerb6.db.model.Checklist;
+import kg.peaksoft.taskTrackerb6.db.model.Notification;
 import kg.peaksoft.taskTrackerb6.db.model.SubTask;
 import kg.peaksoft.taskTrackerb6.db.repository.CardRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.ChecklistRepository;
@@ -33,12 +33,10 @@ public class ChecklistService {
         Checklist checklist = new Checklist();
         checklist.setTitle(request.getTitle());
         checklist.setCount(request.getCount());
-        List<SubTask> subTasks = new ArrayList<>();
         for (SubTaskRequest subTaskRequest : request.getSubTaskRequests()) {
             SubTask subTask = new SubTask(subTaskRequest.getDescription(), subTaskRequest.getIsDone());
             subTask.setChecklist(checklist);
             checklist.addSubTaskToChecklist(subTask);
-            subTasks.add(subTask);
         }
         checklist.setCard(card);
         card.addChecklist(checklist);
@@ -50,7 +48,6 @@ public class ChecklistService {
                 ()-> new NotFoundException("Checklist with id: "+request.getChecklistId()+" not found!")
         );
         checklist.setTitle(request.getNewTitle());
-
         return convertToResponse(checklistRepository.save(checklist));
     }
 
@@ -58,6 +55,17 @@ public class ChecklistService {
         Checklist checklist = checklistRepository.findById(id).orElseThrow(
                 ()-> new NotFoundException("Checklist with id: "+id+" not found!")
         );
+        List<SubTask> subTasks = new ArrayList<>();
+        for (SubTask subTask : checklist.getSubTasks()) {
+            subTask.setEstimation(null);
+            Notification notification = new Notification();
+            if (notification.getSubTask().getId().equals(subTask.getId())){
+                notification.setSubTask(null);
+            }
+            subTasks.add(subTask);
+        }
+        checklist.setSubTasks(subTasks);
+
         checklistRepository.delete(checklist);
         return new SimpleResponse("Checklist with id "+id+" cucessfully deleted", "DELETED");
     }
@@ -81,17 +89,13 @@ public class ChecklistService {
         int countOfSubTasks = 0;
         int countOfCompletedSubTask = 0;
         if (allSubTasks == null){
-            countOfSubTasks = 0;
-            countOfCompletedSubTask = 0;
             return new ChecklistResponse(checklist.getId(), checklist.getTitle(),
                     countOfCompletedSubTask, countOfSubTasks,
                     checklist.getCount(), subTaskResponses);
         }else {
-            List<Boolean> subTasks = new ArrayList<>();
             for (SubTask subTask : allSubTasks) {
                 countOfSubTasks++;
-                if (subTask.getIsDone() == true){
-                    subTasks.add(subTask.getIsDone());
+                if (subTask.getIsDone().equals(true)){
                     countOfCompletedSubTask++;
                 }
             }
@@ -106,9 +110,8 @@ public class ChecklistService {
         }
         checklist.setCount(count);
         checklistRepository.save(checklist);
-        return new ChecklistResponse(checklist.getId(), checklist.getTitle(),
-                                     countOfCompletedSubTask, countOfSubTasks,
-                                     checklist.getCount(), subTaskResponses);
+        return new ChecklistResponse(checklist.getId(), checklist.getTitle(), countOfCompletedSubTask,
+                                     countOfSubTasks, checklist.getCount(), subTaskResponses);
         }
     }
 }
