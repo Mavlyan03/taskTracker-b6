@@ -15,6 +15,4 @@ public interface LabelRepository extends JpaRepository<Label, Long> {
             " from Label l " +
             "where l.card.id = ?1")
     List<LabelResponse> getAllLabelResponses(Long cardId);
-
-
 }
