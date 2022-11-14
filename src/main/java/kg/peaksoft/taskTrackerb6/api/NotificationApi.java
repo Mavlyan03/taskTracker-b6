@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.peaksoft.taskTrackerb6.db.service.NotificationService;
 import kg.peaksoft.taskTrackerb6.dto.response.NotificationResponse;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.LifecycleState;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +21,7 @@ public class NotificationApi {
     @Operation(summary = "Get user's notification", description = "Get all user's notification")
     @GetMapping
     public List<NotificationResponse> getAllUserNotification() {
-        return notificationService.getAllMyNotification();
+        return notificationService.getAllMyNotifications();
     }
 
     @Operation(summary = "Get notification", description = "Get notification by id")

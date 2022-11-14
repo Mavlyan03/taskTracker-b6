@@ -30,12 +30,13 @@ public class NotificationService {
                 new NotFoundException("User not found!"));
     }
 
-    public List<NotificationResponse> getAllMyNotification() {
+    public List<NotificationResponse> getAllMyNotifications() {
         User user = getAuthenticateUser();
         List<NotificationResponse> notificationResponses = new ArrayList<>();
         for (Notification notification : user.getNotifications()) {
              notificationResponses.add(new NotificationResponse(notification));
         }
+
         return notificationResponses;
     }
 

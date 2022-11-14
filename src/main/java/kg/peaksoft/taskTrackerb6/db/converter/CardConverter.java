@@ -38,7 +38,7 @@ public class CardConverter {
     }
 
 
-    public Card convertToEntity(CardRequest request) throws InterruptedException {
+    public Card convertToEntity(CardRequest request) {
         User user = getAuthenticateUser();
         Column column = columnRepository.findById(request.getColumnId()).orElseThrow(
                 () -> new NotFoundException("Column with id: " + request.getColumnId() + " not found!")
@@ -66,8 +66,6 @@ public class CardConverter {
         estimation.setStartTime(convertTimeToEntity(request.getEstimationRequest().getStartTime()));
         estimation.setDeadlineTime(convertTimeToEntity(request.getEstimationRequest().getDeadlineTime()));
         card.setEstimation(estimation);
-
-
         estimation.setCard(card);
 
         List<MemberResponse> workspaceMember = new ArrayList<>();
@@ -82,6 +80,17 @@ public class CardConverter {
             for (MemberRequest m : request.getMemberRequests()) {
                 if (memberResponse.getEmail().equals(m.getEmail())) {
                     card.addMember(convertMemberToUser(m));
+                    Notification notification = new Notification();
+                    notification.setCard(card);
+                    notification.setIsRead(false);
+                    notification.setNotificationType(NotificationType.ASSIGN);
+                    notification.setFromUser(user);
+                    notification.setUser(convertMemberToUser(m));
+                    notification.setCreatedAt(LocalDateTime.now());
+                    notification.setMessage("You has assigned to " + card.getId() + ", by " + user.getFirstName() + " " + user.getLastName());
+                    notificationRepository.save(notification);
+                    User recipient = convertMemberToUser(m);
+                    recipient.addNotification(notification);
                 }
             }
         }
@@ -115,10 +124,12 @@ public class CardConverter {
         response.setId(card.getId());
         response.setTitle(card.getTitle());
         response.setDescription(card.getDescription());
-        response.setLabelResponses(labelRepository.getAllLabelResponses(card.getId()));
+        if (card.getLabels() != null) {
+            response.setLabelResponses(labelRepository.getAllLabelResponses(card.getId()));
+        }
+
         if (card.getEstimation() != null) {
             response.setEstimationResponse(getEstimationByCardId(card.getId()));
-
         }
 
         if (card.getMembers() != null) {
@@ -126,7 +137,9 @@ public class CardConverter {
         }
 
         response.setChecklistResponses(getChecklistResponses(card.getChecklists()));
-        response.setCommentResponses(getCommentResponses(card.getComments()));
+        if (card.getComments() != null) {
+            response.setCommentResponses(getCommentResponses(card.getComments()));
+        }
         return response;
     }
 

@@ -7,7 +7,6 @@ import kg.peaksoft.taskTrackerb6.dto.request.CardRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.UpdateCardTitleRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.CardInnerPageResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.CardResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.ColumnResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

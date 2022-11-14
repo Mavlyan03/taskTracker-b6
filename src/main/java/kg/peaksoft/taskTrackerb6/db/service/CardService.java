@@ -13,7 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -65,12 +64,12 @@ public class CardService {
             notification.setFromUser(user);
             notification.setUser(card.getCreator());
             notification.setCreatedAt(LocalDateTime.now());
-            notification.setMessage("Status has changed by " + user.getFirstName() + " " + user.getLastName());
+            notification.setMessage("Card status with id: " + cardId + " has changed by " + user.getFirstName() + " " + user.getLastName());
             notificationRepository.save(notification);
             User recipient = card.getCreator();
             User workspaceCreator = card.getBoard().getWorkspace().getLead();
             workspaceCreator.setNotifications(List.of(notification));
-            recipient.setNotifications(List.of(notification));
+            recipient.addNotification(notification);
             cardResponses.add(converter.convertToResponseForGetAll(card));
         }
 
@@ -127,7 +126,7 @@ public class CardService {
     }
 
 
-    public CardInnerPageResponse createCard(CardRequest request) throws MessagingException, InterruptedException {
+    public CardInnerPageResponse createCard(CardRequest request) {
         User user = getAuthenticateUser();
         Card card = converter.convertToEntity(request);
         card.setCreator(user);
