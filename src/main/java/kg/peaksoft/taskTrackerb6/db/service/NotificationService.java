@@ -45,7 +45,8 @@ public class NotificationService {
         return new NotificationResponse(
                 notification.getId(),
                 notification.getFromUser().getId(),
-                notification.getFromUser().getFirstName() + " " + notification.getFromUser().getLastName(),
+                notification.getFromUser().getFirstName(),
+                notification.getFromUser().getLastName(),
                 notification.getFromUser().getPhotoLink(),
                 notification.getCreatedAt(),
                 notification.getNotificationType(),

@@ -131,11 +131,12 @@ public class UserService {
 
         return new ResetPasswordResponse(
                 user.getId(),
-                user.getFirstName() + " " + user.getLastName(),
+                user.getFirstName(),
+                user.getLastName(),
                 user.getEmail(),
                 user.getRole(),
                 jwt,
-                "User password updated!");
+                "Password updated!");
     }
 
     private User convertToRegisterEntity(SignUpRequest signUpRequest) {

@@ -15,8 +15,9 @@ public class NotificationResponse {
 
     private Long id;
     private Long notifierId;
-    private String fullName;
-    private String photo;
+    private String firstName;
+    private String lastName;
+    private String image;
     private LocalDateTime createdAt;
     private NotificationType type;
     private String message;
@@ -24,8 +25,9 @@ public class NotificationResponse {
     public NotificationResponse(Notification notification) {
         this.id = notification.getId();
         this.notifierId = notification.getFromUser().getId();
-        this.fullName = notification.getFromUser().getFirstName() + " " + notification.getFromUser().getLastName();
-        this.photo = notification.getFromUser().getPhotoLink();
+        this.firstName = notification.getFromUser().getFirstName();
+        this.lastName = notification.getFromUser().getLastName();
+        this.image = notification.getFromUser().getPhotoLink();
         this.createdAt = notification.getCreatedAt();
         this.type = notification.getNotificationType();
         this.message = notification.getMessage();

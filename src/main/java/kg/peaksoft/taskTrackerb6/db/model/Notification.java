@@ -32,6 +32,7 @@ public class Notification {
 
     private Boolean isRead = false;
 
+    @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
 
     @OneToOne
