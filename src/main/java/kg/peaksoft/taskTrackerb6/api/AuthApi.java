@@ -7,6 +7,7 @@ import kg.peaksoft.taskTrackerb6.dto.request.ResetPasswordRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SignInRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SignUpRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.AuthResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.ResetPasswordResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.db.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +52,7 @@ public class AuthApi {
 
     @Operation(summary = "Reset password", description = "Allows you to reset the user's password")
     @PostMapping("reset/password")
-    public SimpleResponse resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
+    public ResetPasswordResponse resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
         return userService.resetPassword(request);
     }
 

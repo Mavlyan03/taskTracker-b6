@@ -10,6 +10,7 @@ import kg.peaksoft.taskTrackerb6.dto.request.ResetPasswordRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SignInRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SignUpRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.AuthResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.ResetPasswordResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.db.model.User;
 import kg.peaksoft.taskTrackerb6.enums.Role;
@@ -116,13 +117,25 @@ public class UserService {
         return new SimpleResponse("email send", "OK");
     }
 
-    public SimpleResponse resetPassword(ResetPasswordRequest request) {
+    public ResetPasswordResponse resetPassword(ResetPasswordRequest request) {
         User user = repository.findById(request.getUserId()).orElseThrow(
                 () -> new NotFoundException("user with id: " + request.getUserId() + " not found")
         );
 
-        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-        return new SimpleResponse("password updated ", "OK");
+        String oldPassword = user.getPassword();
+        String newPassword = passwordEncoder.encode(request.getNewPassword());
+        if (!oldPassword.equals(newPassword)) {
+            user.setPassword(newPassword);
+        }
+        String jwt = jwtUtil.generateToken(user.getEmail());
+
+        return new ResetPasswordResponse(
+                user.getId(),
+                user.getFirstName() + " " + user.getLastName(),
+                user.getEmail(),
+                user.getRole(),
+                jwt,
+                "User password updated!");
     }
 
     private User convertToRegisterEntity(SignUpRequest signUpRequest) {
