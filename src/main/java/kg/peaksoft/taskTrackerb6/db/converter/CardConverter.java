@@ -4,6 +4,7 @@ import kg.peaksoft.taskTrackerb6.db.model.*;
 import kg.peaksoft.taskTrackerb6.db.repository.*;
 import kg.peaksoft.taskTrackerb6.dto.request.*;
 import kg.peaksoft.taskTrackerb6.dto.response.*;
+import kg.peaksoft.taskTrackerb6.enums.NotificationType;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -27,6 +28,7 @@ public class CardConverter {
     private final WorkspaceRepository workspaceRepository;
     private final SubTaskRepository subTaskRepository;
     private final CardRepository cardRepository;
+    private final NotificationRepository notificationRepository;
 
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -78,6 +80,17 @@ public class CardConverter {
             for (MemberRequest m : request.getMemberRequests()) {
                 if (memberResponse.getEmail().equals(m.getEmail())) {
                     card.addMember(convertMemberToUser(m));
+                    Notification notification = new Notification();
+                    notification.setCard(card);
+                    notification.setIsRead(false);
+                    notification.setNotificationType(NotificationType.ASSIGN);
+                    notification.setFromUser(user);
+                    notification.setUser(convertMemberToUser(m));
+                    notification.setCreatedAt(LocalDateTime.now());
+                    notification.setMessage("You has assigned to " + card.getId() + ", by " + user.getFirstName() + " " + user.getLastName());
+                    notificationRepository.save(notification);
+                    User recipient = convertMemberToUser(m);
+                    recipient.addNotification(notification);
                 }
             }
         }
@@ -90,8 +103,10 @@ public class CardConverter {
                 checklist.addSubTaskToChecklist(subTask);
                 subTask.setChecklist(checklist);
             }
+
             card.addChecklist(checklist);
             checklist.setCard(card);
+
         }
 
         for (CommentRequest commentRequest : request.getCommentRequests()) {
@@ -109,10 +124,12 @@ public class CardConverter {
         response.setId(card.getId());
         response.setTitle(card.getTitle());
         response.setDescription(card.getDescription());
-        response.setLabelResponses(labelRepository.getAllLabelResponses(card.getId()));
+        if (card.getLabels() != null) {
+            response.setLabelResponses(labelRepository.getAllLabelResponses(card.getId()));
+        }
+
         if (card.getEstimation() != null) {
             response.setEstimationResponse(getEstimationByCardId(card.getId()));
-
         }
 
         if (card.getMembers() != null) {
@@ -120,7 +137,9 @@ public class CardConverter {
         }
 
         response.setChecklistResponses(getChecklistResponses(card.getChecklists()));
-        response.setCommentResponses(getCommentResponses(card.getComments()));
+        if (card.getComments() != null) {
+            response.setCommentResponses(getCommentResponses(card.getComments()));
+        }
         return response;
     }
 
