@@ -3,12 +3,15 @@ package kg.peaksoft.taskTrackerb6.db.service;
 import kg.peaksoft.taskTrackerb6.db.model.*;
 import kg.peaksoft.taskTrackerb6.db.repository.CardRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.ChecklistRepository;
+import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import kg.peaksoft.taskTrackerb6.dto.request.ChecklistRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SubTaskRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.UpdateChecklistTitleRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.*;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,8 +23,10 @@ public class ChecklistService {
 
     private final CardRepository cardRepository;
     private final ChecklistRepository checklistRepository;
+    private final UserRepository userRepository;
 
     public ChecklistResponse createChecklist(Long id, ChecklistRequest request){
+        User authUser = getAuthenticateUser();
         Card card = cardRepository.findById(id).orElseThrow(
                 ()-> new NotFoundException("Card with id: "+id+" not found!")
         );
@@ -148,5 +153,12 @@ public class ChecklistService {
 
     public MyTimeClassResponse convertStartTimeToResponse(MyTimeClass timeClass){
         return new MyTimeClassResponse(timeClass.getId(), String.format("%02d:%02d", timeClass.getHour(), timeClass.getMinute()));
+    }
+    public User getAuthenticateUser(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String login = authentication.getName();
+        return userRepository.findByEmail(login).orElseThrow(
+                ()-> new NotFoundException("User not found!")
+        );
     }
 }
