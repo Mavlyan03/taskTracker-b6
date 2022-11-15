@@ -2,10 +2,7 @@ package kg.peaksoft.taskTrackerb6.db.service;
 
 import kg.peaksoft.taskTrackerb6.db.model.*;
 import kg.peaksoft.taskTrackerb6.db.repository.*;
-import kg.peaksoft.taskTrackerb6.dto.request.ChecklistRequest;
-import kg.peaksoft.taskTrackerb6.dto.request.MemberRequest;
-import kg.peaksoft.taskTrackerb6.dto.request.SubTaskRequest;
-import kg.peaksoft.taskTrackerb6.dto.request.UpdateChecklistTitleRequest;
+import kg.peaksoft.taskTrackerb6.dto.request.*;
 import kg.peaksoft.taskTrackerb6.dto.response.*;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -53,6 +50,17 @@ public class ChecklistService {
             }
             subTask.setChecklist(checklist);
             checklist.addSubTaskToChecklist(subTask);
+            if (subTaskRequest.getEstimationRequest() != null){
+                Estimation estimation = new Estimation();
+                    estimation.setStartDate(subTaskRequest.getEstimationRequest().getStartDate());
+                    estimation.setDueDate(subTaskRequest.getEstimationRequest().getDueDate());
+                    estimation.setReminder(subTaskRequest.getEstimationRequest().getReminder());
+                    estimation.setStartTime(convertTimeToEntity(subTaskRequest.getEstimationRequest().getStartTime()));
+                    estimation.setDeadlineTime(convertTimeToEntity(subTaskRequest.getEstimationRequest().getDeadlineTime()));
+                    estimation.setUser(authUser);
+                    subTask.setEstimation(estimation);
+                    estimation.setSubTask(subTask);
+            }
         }
         checklist.setCard(card);
         card.addChecklist(checklist);
@@ -181,5 +189,11 @@ public class ChecklistService {
 
     public User convertMemberToUser(MemberRequest memberRequest){
         return userRepository.findByEmail(memberRequest.getEmail()).get();
+    }
+
+    public MyTimeClass convertTimeToEntity(MyTimeClassRequest request){
+        MyTimeClass myTimeClass = new MyTimeClass();
+        myTimeClass.setTime(request.getHour(), request.getMinute());
+        return myTimeClass;
     }
 }
