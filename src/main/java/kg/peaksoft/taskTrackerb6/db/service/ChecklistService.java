@@ -96,16 +96,27 @@ public class ChecklistService {
             }
             for (SubTask subTask : allSubTasks) {
                 List<MemberResponse> memberResponses = new ArrayList<>();
-                for (User user : subTask.getWorkspacesUsers()) {
-                    memberResponses.add(convertToMemberResponse(user));
+                if (subTask.getWorkspacesUsers() == null){
+                    subTaskResponses.add(new SubTaskResponse(subTask.getId(), subTask.getDescription(), subTask.getIsDone(),
+                            memberResponses, new EstimationResponse(subTask.getEstimation().getId(),
+                            subTask.getEstimation().getStartDate(),
+                            convertStartTimeToResponse(subTask.getEstimation().getStartTime()),
+                            subTask.getEstimation().getDueDate(),
+                            convertStartTimeToResponse(subTask.getEstimation().getDeadlineTime()),
+                            subTask.getEstimation().getReminder())));
+                }else {
+                    for (User user : subTask.getWorkspacesUsers()) {
+                        memberResponses.add(convertToMemberResponse(user));
+                    }
+                    subTaskResponses.add(new SubTaskResponse(subTask.getId(), subTask.getDescription(), subTask.getIsDone(),
+                                                             memberResponses, new EstimationResponse(subTask.getEstimation().getId(),
+                                                                                                     subTask.getEstimation().getStartDate(),
+                                                                                                     convertStartTimeToResponse(subTask.getEstimation().getStartTime()),
+                                                                                                     subTask.getEstimation().getDueDate(),
+                                                                                                     convertStartTimeToResponse(subTask.getEstimation().getDeadlineTime()),
+                                                                                                     subTask.getEstimation().getReminder())));
+
                 }
-                subTaskResponses.add(new SubTaskResponse(subTask.getId(), subTask.getDescription(), subTask.getIsDone(),
-                                                         memberResponses, new EstimationResponse(subTask.getEstimation().getId(),
-                                                                                                 subTask.getEstimation().getStartDate(),
-                                                                                                 convertStartTimeToResponse(subTask.getEstimation().getStartTime()),
-                                                                                                 subTask.getEstimation().getDueDate(),
-                                                                                                 convertStartTimeToResponse(subTask.getEstimation().getDeadlineTime()),
-                                                                                                 subTask.getEstimation().getReminder())));
             }
         Integer count;
         if (countOfCompletedSubTask <= 0){
