@@ -91,7 +91,7 @@ public class ChecklistService {
         checklist.setSubTasks(subTasks);
 
         checklistRepository.delete(checklist);
-        return new SimpleResponse("Checklist with id "+id+" cucessfully deleted", "DELETED");
+        return new SimpleResponse("Checklist with id "+id+" successfully deleted", "DELETED");
     }
 
     public List<ChecklistResponse> findAllChecklistsByCardId(Long id){
