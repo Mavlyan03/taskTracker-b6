@@ -1,10 +1,9 @@
 package kg.peaksoft.taskTrackerb6.db.service;
 
 import kg.peaksoft.taskTrackerb6.db.model.*;
-import kg.peaksoft.taskTrackerb6.db.repository.CardRepository;
-import kg.peaksoft.taskTrackerb6.db.repository.ChecklistRepository;
-import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
+import kg.peaksoft.taskTrackerb6.db.repository.*;
 import kg.peaksoft.taskTrackerb6.dto.request.ChecklistRequest;
+import kg.peaksoft.taskTrackerb6.dto.request.MemberRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SubTaskRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.UpdateChecklistTitleRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.*;
@@ -24,16 +23,34 @@ public class ChecklistService {
     private final CardRepository cardRepository;
     private final ChecklistRepository checklistRepository;
     private final UserRepository userRepository;
+    private final WorkspaceRepository workspaceRepository;
+    private final BoardRepository boardRepository;
 
     public ChecklistResponse createChecklist(Long id, ChecklistRequest request){
         User authUser = getAuthenticateUser();
         Card card = cardRepository.findById(id).orElseThrow(
                 ()-> new NotFoundException("Card with id: "+id+" not found!")
         );
+        Board board = boardRepository.findById(card.getBoard().getId()).get();
+        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).get();
+
         Checklist checklist = new Checklist();
         checklist.setTitle(request.getTitle());
+        List<MemberResponse> members = new ArrayList<>();
+        for (UserWorkSpace userWorkSpace : workspace.getUserWorkSpaces()) {
+            if (!authUser.equals(userWorkSpace.getUser())){
+                members.add(convertToMemberResponse(userWorkSpace.getUser()));
+            }
+        }
         for (SubTaskRequest subTaskRequest : request.getSubTaskRequests()) {
             SubTask subTask = new SubTask(subTaskRequest.getDescription(), subTaskRequest.getIsDone());
+            for (MemberResponse memberResponse : members) {
+                for (MemberRequest memberRequest : subTaskRequest.getMemberRequests()) {
+                    if (memberResponse.getEmail().equals(memberRequest.getEmail())){
+                        subTask.addMember(convertMemberToUser(memberRequest));
+                    }
+                }
+            }
             subTask.setChecklist(checklist);
             checklist.addSubTaskToChecklist(subTask);
         }
@@ -160,5 +177,9 @@ public class ChecklistService {
         return userRepository.findByEmail(login).orElseThrow(
                 ()-> new NotFoundException("User not found!")
         );
+    }
+
+    public User convertMemberToUser(MemberRequest memberRequest){
+        return userRepository.findByEmail(memberRequest.getEmail()).get();
     }
 }
