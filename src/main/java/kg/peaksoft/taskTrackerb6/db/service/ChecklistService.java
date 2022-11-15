@@ -114,8 +114,8 @@ public class ChecklistService {
         int countOfCompletedSubTask = 0;
         if (allSubTasks == null){
             return new ChecklistResponse(checklist.getId(), checklist.getTitle(),
-                    countOfCompletedSubTask, countOfSubTasks,
-                    checklist.getCount(), subTaskResponses);
+                                         countOfCompletedSubTask, countOfSubTasks,
+                                         checklist.getCount(), subTaskResponses);
         }else {
             for (SubTask subTask : allSubTasks) {
                 countOfSubTasks++;
@@ -155,7 +155,6 @@ public class ChecklistService {
                         subTaskResponses.add(new SubTaskResponse(subTask.getId(), subTask.getDescription(), subTask.getIsDone(),
                                                                  memberResponses, estimationResponse));
                     }
-
                 }
             }
         Integer count;

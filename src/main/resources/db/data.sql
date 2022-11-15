@@ -50,12 +50,10 @@ values (1, '2000-04-30', 1, 1, 1),
        (2, '2020-04-30', 1, 1, 1);
 
 insert into users_boards (members_id, boards_id)
-values (1, 1),
-       (3, 1);
+values (1, 1);
 
 insert into user_workspace_roles (id, user_id, workspace_id, role)
-values (1, 1, 1, 'SUPER_ADMIN'),
-       (3, 3, 1, 'USER');
+values (1, 1, 1, 'SUPER_ADMIN');
 
 insert into workspaces_all_issues (workspace_id, all_issues_id)
 values (1, 1);
