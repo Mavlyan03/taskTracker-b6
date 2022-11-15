@@ -97,12 +97,6 @@ public class CardConverter {
 
             for (SubTaskRequest s : c.getSubTaskRequests()) {
                 SubTask subTask = new SubTask(s.getDescription(), s.getIsDone());
-                Estimation estimation1 = new Estimation(s.getEstimationRequest().getStartDate(),
-                                                        s.getEstimationRequest().getDueDate(),
-                                                        s.getEstimationRequest().getReminder());
-                estimation1.setUser(user);
-                estimation1.setStartTime(convertTimeToEntity(s.getEstimationRequest().getStartTime()));
-                estimation1.setDeadlineTime(convertTimeToEntity(s.getEstimationRequest().getDeadlineTime()));
                 for (MemberResponse memberResponse : members) {
                     for (MemberRequest memberRequest : s.getMemberRequests()) {
                         if (memberResponse.getEmail().equals(memberRequest.getEmail())){
@@ -112,8 +106,17 @@ public class CardConverter {
                 }
                 checklist.addSubTaskToChecklist(subTask);
                 subTask.setChecklist(checklist);
-                subTask.setEstimation(estimation1);
-                estimation1.setSubTask(subTask);
+                if (s.getEstimationRequest() != null){
+                    Estimation estimation1 = new Estimation();
+                    estimation1.setStartDate(s.getEstimationRequest().getStartDate());
+                    estimation1.setDueDate(s.getEstimationRequest().getDueDate());
+                    estimation1.setReminder(s.getEstimationRequest().getReminder());
+                    estimation1.setUser(user);
+                    estimation1.setStartTime(convertTimeToEntity(s.getEstimationRequest().getStartTime()));
+                    estimation1.setDeadlineTime(convertTimeToEntity(s.getEstimationRequest().getDeadlineTime()));
+                    subTask.setEstimation(estimation1);
+                    estimation1.setSubTask(subTask);
+                }
             }
 
             card.addChecklist(checklist);
