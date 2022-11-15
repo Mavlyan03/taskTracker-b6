@@ -110,4 +110,10 @@ public class User implements UserDetails {
         return true;
     }
 
+    public void addNotification(Notification notification) {
+        if (notifications == null) {
+            notifications = new ArrayList<>();
+        }
+        notifications.add(notification);
+    }
 }

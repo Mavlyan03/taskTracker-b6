@@ -11,6 +11,7 @@ import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import java.util.List;
 
 @RestController
@@ -24,7 +25,7 @@ public class CardApi {
 
     @Operation(summary = "Create card", description = "Create new card")
     @PostMapping
-    public CardInnerPageResponse createCard(@RequestBody CardRequest request) {
+    public CardInnerPageResponse createCard(@RequestBody CardRequest request) throws MessagingException, InterruptedException {
         return cardService.createCard(request);
     }
 
@@ -62,5 +63,12 @@ public class CardApi {
     @GetMapping("archive-cards/{boardId}")
     public List<CardResponse> getAllArchivedCardsByBoardId(@PathVariable Long boardId) {
         return cardService.getAllArchivedCardsByBoardId(boardId);
+    }
+
+    @Operation(summary = "Move card", description = "Move card by id")
+    @GetMapping("move-card/{cardId}/{columnId}")
+    public List<CardResponse> moveCard(@PathVariable Long cardId,
+                                         @PathVariable Long columnId) {
+        return cardService.moveCard(cardId, columnId);
     }
 }

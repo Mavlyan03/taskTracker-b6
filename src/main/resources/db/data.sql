@@ -1,12 +1,12 @@
 insert into users (id, first_name, last_name, photo_link, email, password, role)
-values (1, 'Esen', 'Niyazov', 'photoLink', 'esen@gmail.com',
-        '$2a$12$CfCkLOcM6zwdxxryeGF6tuqiaSlWpDxdFaUXpBPjNMPwSoMfA8nMa','SUPER_ADMIN'),
+values (1, 'Datka', 'Mamatzhanova', 'photoLink', 'datka@gmail.com',
+        '$2a$12$0POgw5oJtXlmcuRhE5unzuoyjp0uwFif7/45xVKO1RB06Bg380LLW','SUPER_ADMIN'),
 
        (2, 'Nurmuhammad', 'Nurbekov', 'photoLink', 'admin@gmail.com',
         '$2a$12$TbmCs13/KkzrcHd.rSnZeOH5qvVc79nuGb/bYhbC3sT8dYK9unj2q', 'ADMIN'),
 
        (3, 'Nursultan', 'Askarov', 'users_photoLink', 'user@gmail.com',
-        '$2a$12$oRaUgIHxClArpaNXqFIPD.xUSju4iSsGFGEwlQgSWV2aii/3LqYyW', 'USER');
+        '$2a$12$vkwGsKlu3LmvlxpkMz./QOHE9TrcGBU5yjPqTeqjuvjGoFk3pkSlS', 'USER');
 
 insert into workspaces (id, name, is_favorite, lead_id)
 values (1, 'Workspace Name', false,  1);
@@ -33,7 +33,7 @@ values (1, '2022-02-01', 1, '2022-12-12', 2, 5, 'First Text', 1, 1);
 insert into subtasks (id, description, is_done, checklist_id, estimation_id)
 values (1, 'Subtasks description ', false, 1, 1);
 
-insert into notifications (id, text, is_read, user_id, sub_task_id, card_id, column_id, estimation_id)
+insert into notifications (id, message, is_read, user_id, sub_task_id, card_id, column_id, estimation_id)
 values (1, 'First Text', false, 1, 1, 1, 1, 1);
 
 insert into labels (id, color, description, card_id)

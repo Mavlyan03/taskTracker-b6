@@ -1,5 +1,8 @@
 package kg.peaksoft.taskTrackerb6.db.service;
 
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
@@ -7,6 +10,7 @@ import kg.peaksoft.taskTrackerb6.dto.request.ResetPasswordRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SignInRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SignUpRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.AuthResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.ResetPasswordResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.db.model.User;
 import kg.peaksoft.taskTrackerb6.enums.Role;
@@ -16,14 +20,17 @@ import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import kg.peaksoft.taskTrackerb6.config.security.JWTUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
+import java.io.IOException;
 
 @Service
 @Transactional
@@ -33,7 +40,7 @@ public class UserService {
     private final UserRepository repository;
     private final JWTUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
-    private final JavaMailSender  mailSender;
+    private final JavaMailSender mailSender;
 
     public AuthResponse registration(SignUpRequest signUpRequest) {
 
@@ -43,7 +50,7 @@ public class UserService {
 
         User user = convertToRegisterEntity(signUpRequest);
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
-        user.setRole(Role.ADMIN);
+        user.setRole(Role.USER);
         repository.save(user);
 
         String jwt = jwtUtil.generateToken(user.getEmail());
@@ -56,6 +63,18 @@ public class UserService {
                 user.getRole(),
                 jwt
         );
+    }
+
+    @PostConstruct
+    public void init() throws IOException {
+        GoogleCredentials googleCredentials =
+                GoogleCredentials.fromStream(new ClassPathResource("tasktracker.json")
+                        .getInputStream());
+
+        FirebaseOptions firebaseOptions = FirebaseOptions.builder()
+                .setCredentials(googleCredentials).build();
+
+        FirebaseApp.initializeApp(firebaseOptions);
     }
 
     public AuthResponse login(SignInRequest signInRequest) {
@@ -90,7 +109,7 @@ public class UserService {
 
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-        helper.setSubject("[task_tracker] reset password link");
+        helper.setSubject("[task_tracker] reset password link , user id: " + user);
         helper.setFrom("tasktracker.b6@gmail.com");
         helper.setTo(email);
         helper.setText(link + "/" + user.getId(), true);
@@ -98,13 +117,26 @@ public class UserService {
         return new SimpleResponse("email send", "OK");
     }
 
-    public SimpleResponse resetPassword(ResetPasswordRequest request) {
+    public ResetPasswordResponse resetPassword(ResetPasswordRequest request) {
         User user = repository.findById(request.getUserId()).orElseThrow(
                 () -> new NotFoundException("user with id: " + request.getUserId() + " not found")
         );
 
-        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-        return new SimpleResponse("password updated ", "OK");
+        String oldPassword = user.getPassword();
+        String newPassword = passwordEncoder.encode(request.getNewPassword());
+        if (!oldPassword.equals(newPassword)) {
+            user.setPassword(newPassword);
+        }
+        String jwt = jwtUtil.generateToken(user.getEmail());
+
+        return new ResetPasswordResponse(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getRole(),
+                jwt,
+                "Password updated!");
     }
 
     private User convertToRegisterEntity(SignUpRequest signUpRequest) {
@@ -121,7 +153,9 @@ public class UserService {
         User user;
         if (!repository.existsByEmail(firebaseToken.getEmail())) {
             User newUser = new User();
-            newUser.setFirstName(firebaseToken.getName());
+            String[] name = firebaseToken.getName().split(" ");
+            newUser.setFirstName(name[0]);
+            newUser.setLastName(name[1]);
             newUser.setEmail(firebaseToken.getEmail());
             newUser.setPassword(firebaseToken.getEmail());
             newUser.setRole(Role.ADMIN);
