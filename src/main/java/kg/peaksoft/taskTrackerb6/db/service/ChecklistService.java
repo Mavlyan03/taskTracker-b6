@@ -27,7 +27,6 @@ public class ChecklistService {
         );
         Checklist checklist = new Checklist();
         checklist.setTitle(request.getTitle());
-//        checklist.setCount(request.getCount());
         for (SubTaskRequest subTaskRequest : request.getSubTaskRequests()) {
             SubTask subTask = new SubTask(subTaskRequest.getDescription(), subTaskRequest.getIsDone());
             subTask.setChecklist(checklist);
