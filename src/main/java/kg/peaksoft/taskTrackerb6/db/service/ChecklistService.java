@@ -96,14 +96,19 @@ public class ChecklistService {
             }
             for (SubTask subTask : allSubTasks) {
                 List<MemberResponse> memberResponses = new ArrayList<>();
+                EstimationResponse estimationResponse = new EstimationResponse();
                 if (subTask.getWorkspacesUsers() == null){
+                    if (subTask.getEstimation() == null){
+                        subTaskResponses.add(new SubTaskResponse(subTask.getId(), subTask.getDescription(), subTask.getIsDone(),
+                                                                 memberResponses, estimationResponse));
+                    }
                     subTaskResponses.add(new SubTaskResponse(subTask.getId(), subTask.getDescription(), subTask.getIsDone(),
                             memberResponses, new EstimationResponse(subTask.getEstimation().getId(),
-                            subTask.getEstimation().getStartDate(),
-                            convertStartTimeToResponse(subTask.getEstimation().getStartTime()),
-                            subTask.getEstimation().getDueDate(),
-                            convertStartTimeToResponse(subTask.getEstimation().getDeadlineTime()),
-                            subTask.getEstimation().getReminder())));
+                                                                    subTask.getEstimation().getStartDate(),
+                                                                    convertStartTimeToResponse(subTask.getEstimation().getStartTime()),
+                                                                    subTask.getEstimation().getDueDate(),
+                                                                    convertStartTimeToResponse(subTask.getEstimation().getDeadlineTime()),
+                                                                    subTask.getEstimation().getReminder())));
                 }else {
                     for (User user : subTask.getWorkspacesUsers()) {
                         memberResponses.add(convertToMemberResponse(user));
