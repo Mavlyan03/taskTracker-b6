@@ -79,6 +79,10 @@ public class ChecklistService {
         Checklist checklist = checklistRepository.findById(id).orElseThrow(
                 ()-> new NotFoundException("Checklist with id: "+id+" not found!")
         );
+        for (SubTask subTask : checklist.getSubTasks()) {
+            subTask.setChecklist(null);
+            subTask.setEstimation(null);
+        }
         checklistRepository.delete(checklist);
         return new SimpleResponse("Checklist with id "+id+" successfully deleted", "DELETED");
     }
