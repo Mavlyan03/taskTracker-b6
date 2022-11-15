@@ -88,11 +88,34 @@ public class CardConverter {
         for (ChecklistRequest c : request.getChecklistRequests()) {
             Checklist checklist = new Checklist(c.getTitle(), c.getCount());
 
+            List<MemberResponse> members = new ArrayList<>();
+            for (UserWorkSpace u : workspace.getUserWorkSpaces()) {
+                if (!user.equals(u.getUser())){
+                    members.add(convertToMemberResponse(u.getUser()));
+                }
+            }
+
             for (SubTaskRequest s : c.getSubTaskRequests()) {
                 SubTask subTask = new SubTask(s.getDescription(), s.getIsDone());
+                Estimation estimation1 = new Estimation(s.getEstimationRequest().getStartDate(),
+                                                        s.getEstimationRequest().getDueDate(),
+                                                        s.getEstimationRequest().getReminder());
+                estimation1.setUser(user);
+                estimation1.setStartTime(convertTimeToEntity(s.getEstimationRequest().getStartTime()));
+                estimation1.setDeadlineTime(convertTimeToEntity(s.getEstimationRequest().getDeadlineTime()));
+                for (MemberResponse memberResponse : members) {
+                    for (MemberRequest memberRequest : s.getMemberRequests()) {
+                        if (memberResponse.getEmail().equals(memberRequest.getEmail())){
+                            subTask.addMember(convertMemberToUser(memberRequest));
+                        }
+                    }
+                }
                 checklist.addSubTaskToChecklist(subTask);
                 subTask.setChecklist(checklist);
+                subTask.setEstimation(estimation1);
+                estimation1.setSubTask(subTask);
             }
+
             card.addChecklist(checklist);
             checklist.setCard(card);
         }

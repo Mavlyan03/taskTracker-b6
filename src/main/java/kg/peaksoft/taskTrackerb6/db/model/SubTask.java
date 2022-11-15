@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.persistence.Column;
+import java.util.ArrayList;
 import java.util.List;
 
 import static javax.persistence.CascadeType.*;
@@ -39,6 +40,13 @@ public class SubTask {
     public SubTask(String description, Boolean isDone) {
         this.description = description;
         this.isDone = isDone;
+    }
+
+    public void addMember(User user){
+        if (workspacesUsers == null){
+            workspacesUsers = new ArrayList<>();
+        }
+        workspacesUsers.add(user);
     }
 
 }
