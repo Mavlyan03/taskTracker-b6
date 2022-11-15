@@ -10,6 +10,6 @@ import java.util.List;
 public class ChecklistRequest {
 
     private String title;
-    private int count;
+//    private int count;
     private List<SubTaskRequest> subTaskRequests;
 }

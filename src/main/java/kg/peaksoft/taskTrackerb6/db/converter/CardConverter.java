@@ -86,7 +86,7 @@ public class CardConverter {
         }
 
         for (ChecklistRequest c : request.getChecklistRequests()) {
-            Checklist checklist = new Checklist(c.getTitle(), c.getCount());
+            Checklist checklist = new Checklist(c.getTitle());
 
             List<MemberResponse> members = new ArrayList<>();
             for (UserWorkSpace u : workspace.getUserWorkSpaces()) {
@@ -108,14 +108,14 @@ public class CardConverter {
                 subTask.setChecklist(checklist);
                 if (s.getEstimationRequest() != null){
                     Estimation estimation1 = new Estimation();
-                    estimation1.setStartDate(s.getEstimationRequest().getStartDate());
-                    estimation1.setDueDate(s.getEstimationRequest().getDueDate());
-                    estimation1.setReminder(s.getEstimationRequest().getReminder());
-                    estimation1.setUser(user);
-                    estimation1.setStartTime(convertTimeToEntity(s.getEstimationRequest().getStartTime()));
-                    estimation1.setDeadlineTime(convertTimeToEntity(s.getEstimationRequest().getDeadlineTime()));
-                    subTask.setEstimation(estimation1);
-                    estimation1.setSubTask(subTask);
+                        estimation1.setStartDate(s.getEstimationRequest().getStartDate());
+                        estimation1.setDueDate(s.getEstimationRequest().getDueDate());
+                        estimation1.setReminder(s.getEstimationRequest().getReminder());
+                        estimation1.setUser(user);
+                        estimation1.setStartTime(convertTimeToEntity(s.getEstimationRequest().getStartTime()));
+                        estimation1.setDeadlineTime(convertTimeToEntity(s.getEstimationRequest().getDeadlineTime()));
+                        subTask.setEstimation(estimation1);
+                        estimation1.setSubTask(subTask);
                 }
             }
 
