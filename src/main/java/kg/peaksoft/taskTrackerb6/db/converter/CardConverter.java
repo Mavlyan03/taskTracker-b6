@@ -27,7 +27,6 @@ public class CardConverter {
     private final LabelRepository labelRepository;
     private final EstimationRepository estimationRepository;
     private final WorkspaceRepository workspaceRepository;
-    private final SubTaskRepository subTaskRepository;
     private final CardRepository cardRepository;
     private final ChecklistRepository checklistRepository;
     private final ChecklistService checklistService;
@@ -39,7 +38,6 @@ public class CardConverter {
         return userRepository.findByEmail(login).orElseThrow(() ->
                 new NotFoundException("User not found!"));
     }
-
 
     public Card convertToEntity(CardRequest request) {
         User user = getAuthenticateUser();
@@ -156,7 +154,6 @@ public class CardConverter {
 
         if (card.getEstimation() != null) {
             response.setEstimationResponse(getEstimationByCardId(card.getId()));
-
         }
 
         if (card.getMembers() != null) {
