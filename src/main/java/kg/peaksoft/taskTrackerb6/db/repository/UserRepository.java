@@ -20,4 +20,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("select u from User u inner join Board b on u.id = b.id")
     List<User> getAllUserFromBoardId(@Param("boardId") Long id);
+
+    @Query("select new kg.peaksoft.taskTrackerb6.dto.response.CardMemberResponse(u.id, u.photoLink)" +
+            " from User u where u.id = ?1")
+    List<User> getAllCardMembers(Long cardId);
 }

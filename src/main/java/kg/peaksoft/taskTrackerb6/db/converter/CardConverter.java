@@ -66,7 +66,6 @@ public class CardConverter {
         estimation.setStartTime(convertTimeToEntity(request.getEstimationRequest().getStartTime()));
         estimation.setDeadlineTime(convertTimeToEntity(request.getEstimationRequest().getDeadlineTime()));
         card.setEstimation(estimation);
-        estimation.setCard(card);
 
         List<MemberResponse> workspaceMember = new ArrayList<>();
         for (UserWorkSpace u : workspace.getUserWorkSpaces()) {

@@ -17,18 +17,18 @@ values (1, 'First Board', 'board_photo', false, false,  1);
 insert into columns (id, title, is_archive, board_id)
 values (1, 'First Column', false, 1);
 
-insert into cards (id, title, description, is_archive, created_at, creator_id, estimation_id, board_id, column_id)
-values (1, 'First Card', 'First Description', false, '2022-10-31',  1, 1, 1,  1);
-
-insert into checklists (id, title, count, card_id)
-values (1, 'First Checklist', 1, 1);
-
 insert into times (id, hour, minute)
 values (1, 10, 20),
        (2, 12,20);
 
-insert into estimations (id, start_date, start_time_id, due_date, deadline_time_id, reminder, text, card_id, user_id)
-values (1, '2022-02-01', 1, '2022-12-12', 2, 5, 'First Text', 1, 1);
+insert into estimations (id, start_date, start_time_id, due_date, deadline_time_id, reminder, text, user_id)
+values (1, '2022-02-01', 1, '2022-12-12', 2, 5, 'First Text', 1);
+
+insert into cards (id, title, description, is_archive, created_at, creator_id, estimation_id, board_id, column_id)
+values (1, 'First Card', 'First Description', false, '2022-10-31',  1, 1, 1, 1);
+
+insert into checklists (id, title, count, card_id)
+values (1, 'First Checklist', 1, 1);
 
 insert into subtasks (id, description, is_done, checklist_id, estimation_id)
 values (1, 'Subtasks description ', false, 1, 1);

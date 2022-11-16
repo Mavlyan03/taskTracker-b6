@@ -3,6 +3,7 @@ package kg.peaksoft.taskTrackerb6.db.service;
 import kg.peaksoft.taskTrackerb6.db.model.*;
 import kg.peaksoft.taskTrackerb6.db.repository.BoardRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.LabelRepository;
+import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
 import kg.peaksoft.taskTrackerb6.dto.response.AllIssuesResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.CardMemberResponse;
@@ -24,6 +25,7 @@ public class AllIssuesService {
     private final WorkspaceRepository workspaceRepository;
     private final BoardRepository boardRepository;
     private final LabelRepository labelRepository;
+    private final UserRepository userRepository;
 
     public List<AllIssuesResponse> allIssues(Long workspaceId) {
         Workspace workspace = workspaceRepository.findById(workspaceId).orElseThrow(
@@ -44,34 +46,53 @@ public class AllIssuesService {
         Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).get();
         AllIssuesResponse response = new AllIssuesResponse(card);
         List<CardMemberResponse> cardMemberResponses = new ArrayList<>();
-        int period;
         int isDoneCounter = 0;
         int allSubTasksCounter = 0;
 
-        for (Card c : workspace.getAllIssues()) {
+//        int period =
 
-            for (User user : c.getMembers()) {
-                cardMemberResponses.add(new CardMemberResponse(user));
-                response.setAssignee(cardMemberResponses);
-            }
-
-            response.setLabels(labelRepository.getAllLabelResponses(c.getId()));
-
-            for (Checklist checklist : c.getChecklists()) {
-                for (SubTask s : checklist.getSubTasks()) {
-                    allSubTasksCounter++;
-                    if (s.getIsDone().equals(true)) {
-                        isDoneCounter++;
-                    }
-                }
-
-                String checklist1 = "" + isDoneCounter + "/" + allSubTasksCounter;
-                response.setChecklist(checklist1);
-            }
-
-            period = Period.between(c.getEstimation().getStartDate(), c.getEstimation().getDueDate()).getDays();
-            response.setPeriod("" + period + " days");
+        for (User user : card.getMembers()) {
+            cardMemberResponses.add(new CardMemberResponse(user));
         }
+
+
+
+//        private List<CardMemberResponse> assignee;
+//        private List<LabelResponse> labels;
+//        private String checklist;
+//        private int period;
+
+
+
+//        for (Card c : workspace.getAllIssues()) {
+//
+//            for (User user : c.getMembers()) {
+//                if (!user.equals(c.getCreator())) {
+//                    cardMemberResponses.add(new CardMemberResponse(user));
+//                }
+//
+//                response.setAssignee(cardMemberResponses);
+//            }
+//
+//            response.setLabels(labelRepository.getAllLabelResponses(c.getId()));
+//
+//            for (Checklist checklist : c.getChecklists()) {
+//                for (SubTask s : checklist.getSubTasks()) {
+//                    allSubTasksCounter++;
+//                    if (s.getIsDone().equals(true)) {
+//                        isDoneCounter++;
+//                    }
+//
+//                    String checklist1 = "" + isDoneCounter + "/" + allSubTasksCounter;
+//                    response.setChecklist(checklist1);
+//                }
+//            }
+//
+//            if (c.getEstimation() != null) {
+//                int period = Period.between(c.getEstimation().getStartDate(), c.getEstimation().getDueDate()).getDays();
+//                response.setPeriod("" + period + " days");
+//            }
+//        }
 
         return response;
     }
