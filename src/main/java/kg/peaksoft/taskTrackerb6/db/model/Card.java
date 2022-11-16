@@ -38,6 +38,9 @@ public class Card {
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private User creator;
 
+    @OneToOne
+    private User movedUser;
+
     @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private List<User> members;
 

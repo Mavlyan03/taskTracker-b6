@@ -7,11 +7,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import kg.peaksoft.taskTrackerb6.dto.request.ResetPasswordRequest;
-import kg.peaksoft.taskTrackerb6.dto.request.SearchRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SignInRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SignUpRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.AuthResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.SearchResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.ResetPasswordResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.db.model.User;
 import kg.peaksoft.taskTrackerb6.enums.Role;
@@ -32,10 +31,6 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 
 @Service
 @Transactional
@@ -49,13 +44,13 @@ public class UserService {
 
     public AuthResponse registration(SignUpRequest signUpRequest) {
 
-        if (repository.existsUserByEmail(signUpRequest.getEmail())) {
+        if (repository.existsByEmail(signUpRequest.getEmail())) {
             throw new BadRequestException("this email: " + signUpRequest.getEmail() + " is already in use!");
         }
 
         User user = convertToRegisterEntity(signUpRequest);
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
-        user.setRole(Role.ADMIN);
+        user.setRole(Role.USER);
         repository.save(user);
 
         String jwt = jwtUtil.generateToken(user.getEmail());
@@ -84,7 +79,7 @@ public class UserService {
 
     public AuthResponse login(SignInRequest signInRequest) {
 
-        User user = repository.findUserByEmail(signInRequest.getEmail()).orElseThrow(
+        User user = repository.findByEmail(signInRequest.getEmail()).orElseThrow(
                 () -> new NotFoundException("user with this email: " + signInRequest.getEmail() + " not found!"));
 
         if (signInRequest.getPassword().isBlank()) {
@@ -108,13 +103,13 @@ public class UserService {
     }
 
     public SimpleResponse forgotPassword(String email, String link) throws MessagingException {
-        User user = repository.findUserByEmail(email).orElseThrow(
+        User user = repository.findByEmail(email).orElseThrow(
                 () -> new NotFoundException("User with email: " + email + " not found!")
         );
 
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-        helper.setSubject("[task_tracker] reset password link");
+        helper.setSubject("[task_tracker] reset password link , user id: " + user);
         helper.setFrom("tasktracker.b6@gmail.com");
         helper.setTo(email);
         helper.setText(link + "/" + user.getId(), true);
@@ -122,13 +117,26 @@ public class UserService {
         return new SimpleResponse("email send", "OK");
     }
 
-    public SimpleResponse resetPassword(ResetPasswordRequest request) {
+    public ResetPasswordResponse resetPassword(ResetPasswordRequest request) {
         User user = repository.findById(request.getUserId()).orElseThrow(
                 () -> new NotFoundException("user with id: " + request.getUserId() + " not found")
         );
 
-        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-        return new SimpleResponse("password updated ", "OK");
+        String oldPassword = user.getPassword();
+        String newPassword = passwordEncoder.encode(request.getNewPassword());
+        if (!oldPassword.equals(newPassword)) {
+            user.setPassword(newPassword);
+        }
+        String jwt = jwtUtil.generateToken(user.getEmail());
+
+        return new ResetPasswordResponse(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getRole(),
+                jwt,
+                "Password updated!");
     }
 
     private User convertToRegisterEntity(SignUpRequest signUpRequest) {
@@ -143,7 +151,7 @@ public class UserService {
     public AuthResponse authWithGoogle(String tokenId) throws FirebaseAuthException {
         FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdToken(tokenId);
         User user;
-        if (!repository.existsUserByEmail(firebaseToken.getEmail())) {
+        if (!repository.existsByEmail(firebaseToken.getEmail())) {
             User newUser = new User();
             String[] name = firebaseToken.getName().split(" ");
             newUser.setFirstName(name[0]);
@@ -153,7 +161,7 @@ public class UserService {
             newUser.setRole(Role.ADMIN);
             user = repository.save(newUser);
         }
-        user = repository.findUserByEmail(firebaseToken.getEmail()).orElseThrow(
+        user = repository.findByEmail(firebaseToken.getEmail()).orElseThrow(
                 () -> new NotFoundException("user with this email not found!"));
         String token = jwtUtil.generateToken(user.getPassword());
         return new AuthResponse(
@@ -163,20 +171,5 @@ public class UserService {
                 user.getEmail(),
                 user.getRole(),
                 token);
-    }
-
-    public SearchResponse search(String text) {
-
-        User user = repository.globalSearch(text)
-                .orElseThrow(() -> new NotFoundException("User not found!")
-                );
-
-        repository.save(user);
-        return new SearchResponse(
-                user.getFirstName(),
-                user.getLastName(),
-                user.getEmail(),
-                user.getRole()
-        );
     }
 }
