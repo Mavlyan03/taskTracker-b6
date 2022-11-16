@@ -169,7 +169,7 @@ public class CardConverter {
             }
         }
 
-        response.setNumberOfCompletedSubTask(completedSubTasks + 1);
+        response.setNumberOfCompletedSubTask(completedSubTasks);
         return response;
     }
 

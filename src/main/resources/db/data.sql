@@ -17,8 +17,8 @@ values (1, 'First Board', 'board_photo', false, false,  1);
 insert into columns (id, title, is_archive, board_id)
 values (1, 'First Column', false, 1);
 
-insert into cards (id, title, description, is_archive, created_at, creator_id, board_id, column_id)
-values (1, 'First Card', 'First Description', false, '2022-10-31',  1, 1, 1);
+insert into cards (id, title, description, is_archive, created_at, creator_id, estimation_id, board_id, column_id)
+values (1, 'First Card', 'First Description', false, '2022-10-31',  1, 1, 1,  1);
 
 insert into checklists (id, title, count, card_id)
 values (1, 'First Checklist', 1, 1);

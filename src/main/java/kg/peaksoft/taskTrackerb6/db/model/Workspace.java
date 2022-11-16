@@ -56,4 +56,11 @@ public class Workspace {
         }
         userWorkSpaces.add(userWorkSpace);
     }
+
+    public void addCard(Card card) {
+        if (allIssues == null) {
+            allIssues = new ArrayList<>();
+        }
+        allIssues.add(card);
+    }
 }
