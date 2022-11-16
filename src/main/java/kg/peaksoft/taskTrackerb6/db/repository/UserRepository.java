@@ -25,10 +25,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("select u from User u where"
             + " upper(u.firstName) like concat('%',:text, '%')"
             + " or lower(u.firstName) like concat('%',:text, '%')"
+            + " or initcap(u.firstName) like concat('%',:text, '%')"
             + " or upper(u.lastName) like concat('%',:text, '%')"
             + " or lower(u.lastName) like concat('%',:text, '%')"
+            + " or initcap(u.lastName) like concat('%',:text, '%')"
             + " or u.email like :text "
     )
-    Optional<User> globalSearch(@Param("text") String text);
+    List<User> globalSearch(@Param("text") String text);
 }
 
