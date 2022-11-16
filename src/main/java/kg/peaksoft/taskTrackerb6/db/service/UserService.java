@@ -7,9 +7,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import kg.peaksoft.taskTrackerb6.dto.request.ResetPasswordRequest;
+import kg.peaksoft.taskTrackerb6.dto.request.SearchRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SignInRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SignUpRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.AuthResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.SearchResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.db.model.User;
 import kg.peaksoft.taskTrackerb6.enums.Role;
@@ -30,6 +32,10 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 @Service
 @Transactional
@@ -43,7 +49,7 @@ public class UserService {
 
     public AuthResponse registration(SignUpRequest signUpRequest) {
 
-        if (repository.existsByEmail(signUpRequest.getEmail())) {
+        if (repository.existsUserByEmail(signUpRequest.getEmail())) {
             throw new BadRequestException("this email: " + signUpRequest.getEmail() + " is already in use!");
         }
 
@@ -78,7 +84,7 @@ public class UserService {
 
     public AuthResponse login(SignInRequest signInRequest) {
 
-        User user = repository.findByEmail(signInRequest.getEmail()).orElseThrow(
+        User user = repository.findUserByEmail(signInRequest.getEmail()).orElseThrow(
                 () -> new NotFoundException("user with this email: " + signInRequest.getEmail() + " not found!"));
 
         if (signInRequest.getPassword().isBlank()) {
@@ -102,7 +108,7 @@ public class UserService {
     }
 
     public SimpleResponse forgotPassword(String email, String link) throws MessagingException {
-        User user = repository.findByEmail(email).orElseThrow(
+        User user = repository.findUserByEmail(email).orElseThrow(
                 () -> new NotFoundException("User with email: " + email + " not found!")
         );
 
@@ -137,7 +143,7 @@ public class UserService {
     public AuthResponse authWithGoogle(String tokenId) throws FirebaseAuthException {
         FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdToken(tokenId);
         User user;
-        if (!repository.existsByEmail(firebaseToken.getEmail())) {
+        if (!repository.existsUserByEmail(firebaseToken.getEmail())) {
             User newUser = new User();
             String[] name = firebaseToken.getName().split(" ");
             newUser.setFirstName(name[0]);
@@ -147,7 +153,7 @@ public class UserService {
             newUser.setRole(Role.ADMIN);
             user = repository.save(newUser);
         }
-        user = repository.findByEmail(firebaseToken.getEmail()).orElseThrow(
+        user = repository.findUserByEmail(firebaseToken.getEmail()).orElseThrow(
                 () -> new NotFoundException("user with this email not found!"));
         String token = jwtUtil.generateToken(user.getPassword());
         return new AuthResponse(
@@ -157,5 +163,20 @@ public class UserService {
                 user.getEmail(),
                 user.getRole(),
                 token);
+    }
+
+    public SearchResponse search(String text) {
+
+        User user = repository.globalSearch(text)
+                .orElseThrow(() -> new NotFoundException("User not found!")
+                );
+
+        repository.save(user);
+        return new SearchResponse(
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getRole()
+        );
     }
 }
