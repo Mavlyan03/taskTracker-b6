@@ -189,7 +189,8 @@ public class UserService {
         List<SearchResponse> searchResponses= new ArrayList<>();
         List<User> users = repository.globalSearch(text);
         for (User user : users) {
-            searchResponses.add(mapToSearchResponse(user));
+            searchResponses.add(mapToSearchResponse(user)
+            );
         }
         return searchResponses;
     }
