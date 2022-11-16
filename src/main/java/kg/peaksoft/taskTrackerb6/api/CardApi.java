@@ -2,12 +2,15 @@ package kg.peaksoft.taskTrackerb6.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import kg.peaksoft.taskTrackerb6.db.service.AllIssuesService;
 import kg.peaksoft.taskTrackerb6.db.service.CardService;
 import kg.peaksoft.taskTrackerb6.dto.request.CardRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.UpdateCardTitleRequest;
+import kg.peaksoft.taskTrackerb6.dto.response.AllIssuesResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.CardInnerPageResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.CardResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +25,7 @@ import java.util.List;
 public class CardApi {
 
     private final CardService cardService;
+    private final AllIssuesService allIssuesService;
 
     @Operation(summary = "Create card", description = "Create new card")
     @PostMapping
@@ -70,5 +74,11 @@ public class CardApi {
     public List<CardResponse> moveCard(@PathVariable Long cardId,
                                          @PathVariable Long columnId) {
         return cardService.moveCard(cardId, columnId);
+    }
+
+    @Operation(summary = "Get all workspace cards", description = "Get all workspace cards by workspace id")
+    @GetMapping("all-issues/{workspaceId}")
+    public List<AllIssuesResponse> allIssues(@PathVariable Long workspaceId) {
+        return allIssuesService.allIssues(workspaceId);
     }
 }
