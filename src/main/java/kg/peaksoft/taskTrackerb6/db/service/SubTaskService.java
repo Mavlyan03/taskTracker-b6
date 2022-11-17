@@ -67,6 +67,14 @@ public class SubTaskService {
         return convertToResponse(subTaskRepository.save(subTask));
     }
 
+    public SubTaskResponse updateDescription(Long id, SubTaskRequest request){
+        SubTask subTask = subTaskRepository.findById(id).orElseThrow(
+                ()-> new NotFoundException("SubTask with id: "+id+" not found!")
+        );
+        subTask.setDescription(request.getDescription());
+        return convertToResponse(subTaskRepository.save(subTask));
+    }
+
     private SubTaskResponse convertToResponse(SubTask subTask) {
 
         List<MemberResponse> memberResponses = new ArrayList<>();
