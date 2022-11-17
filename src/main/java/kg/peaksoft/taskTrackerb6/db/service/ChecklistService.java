@@ -50,9 +50,9 @@ public class ChecklistService {
         User authUser = getAuthenticateUser();
         Card card = cardRepository.findById(id).orElseThrow(() ->
                 new NoSuchElementException(Card.class, id));
-        Board board = boardRepository.findById(card.getBoard().getId()).orElseThrow(()->
+        Board board = boardRepository.findById(card.getBoard().getId()).orElseThrow(() ->
                 new NoSuchElementException(Board.class, id));
-        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(()->
+        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(() ->
                 new NoSuchElementException(Workspace.class, id));
 
         Checklist checklist = new Checklist();
@@ -92,15 +92,15 @@ public class ChecklistService {
     }
 
     public ChecklistResponse updateTitle(UpdateChecklistTitleRequest request) {
-        Checklist checklist = checklistRepository.findById(request.getChecklistId()).orElseThrow(()->
-                new NotFoundException("Checklist with id: "+request.getChecklistId()+" not found!"));
+        Checklist checklist = checklistRepository.findById(request.getChecklistId()).orElseThrow(() ->
+                new NotFoundException("Checklist with id: " + request.getChecklistId() + " not found!"));
         checklist.setTitle(request.getNewTitle());
         return convertToResponse(checklistRepository.save(checklist));
     }
 
     public SimpleResponse deleteChecklist(Long id) {
-        Checklist checklist = checklistRepository.findById(id).orElseThrow(()->
-                new NotFoundException("Checklist with id: "+id+" not found!"));
+        Checklist checklist = checklistRepository.findById(id).orElseThrow(() ->
+                new NotFoundException("Checklist with id: " + id + " not found!"));
         for (SubTask subTask : checklist.getSubTasks()) {
             subTask.setChecklist(null);
             subTask.setEstimation(null);
@@ -127,7 +127,7 @@ public class ChecklistService {
 
         int countOfSubTasks = 0;
         int countOfCompletedSubTask = 0;
-        if (allSubTasks != null){
+        if (allSubTasks != null) {
             for (SubTask subTask : allSubTasks) {
                 countOfSubTasks++;
                 if (subTask.getIsDone().equals(true)) {
@@ -200,12 +200,12 @@ public class ChecklistService {
     public User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String login = authentication.getName();
-        return userRepository.findUserByEmail(login).orElseThrow(()->
+        return userRepository.findUserByEmail(login).orElseThrow(() ->
                 new NotFoundException("User not found!"));
     }
 
     public User convertMemberToUser(MemberRequest request) {
-        return userRepository.findUserByEmail(request.getEmail()).orElseThrow(()->
+        return userRepository.findUserByEmail(request.getEmail()).orElseThrow(() ->
                 new NoSuchElementException("Email not found!"));
     }
 
