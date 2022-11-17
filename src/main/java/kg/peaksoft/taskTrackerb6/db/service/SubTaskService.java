@@ -9,6 +9,7 @@ import kg.peaksoft.taskTrackerb6.dto.request.MemberRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SubTaskRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.EstimationResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.MemberResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SubTaskResponse;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -69,10 +70,20 @@ public class SubTaskService {
 
     public SubTaskResponse updateDescription(Long id, SubTaskRequest request){
         SubTask subTask = subTaskRepository.findById(id).orElseThrow(
-                ()-> new NotFoundException("SubTask with id: "+id+" not found!")
+                ()-> new NotFoundException("Subtask with id: "+id+" not found!")
         );
         subTask.setDescription(request.getDescription());
         return convertToResponse(subTaskRepository.save(subTask));
+    }
+
+    public SimpleResponse deleteSubTask(Long id){
+        SubTask subTask = subTaskRepository.findById(id).orElseThrow(
+                ()-> new NotFoundException("Subtask with id: "+id+" not found!")
+        );
+        subTask.setEstimation(null);
+        subTask.setChecklist(null);
+        subTaskRepository.delete(subTask);
+        return new SimpleResponse("Subtask with id "+id+" successfully deleted", "DELETED");
     }
 
     private SubTaskResponse convertToResponse(SubTask subTask) {
