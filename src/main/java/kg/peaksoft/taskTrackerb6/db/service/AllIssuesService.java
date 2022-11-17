@@ -5,8 +5,7 @@ import kg.peaksoft.taskTrackerb6.db.repository.CardRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.LabelRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
-import kg.peaksoft.taskTrackerb6.dto.request.ColorRequest;
-import kg.peaksoft.taskTrackerb6.dto.response.AllIssuesCardsResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.SearchCard;
 import kg.peaksoft.taskTrackerb6.dto.response.AllIssuesResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.CardMemberResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.LabelResponse;
@@ -79,8 +78,8 @@ public class AllIssuesService {
         return response;
     }
 
-    public AllIssuesCardsResponse filterByCreatedDate(Long id, LocalDate fromDate, LocalDate to) {
-        AllIssuesCardsResponse response = new AllIssuesCardsResponse();
+    public SearchCard filterByCreatedDate(Long id, LocalDate fromDate, LocalDate to) {
+        SearchCard response = new SearchCard();
         if (fromDate != null && to != null) {
 
             if (fromDate.isAfter(to)) {

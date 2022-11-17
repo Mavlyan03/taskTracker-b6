@@ -3,7 +3,7 @@ package kg.peaksoft.taskTrackerb6.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.peaksoft.taskTrackerb6.db.service.AllIssuesService;
-import kg.peaksoft.taskTrackerb6.dto.response.AllIssuesCardsResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.SearchCard;
 import kg.peaksoft.taskTrackerb6.dto.response.AllIssuesResponse;
 import kg.peaksoft.taskTrackerb6.enums.LabelsColor;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +30,9 @@ public class AllIssuesApi {
 
     @Operation(summary = "Filter by created date", description = "Filter cards by created date")
     @GetMapping("dates/{id}")
-    public AllIssuesCardsResponse filterByCreatedDate(@PathVariable Long id,
-                                                      @RequestParam("fromDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
-                                                      @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+    public SearchCard filterByCreatedDate(@PathVariable Long id,
+                                          @RequestParam("fromDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+                                          @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
         return service.filterByCreatedDate(id, fromDate, to);
     }
 

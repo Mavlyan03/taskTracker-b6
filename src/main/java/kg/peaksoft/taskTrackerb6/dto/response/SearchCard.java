@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AllIssuesCardsResponse {
+public class SearchCard {
 
     private List<AllIssuesResponse> responses;
 }
