@@ -94,6 +94,14 @@ public class SubTaskService {
         return convertToResponse(subTaskRepository.save(subTask));
     }
 
+    public SubTaskResponse uncheck(Long subtaskId){
+        SubTask subTask = subTaskRepository.findById(subtaskId).orElseThrow(
+                ()-> new NotFoundException("Subtask with id: "+subtaskId+" not found!")
+        );
+        subTask.setIsDone(false);
+        return convertToResponse(subTaskRepository.save(subTask));
+    }
+
     private SubTaskResponse convertToResponse(SubTask subTask) {
 
         List<MemberResponse> memberResponses = new ArrayList<>();
