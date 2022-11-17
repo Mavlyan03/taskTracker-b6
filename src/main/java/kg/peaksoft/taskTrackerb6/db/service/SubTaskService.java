@@ -66,6 +66,16 @@ public class SubTaskService {
         return convertToResponse(subTaskRepository.save(subTask));
     }
 
+    private MemberResponse convertToMemberResponse(User user) {
+        return new MemberResponse(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getPhotoLink()
+        );
+    }
+
     public User getCurrentUser(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String login = authentication.getName();
