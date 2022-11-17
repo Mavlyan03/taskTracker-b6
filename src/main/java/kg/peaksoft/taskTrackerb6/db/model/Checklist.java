@@ -32,9 +32,8 @@ public class Checklist {
     @ManyToOne(cascade = {DETACH, MERGE, PERSIST, REFRESH})
     private Card card;
 
-    public Checklist(String title, int count) {
+    public Checklist(String title) {
         this.title = title;
-        this.count = count;
     }
 
     public void addSubTaskToChecklist(SubTask subTask) {

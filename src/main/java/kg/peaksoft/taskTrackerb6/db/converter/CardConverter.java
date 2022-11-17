@@ -2,6 +2,7 @@ package kg.peaksoft.taskTrackerb6.db.converter;
 
 import kg.peaksoft.taskTrackerb6.db.model.*;
 import kg.peaksoft.taskTrackerb6.db.repository.*;
+import kg.peaksoft.taskTrackerb6.db.service.ChecklistService;
 import kg.peaksoft.taskTrackerb6.dto.request.*;
 import kg.peaksoft.taskTrackerb6.dto.response.*;
 import kg.peaksoft.taskTrackerb6.enums.NotificationType;
@@ -26,8 +27,9 @@ public class CardConverter {
     private final LabelRepository labelRepository;
     private final EstimationRepository estimationRepository;
     private final WorkspaceRepository workspaceRepository;
-    private final SubTaskRepository subTaskRepository;
     private final CardRepository cardRepository;
+    private final ChecklistRepository checklistRepository;
+    private final ChecklistService checklistService;
     private final NotificationRepository notificationRepository;
 
     private User getAuthenticateUser() {
@@ -36,7 +38,6 @@ public class CardConverter {
         return userRepository.findByEmail(login).orElseThrow(() ->
                 new NotFoundException("User not found!"));
     }
-
 
     public Card convertToEntity(CardRequest request) {
         User user = getAuthenticateUser();
@@ -96,17 +97,40 @@ public class CardConverter {
         }
 
         for (ChecklistRequest c : request.getChecklistRequests()) {
-            Checklist checklist = new Checklist(c.getTitle(), c.getCount());
+            Checklist checklist = new Checklist(c.getTitle());
+
+            List<MemberResponse> members = new ArrayList<>();
+            for (UserWorkSpace u : workspace.getUserWorkSpaces()) {
+                if (!user.equals(u.getUser())){
+                    members.add(convertToMemberResponse(u.getUser()));
+                }
+            }
 
             for (SubTaskRequest s : c.getSubTaskRequests()) {
                 SubTask subTask = new SubTask(s.getDescription(), s.getIsDone());
+                for (MemberResponse memberResponse : members) {
+                    for (MemberRequest memberRequest : s.getMemberRequests()) {
+                        if (memberResponse.getEmail().equals(memberRequest.getEmail())){
+                            subTask.addMember(convertMemberToUser(memberRequest));
+                        }
+                    }
+                }
                 checklist.addSubTaskToChecklist(subTask);
                 subTask.setChecklist(checklist);
+                if (s.getEstimationRequest() != null){
+                    Estimation estimation1 = new Estimation();
+                        estimation1.setStartDate(s.getEstimationRequest().getStartDate());
+                        estimation1.setDueDate(s.getEstimationRequest().getDueDate());
+                        estimation1.setReminder(s.getEstimationRequest().getReminder());
+                        estimation1.setUser(user);
+                        estimation1.setStartTime(convertTimeToEntity(s.getEstimationRequest().getStartTime()));
+                        estimation1.setDeadlineTime(convertTimeToEntity(s.getEstimationRequest().getDeadlineTime()));
+                        subTask.setEstimation(estimation1);
+                        estimation1.setSubTask(subTask);
+                }
             }
-
             card.addChecklist(checklist);
             checklist.setCard(card);
-
         }
 
         for (CommentRequest commentRequest : request.getCommentRequests()) {
@@ -136,7 +160,7 @@ public class CardConverter {
             response.setMemberResponses(getAllCardMembers(card.getMembers()));
         }
 
-        response.setChecklistResponses(getChecklistResponses(card.getChecklists()));
+        response.setChecklistResponses(getChecklistResponses(checklistRepository.findAllChecklists(card.getId())));
         if (card.getComments() != null) {
             response.setCommentResponses(getCommentResponses(card.getComments()));
         }
@@ -155,8 +179,10 @@ public class CardConverter {
 
         response.setNumberOfMembers(card.getMembers().size());
         int subTask = 0;
-        for (Checklist checklist : card.getChecklists()) {
-            subTask = checklist.getSubTasks().size();
+        for (Checklist checklist : checklistRepository.findAllChecklists(card.getId())) {
+            for (int i = 0; i < checklist.getSubTasks().size(); i++) {
+            subTask++;
+            }
         }
 
         response.setNumberOfSubTasks(subTask);
@@ -169,17 +195,20 @@ public class CardConverter {
             }
         }
 
-        response.setNumberOfCompletedSubTask(completedSubTasks + 1);
+        response.setNumberOfCompletedSubTask(completedSubTasks);
         return response;
     }
 
     private List<CommentResponse> getCommentResponses(List<Comment> comments) {
         List<CommentResponse> commentResponses = new ArrayList<>();
-        for (Comment c : comments) {
-            commentResponses.add(convertCommentToResponse(c));
+        if (comments == null){
+            return commentResponses;
+        }else {
+            for (Comment c : comments) {
+                commentResponses.add(convertCommentToResponse(c));
+            }
+            return commentResponses;
         }
-
-        return commentResponses;
     }
 
     private CommentResponse convertCommentToResponse(Comment comment) {
@@ -191,17 +220,16 @@ public class CardConverter {
         return new CommentedUserResponse(user.getId(), user.getFirstName(), user.getLastName(), user.getPhotoLink());
     }
 
-    private ChecklistResponse convertChecklistToResponse(Checklist checklist) {
-        return new ChecklistResponse(checklist.getId(), checklist.getTitle(), checklist.getCount(), subTaskRepository.getSubTaskResponseByChecklistId(checklist.getId()));
-    }
-
     private List<ChecklistResponse> getChecklistResponses(List<Checklist> checklists) {
         List<ChecklistResponse> responses = new ArrayList<>();
-        for (Checklist c : checklists) {
-            responses.add(convertChecklistToResponse(c));
+        if (checklists == null){
+            return responses;
+        }else {
+            for (Checklist c : checklists) {
+                responses.add(checklistService.convertToResponse(c));
+            }
+            return responses;
         }
-
-        return responses;
     }
 
     private List<MemberResponse> getAllCardMembers(List<User> users) {
