@@ -24,8 +24,8 @@ values (1, 10, 20),
 insert into estimations (id, start_date, start_time_id, due_date, deadline_time_id, reminder, text, user_id)
 values (1, '2022-02-01', 1, '2022-12-12', 2, 5, 'First Text', 1);
 
-insert into cards (id, title, description, is_archive, created_at, creator_id, estimation_id, board_id, column_id)
-values (1, 'First Card', 'First Description', false, '2022-10-31',  1, 1, 1, 1);
+insert into cards (id, title, description, is_archive, created_at, creator_id, estimation_id, board_id, column_id, workspace_id)
+values (1, 'First Card', 'First Description', false, '2022-10-31',  1, 1, 1, 1, 1);
 
 insert into checklists (id, title, count, card_id)
 values (1, 'First Checklist', 1, 1);
@@ -54,9 +54,6 @@ values (1, 1);
 
 insert into user_workspace_roles (id, user_id, workspace_id, role)
 values (1, 1, 1, 'SUPER_ADMIN');
-
-insert into workspaces_all_issues (workspace_id, all_issues_id)
-values (1, 1);
 
 insert into cards_members (card_id, members_id)
 values (1, 1);

@@ -135,6 +135,7 @@ public class CardService {
         card.setCreator(user);
         card.setColumn(card.getColumn());
         card.setCreatedAt(LocalDate.now());
+        card.setWorkspace(workspace);
         workspace.addCard(card);
         return converter.convertToCardInnerPageResponse(cardRepository.save(card));
     }

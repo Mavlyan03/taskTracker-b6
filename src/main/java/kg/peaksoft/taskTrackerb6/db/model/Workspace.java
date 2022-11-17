@@ -26,7 +26,7 @@ public class Workspace {
 
     private Boolean isFavorite = false;
 
-    @ManyToMany(cascade = {ALL})
+    @OneToMany(cascade = {ALL}, mappedBy = "workspace")
     private List<Card> allIssues;
 
     @ManyToOne(cascade = {DETACH, MERGE, REFRESH})

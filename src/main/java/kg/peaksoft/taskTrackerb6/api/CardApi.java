@@ -6,11 +6,9 @@ import kg.peaksoft.taskTrackerb6.db.service.AllIssuesService;
 import kg.peaksoft.taskTrackerb6.db.service.CardService;
 import kg.peaksoft.taskTrackerb6.dto.request.CardRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.UpdateCardTitleRequest;
-import kg.peaksoft.taskTrackerb6.dto.response.AllIssuesResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.CardInnerPageResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.CardResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

@@ -12,7 +12,8 @@ import java.util.List;
 @Repository
 public interface CardRepository extends JpaRepository<Card, Long> {
 
-    @Query("select c from Card c where c.createdAt between :fromDate and :to")
-    List<Card> searchCardByCreatedAt(@Param("fromDate") LocalDate fromDate,
-                             @Param("to") LocalDate to);
+    @Query("select c from Card c where c.createdAt between :fromDate and :to and c.workspace.id = :id")
+    List<Card> searchCardByCreatedAt(Long id,
+                                     @Param("fromDate") LocalDate fromDate,
+                                     @Param("to") LocalDate to);
 }

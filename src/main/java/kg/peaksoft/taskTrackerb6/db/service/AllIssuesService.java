@@ -5,17 +5,15 @@ import kg.peaksoft.taskTrackerb6.db.repository.CardRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.LabelRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
-import kg.peaksoft.taskTrackerb6.dto.request.LabelColorRequest;
+import kg.peaksoft.taskTrackerb6.dto.request.ColorRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.AllIssuesCardsResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.AllIssuesResponse;
-import kg.peaksoft.taskTrackerb6.dto.request.CardDatesRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.CardMemberResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.LabelResponse;
 import kg.peaksoft.taskTrackerb6.enums.LabelsColor;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.dialect.pagination.LegacyLimitHandler;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -81,7 +79,7 @@ public class AllIssuesService {
         return response;
     }
 
-    public AllIssuesCardsResponse filterByCreatedDate(LocalDate fromDate, LocalDate to) {
+    public AllIssuesCardsResponse filterByCreatedDate(Long id, LocalDate fromDate, LocalDate to) {
         AllIssuesCardsResponse response = new AllIssuesCardsResponse();
         if (fromDate != null && to != null) {
 
@@ -89,7 +87,7 @@ public class AllIssuesService {
                 throw new BadCredentialException("Please make a valid request");
             }
 
-            response.setResponses(allIssuesResponsesList(cardRepository.searchCardByCreatedAt(fromDate, to)));
+            response.setResponses(allIssuesResponsesList(cardRepository.searchCardByCreatedAt(id, fromDate, to)));
         }
 
         return response;
@@ -104,19 +102,14 @@ public class AllIssuesService {
         return responses;
     }
 
-    public List<AllIssuesResponse> filterByLabelColor(LabelColorRequest request) {
-        Workspace workspace = workspaceRepository.findById(request.getWorkspaceId()).get();
+    public List<AllIssuesResponse> filterByLabelColor(Long id, List<LabelsColor> colors) {
+        Workspace workspace = workspaceRepository.findById(id).get();
         List<Card> workspaceCards = workspace.getAllIssues();
         List<AllIssuesResponse> allIssues = new ArrayList<>();
-        System.out.println("Before 1 for");
         for (Card card : workspaceCards) {
-            System.out.println("After 1 for");
             for (Label label : card.getLabels()) {
-                System.out.println("After 2 for");
-                for (LabelsColor color : request.getColors()) {
-                    System.out.println("After 3 for");
+                for (LabelsColor color : colors) {
                     if (color.equals(label.getColor())) {
-                        System.out.println("In if block");
                         allIssues.add(convertToResponse(card));
                     }
                 }
