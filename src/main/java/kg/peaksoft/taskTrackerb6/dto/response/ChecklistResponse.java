@@ -13,6 +13,8 @@ public class ChecklistResponse {
 
     private Long id;
     private String title;
+    private int countOfCompletedSubTask;
+    private int countOfSubTasks;
     private int count;
     private List<SubTaskResponse> subTaskResponses;
 }

@@ -14,11 +14,11 @@ import javax.transaction.Transactional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserDetailsService {
 
-    private final UserRepository repository;
+    private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return repository.findByEmail(email).orElseThrow(
+        return userRepository.findUserByEmail(email).orElseThrow(
                 () -> new UsernameNotFoundException("user with email: " + email +" not found")
         );
     }

@@ -40,13 +40,22 @@ public class WorkspaceService {
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String login = authentication.getName();
-        return userRepository.findByEmail(login).orElseThrow(() ->
+        return userRepository.findUserByEmail(login).orElseThrow(() ->
                 new NotFoundException("User not found!"));
     }
 
     public WorkspaceResponse createWorkspace(WorkspaceRequest workspaceRequest) throws MessagingException {
         User user = getAuthenticateUser();
         Workspace workspace = convertToEntity(workspaceRequest);
+
+        for (String email : workspaceRequest.getEmails()) {
+            boolean exists = userRepository.existsUserByEmail(email);
+            if (!exists) {
+                inviteMember(email, workspaceRequest.getLink());
+            }
+            inviteMember(email, workspaceRequest.getLink());
+        }
+
         UserWorkSpace userWorkSpace = new UserWorkSpace();
         userWorkSpace.setUser(user);
         userWorkSpace.setWorkspace(workspace);

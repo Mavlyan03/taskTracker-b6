@@ -76,7 +76,7 @@ public class AdminService {
     private User getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String login = authentication.getName();
-        return userRepository.findByEmail(login).orElseThrow(() ->
+        return userRepository.findUserByEmail(login).orElseThrow(() ->
                 new NotFoundException("User not found!"));
     }
 }
