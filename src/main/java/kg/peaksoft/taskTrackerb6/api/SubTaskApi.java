@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.peaksoft.taskTrackerb6.db.service.SubTaskService;
 import kg.peaksoft.taskTrackerb6.dto.request.SubTaskRequest;
+import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SubTaskResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -29,5 +30,11 @@ public class SubTaskApi {
     public SubTaskResponse updateDescription(@PathVariable Long subtaskId,
                                              @RequestBody SubTaskRequest request){
         return subTaskService.updateDescription(subtaskId, request);
+    }
+
+    @Operation(summary = "Delete subtask", description = "Delete subtask by id")
+    @DeleteMapping("{id}")
+    public SimpleResponse deleteSubTask(@PathVariable Long id){
+        return subTaskService.deleteSubTask(id);
     }
 }
