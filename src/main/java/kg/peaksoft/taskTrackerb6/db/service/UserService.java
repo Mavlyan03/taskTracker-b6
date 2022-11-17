@@ -6,19 +6,20 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
+import kg.peaksoft.taskTrackerb6.config.security.JWTUtil;
+import kg.peaksoft.taskTrackerb6.db.model.User;
+import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import kg.peaksoft.taskTrackerb6.dto.request.ResetPasswordRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SignInRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SignUpRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.AuthResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.ResetPasswordResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.SearchResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
-import kg.peaksoft.taskTrackerb6.db.model.User;
 import kg.peaksoft.taskTrackerb6.enums.Role;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.BadRequestException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
-import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
-import kg.peaksoft.taskTrackerb6.config.security.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -31,6 +32,8 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional
@@ -44,7 +47,7 @@ public class UserService {
 
     public AuthResponse registration(SignUpRequest signUpRequest) {
 
-        if (repository.existsByEmail(signUpRequest.getEmail())) {
+        if (repository.existsUserByEmail(signUpRequest.getEmail())) {
             throw new BadRequestException("this email: " + signUpRequest.getEmail() + " is already in use!");
         }
 
@@ -79,7 +82,7 @@ public class UserService {
 
     public AuthResponse login(SignInRequest signInRequest) {
 
-        User user = repository.findByEmail(signInRequest.getEmail()).orElseThrow(
+        User user = repository.findUserByEmail(signInRequest.getEmail()).orElseThrow(
                 () -> new NotFoundException("user with this email: " + signInRequest.getEmail() + " not found!"));
 
         if (signInRequest.getPassword().isBlank()) {
@@ -103,7 +106,7 @@ public class UserService {
     }
 
     public SimpleResponse forgotPassword(String email, String link) throws MessagingException {
-        User user = repository.findByEmail(email).orElseThrow(
+        User user = repository.findUserByEmail(email).orElseThrow(
                 () -> new NotFoundException("User with email: " + email + " not found!")
         );
 
@@ -151,7 +154,7 @@ public class UserService {
     public AuthResponse authWithGoogle(String tokenId) throws FirebaseAuthException {
         FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdToken(tokenId);
         User user;
-        if (!repository.existsByEmail(firebaseToken.getEmail())) {
+        if (!repository.existsUserByEmail(firebaseToken.getEmail())) {
             User newUser = new User();
             String[] name = firebaseToken.getName().split(" ");
             newUser.setFirstName(name[0]);
@@ -161,9 +164,9 @@ public class UserService {
             newUser.setRole(Role.ADMIN);
             user = repository.save(newUser);
         }
-        user = repository.findByEmail(firebaseToken.getEmail()).orElseThrow(
+        user = repository.findUserByEmail(firebaseToken.getEmail()).orElseThrow(
                 () -> new NotFoundException("user with this email not found!"));
-        String token = jwtUtil.generateToken(user.getPassword());
+        String token = jwtUtil.generateToken(user.getEmail());
         return new AuthResponse(
                 user.getId(),
                 user.getFirstName(),
@@ -171,5 +174,23 @@ public class UserService {
                 user.getEmail(),
                 user.getRole(),
                 token);
+    }
+
+    private SearchResponse mapToSearchResponse(User user) {
+        return new SearchResponse(
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail()
+        );
+    }
+
+    public List<SearchResponse> globalSearch(String text) {
+        List<SearchResponse> searchResponses= new ArrayList<>();
+        List<User> users = repository.globalSearch(text);
+        for (User user : users) {
+            searchResponses.add(mapToSearchResponse(user)
+            );
+        }
+        return searchResponses;
     }
 }

@@ -40,7 +40,7 @@ public class WorkspaceService {
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String login = authentication.getName();
-        return userRepository.findByEmail(login).orElseThrow(() ->
+        return userRepository.findUserByEmail(login).orElseThrow(() ->
                 new NotFoundException("User not found!"));
     }
 
@@ -49,7 +49,7 @@ public class WorkspaceService {
         Workspace workspace = convertToEntity(workspaceRequest);
 
         for (String email : workspaceRequest.getEmails()) {
-            boolean exists = userRepository.existsByEmail(email);
+            boolean exists = userRepository.existsUserByEmail(email);
             if (!exists) {
                 inviteMember(email, workspaceRequest.getLink());
             }
