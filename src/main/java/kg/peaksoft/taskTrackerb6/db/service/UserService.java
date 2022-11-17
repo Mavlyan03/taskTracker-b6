@@ -166,7 +166,7 @@ public class UserService {
         }
         user = repository.findUserByEmail(firebaseToken.getEmail()).orElseThrow(
                 () -> new NotFoundException("user with this email not found!"));
-        String token = jwtUtil.generateToken(user.getPassword());
+        String token = jwtUtil.generateToken(user.getEmail());
         return new AuthResponse(
                 user.getId(),
                 user.getFirstName(),
