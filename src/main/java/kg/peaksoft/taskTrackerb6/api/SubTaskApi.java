@@ -37,4 +37,11 @@ public class SubTaskApi {
     public SimpleResponse deleteSubTask(@PathVariable Long id){
         return subTaskService.deleteSubTask(id);
     }
+
+    @Operation(summary = "Complete", description = "Add this subtask to completed")
+    @PutMapping("complete/{id}")
+    public SubTaskResponse addToCompleted(@PathVariable Long id){
+        return subTaskService.addToCompleted(id);
+    }
+
 }
