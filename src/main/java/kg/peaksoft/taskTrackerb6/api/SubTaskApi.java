@@ -44,4 +44,9 @@ public class SubTaskApi {
         return subTaskService.addToCompleted(id);
     }
 
+    @Operation(summary = "Uncheck", description = "Uncheck the task")
+    @PutMapping("subtask/{id}")
+    public SubTaskResponse uncheck(@PathVariable Long id){
+        return subTaskService.uncheck(id);
+    }
 }
