@@ -25,6 +25,7 @@ import kg.peaksoft.taskTrackerb6.dto.response.MemberResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.MyTimeClassResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SubTaskResponse;
+import kg.peaksoft.taskTrackerb6.exceptions.NoSuchElementException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -33,7 +34,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
+
 
 @Service
 @RequiredArgsConstructor
@@ -47,11 +48,12 @@ public class ChecklistService {
 
     public ChecklistResponse createChecklist(Long id, ChecklistRequest request) {
         User authUser = getAuthenticateUser();
-        Card card = cardRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Card with id: " + id + " not found!")
-        );
-        Board board = boardRepository.findById(card.getBoard().getId()).get();
-        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).get();
+        Card card = cardRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException(Card.class, id));
+        Board board = boardRepository.findById(card.getBoard().getId()).orElseThrow(()->
+                new NoSuchElementException(Board.class, id));
+        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(()->
+                new NoSuchElementException(Workspace.class, id));
 
         Checklist checklist = new Checklist();
         checklist.setTitle(request.getTitle());
