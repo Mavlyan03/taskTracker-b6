@@ -180,8 +180,7 @@ public class UserService {
         return new SearchResponse(
                 user.getFirstName(),
                 user.getLastName(),
-                user.getEmail(),
-                user.getRole()
+                user.getEmail()
         );
     }
 

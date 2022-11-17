@@ -58,8 +58,8 @@ public class AuthApi {
         return userService.authWithGoogle(token);
     }
 
-    @Operation(summary = "Search users", description = "Search users by first/last name & e-mail")
-    @GetMapping("text")
+    @Operation(summary = "Global search", description = "Search by user e-mail, first and last name")
+    @GetMapping("search")
     public List<SearchResponse> globalSearch(@RequestParam String text) {
         return userService.globalSearch(text);
     }
