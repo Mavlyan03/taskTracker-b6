@@ -11,6 +11,7 @@ import kg.peaksoft.taskTrackerb6.dto.response.EstimationResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.MemberResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SubTaskResponse;
+import kg.peaksoft.taskTrackerb6.exceptions.NoSuchElementException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -30,13 +31,13 @@ public class SubTaskService {
     private final ChecklistService checklistService;
     private final SubTaskRepository subTaskRepository;
 
-    public SubTaskResponse createSubTask(Long id, SubTaskRequest request){
+    public SubTaskResponse createSubTask(Long id, SubTaskRequest request) {
 
         User currentUser = getCurrentUser();
-        Checklist checklist = checklistRepository.findById(id).orElseThrow(
-                ()-> new NotFoundException("Checklist with id: "+id+" not found!")
-        );
-        Workspace workspace = workspaceRepository.findById(checklist.getCard().getBoard().getWorkspace().getId()).get();
+        Checklist checklist = checklistRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException(Checklist.class, id));
+        Workspace workspace = workspaceRepository.findById(checklist.getCard().getBoard().getWorkspace().getId()).orElseThrow(() ->
+                new NoSuchElementException(Workspace.class, id));
 
         SubTask subTask = new SubTask();
         subTask.setIsDone(request.getIsDone());
@@ -47,12 +48,12 @@ public class SubTaskService {
         }
         for (MemberResponse memberResponse : memberResponses) {
             for (MemberRequest memberRequest : request.getMemberRequests()) {
-                if (memberResponse.getEmail().equals(memberRequest.getEmail())){
+                if (memberResponse.getEmail().equals(memberRequest.getEmail())) {
                     subTask.addMember(checklistService.convertMemberToUser(memberRequest));
                 }
             }
         }
-        if (request.getEstimationRequest() != null){
+        if (request.getEstimationRequest() != null) {
             Estimation estimation = new Estimation();
             estimation.setStartDate(request.getEstimationRequest().getStartDate());
             estimation.setDueDate(request.getEstimationRequest().getDueDate());
@@ -68,36 +69,32 @@ public class SubTaskService {
         return convertToResponse(subTaskRepository.save(subTask));
     }
 
-    public SubTaskResponse updateDescription(Long id, SubTaskRequest request){
-        SubTask subTask = subTaskRepository.findById(id).orElseThrow(
-                ()-> new NotFoundException("Subtask with id: "+id+" not found!")
-        );
+    public SubTaskResponse updateDescription(Long id, SubTaskRequest request) {
+        SubTask subTask = subTaskRepository.findById(id).orElseThrow(() ->
+                new NotFoundException("Subtask with id: " + id + " not found!"));
         subTask.setDescription(request.getDescription());
         return convertToResponse(subTaskRepository.save(subTask));
     }
 
-    public SimpleResponse deleteSubTask(Long id){
-        SubTask subTask = subTaskRepository.findById(id).orElseThrow(
-                ()-> new NotFoundException("Subtask with id: "+id+" not found!")
-        );
+    public SimpleResponse deleteSubTask(Long id) {
+        SubTask subTask = subTaskRepository.findById(id).orElseThrow(() ->
+                new NotFoundException("Subtask with id: " + id + " not found!"));
         subTask.setEstimation(null);
         subTask.setChecklist(null);
         subTaskRepository.delete(subTask);
-        return new SimpleResponse("Subtask with id "+id+" successfully deleted", "DELETED");
+        return new SimpleResponse("Subtask with id " + id + " successfully deleted", "DELETED");
     }
 
-    public SubTaskResponse addToCompleted(Long subtaskId){
-        SubTask subTask = subTaskRepository.findById(subtaskId).orElseThrow(
-                ()-> new NotFoundException("Subtask with id: "+subtaskId+" not found!")
-        );
+    public SubTaskResponse addToCompleted(Long subtaskId) {
+        SubTask subTask = subTaskRepository.findById(subtaskId).orElseThrow(() ->
+                new NotFoundException("Subtask with id: " + subtaskId + " not found!"));
         subTask.setIsDone(true);
         return convertToResponse(subTaskRepository.save(subTask));
     }
 
-    public SubTaskResponse uncheck(Long subtaskId){
-        SubTask subTask = subTaskRepository.findById(subtaskId).orElseThrow(
-                ()-> new NotFoundException("Subtask with id: "+subtaskId+" not found!")
-        );
+    public SubTaskResponse uncheck(Long subtaskId) {
+        SubTask subTask = subTaskRepository.findById(subtaskId).orElseThrow(() ->
+                new NotFoundException("Subtask with id: " + subtaskId + " not found!"));
         subTask.setIsDone(false);
         return convertToResponse(subTaskRepository.save(subTask));
     }
@@ -106,31 +103,31 @@ public class SubTaskService {
 
         List<MemberResponse> memberResponses = new ArrayList<>();
         EstimationResponse estimationResponse = new EstimationResponse();
-        if (subTask.getWorkspacesUsers() == null){
-            if (subTask.getEstimation() == null){
+        if (subTask.getWorkspacesUsers() == null) {
+            if (subTask.getEstimation() == null) {
                 return new SubTaskResponse(subTask.getId(), subTask.getDescription(), subTask.getIsDone(), memberResponses, estimationResponse);
-            }else {
+            } else {
                 return new SubTaskResponse(subTask.getId(), subTask.getDescription(), subTask.getIsDone(), memberResponses,
                         new EstimationResponse(subTask.getEstimation().getId(),
-                                               subTask.getEstimation().getStartDate(),
-                                               checklistService.convertStartTimeToResponse(subTask.getEstimation().getStartTime()),
-                                               subTask.getEstimation().getDueDate(),
-                                               checklistService.convertStartTimeToResponse(subTask.getEstimation().getDeadlineTime()),
-                                               subTask.getEstimation().getReminder()));
+                                subTask.getEstimation().getStartDate(),
+                                checklistService.convertStartTimeToResponse(subTask.getEstimation().getStartTime()),
+                                subTask.getEstimation().getDueDate(),
+                                checklistService.convertStartTimeToResponse(subTask.getEstimation().getDeadlineTime()),
+                                subTask.getEstimation().getReminder()));
             }
-        }else {
+        } else {
             for (User user : subTask.getWorkspacesUsers()) {
                 memberResponses.add(convertToMemberResponse(user));
             }
-            if (subTask.getEstimation() != null){
+            if (subTask.getEstimation() != null) {
                 return new SubTaskResponse(subTask.getId(), subTask.getDescription(), subTask.getIsDone(), memberResponses,
                         new EstimationResponse(subTask.getEstimation().getId(),
-                                               subTask.getEstimation().getStartDate(),
-                                               checklistService.convertStartTimeToResponse(subTask.getEstimation().getStartTime()),
-                                               subTask.getEstimation().getDueDate(),
-                                               checklistService.convertStartTimeToResponse(subTask.getEstimation().getDeadlineTime()),
-                                               subTask.getEstimation().getReminder()));
-            }else {
+                                subTask.getEstimation().getStartDate(),
+                                checklistService.convertStartTimeToResponse(subTask.getEstimation().getStartTime()),
+                                subTask.getEstimation().getDueDate(),
+                                checklistService.convertStartTimeToResponse(subTask.getEstimation().getDeadlineTime()),
+                                subTask.getEstimation().getReminder()));
+            } else {
                 return new SubTaskResponse(subTask.getId(), subTask.getDescription(), subTask.getIsDone(), memberResponses, estimationResponse);
             }
         }
@@ -146,11 +143,11 @@ public class SubTaskService {
         );
     }
 
-    public User getCurrentUser(){
+    public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String login = authentication.getName();
-        return userRepository.findUserByEmail(login).orElseThrow(
-                ()-> new NotFoundException("User not found!")
-        );
+        return userRepository.findUserByEmail(login).orElseThrow(() ->
+                new NotFoundException("User not found!"));
     }
+
 }
