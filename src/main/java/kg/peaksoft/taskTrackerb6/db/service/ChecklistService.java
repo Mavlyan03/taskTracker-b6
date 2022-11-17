@@ -179,13 +179,13 @@ public class ChecklistService {
     public User getAuthenticateUser(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String login = authentication.getName();
-        return userRepository.findByEmail(login).orElseThrow(
+        return userRepository.findUserByEmail(login).orElseThrow(
                 ()-> new NotFoundException("User not found!")
         );
     }
 
     public User convertMemberToUser(MemberRequest memberRequest){
-        return userRepository.findByEmail(memberRequest.getEmail()).get();
+        return userRepository.findUserByEmail(memberRequest.getEmail()).get();
     }
 
     public MyTimeClass convertTimeToEntity(MyTimeClassRequest request){

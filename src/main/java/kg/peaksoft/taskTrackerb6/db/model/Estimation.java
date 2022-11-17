@@ -37,9 +37,6 @@ public class Estimation {
     @Column(length = 10000)
     private String text;
 
-//    @OneToOne(cascade = {DETACH, REFRESH, PERSIST, MERGE})
-//    private Card card;
-
     @OneToOne(cascade = {DETACH, REFRESH, PERSIST, MERGE})
     private SubTask subTask;
 
