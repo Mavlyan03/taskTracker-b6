@@ -86,6 +86,14 @@ public class SubTaskService {
         return new SimpleResponse("Subtask with id "+id+" successfully deleted", "DELETED");
     }
 
+    public SubTaskResponse addToCompleted(Long subtaskId){
+        SubTask subTask = subTaskRepository.findById(subtaskId).orElseThrow(
+                ()-> new NotFoundException("Subtask with id: "+subtaskId+" not found!")
+        );
+        subTask.setIsDone(true);
+        return convertToResponse(subTaskRepository.save(subTask));
+    }
+
     private SubTaskResponse convertToResponse(SubTask subTask) {
 
         List<MemberResponse> memberResponses = new ArrayList<>();
