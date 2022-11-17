@@ -23,4 +23,11 @@ public class SubTaskApi {
                                          @RequestBody SubTaskRequest request){
         return subTaskService.createSubTask(id, request);
     }
+
+    @Operation(summary = "Update subtask description", description = "Update subtask description by id")
+    @PutMapping("{subtaskId}")
+    public SubTaskResponse updateDescription(@PathVariable Long subtaskId,
+                                             @RequestBody SubTaskRequest request){
+        return subTaskService.updateDescription(subtaskId, request);
+    }
 }
