@@ -75,10 +75,4 @@ public class CardApi {
                                          @PathVariable Long columnId) {
         return cardService.moveCard(cardId, columnId);
     }
-
-    @Operation(summary = "Get all workspace cards", description = "Get all workspace cards by workspace id")
-    @GetMapping("all-issues/{workspaceId}")
-    public List<AllIssuesResponse> allIssues(@PathVariable Long workspaceId) {
-        return allIssuesService.allIssues(workspaceId);
-    }
 }
