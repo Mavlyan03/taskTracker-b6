@@ -47,15 +47,6 @@ public class WorkspaceService {
     public WorkspaceResponse createWorkspace(WorkspaceRequest workspaceRequest) throws MessagingException {
         User user = getAuthenticateUser();
         Workspace workspace = convertToEntity(workspaceRequest);
-
-        for (String email : workspaceRequest.getEmails()) {
-            boolean exists = userRepository.existsUserByEmail(email);
-            if (!exists) {
-                inviteMember(email, workspaceRequest.getLink());
-            }
-            inviteMember(email, workspaceRequest.getLink());
-        }
-
         UserWorkSpace userWorkSpace = new UserWorkSpace();
         userWorkSpace.setUser(user);
         userWorkSpace.setWorkspace(workspace);
@@ -136,6 +127,7 @@ public class WorkspaceService {
         for (Workspace workspace : workspaces) {
             favoriteWorkspaces.add(convertToFavoriteWorkspaceResponse(workspace));
         }
+
         return favoriteWorkspaces;
     }
 
@@ -146,6 +138,7 @@ public class WorkspaceService {
         for (Board board : boards) {
             favoriteBoards.add(convertToFavoriteBoardResponse(board));
         }
+
         return favoriteBoards;
     }
 
@@ -159,7 +152,7 @@ public class WorkspaceService {
 
         } else {
             for (String email : request.getEmails()) {
-                boolean exists = userRepository.existsByEmail(email);
+                boolean exists = userRepository.existsUserByEmail(email);
                 if (!exists) {
                     MimeMessage mimeMessage = mailSender.createMimeMessage();
                     MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
