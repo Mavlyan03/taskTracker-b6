@@ -1,6 +1,11 @@
 package kg.peaksoft.taskTrackerb6.db.service;
 
-import kg.peaksoft.taskTrackerb6.db.model.*;
+import kg.peaksoft.taskTrackerb6.db.model.Checklist;
+import kg.peaksoft.taskTrackerb6.db.model.Estimation;
+import kg.peaksoft.taskTrackerb6.db.model.SubTask;
+import kg.peaksoft.taskTrackerb6.db.model.User;
+import kg.peaksoft.taskTrackerb6.db.model.UserWorkSpace;
+import kg.peaksoft.taskTrackerb6.db.model.Workspace;
 import kg.peaksoft.taskTrackerb6.db.repository.ChecklistRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.SubTaskRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
@@ -12,7 +17,6 @@ import kg.peaksoft.taskTrackerb6.dto.response.MemberResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SubTaskResponse;
 import kg.peaksoft.taskTrackerb6.exceptions.NoSuchElementException;
-import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -100,7 +104,6 @@ public class SubTaskService {
     }
 
     private SubTaskResponse convertToResponse(SubTask subTask) {
-
         List<MemberResponse> memberResponses = new ArrayList<>();
         EstimationResponse estimationResponse = new EstimationResponse();
         if (subTask.getWorkspacesUsers() == null) {
@@ -139,7 +142,7 @@ public class SubTaskService {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
-                user.getPhotoLink()
+                user.getImage()
         );
     }
 
