@@ -13,6 +13,7 @@ import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 @Transactional
 @RequiredArgsConstructor
 public class ParticipantService {
@@ -39,8 +41,12 @@ public class ParticipantService {
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String login = authentication.getName();
-        return userRepository.findByEmail(login).orElseThrow(() ->
-                new NotFoundException("User not found!"));
+        return userRepository.findByEmail(login).orElseThrow(() -> {
+
+            log.error("User not found!");
+
+              throw  new NotFoundException("User not found!");
+        });
     }
 
     public ParticipantResponse mapToResponse(User user) {
@@ -56,11 +62,19 @@ public class ParticipantService {
         User killer = getAuthenticateUser();
 
         Workspace workspace = workspaceRepository.findById(workspaceId).orElseThrow(
-                () -> new NotFoundException(" workspace with this id" + workspaceId + "not found")
+                () -> {
+                    log.error(" workspace with this id" + workspaceId + "not found");
+
+                    throw new NotFoundException(" workspace with this id" + workspaceId + "not found");
+                }
         );
 
         User corpse = userRepository.findById(userId).orElseThrow(
-                () -> new NotFoundException("User with this id " + userId + " not found")
+                () -> {
+                    log.error("User with this id " + userId + " not found");
+
+                  throw   new NotFoundException("User with this id " + userId + " not found");
+                }
         );
 
         if (corpse.equals(killer)) {
@@ -99,7 +113,11 @@ public class ParticipantService {
 
     public List<ParticipantResponse> getAllParticipantFromWorkspace(Long workspaceId) {
         Workspace workspace = workspaceRepository.findById(workspaceId).orElseThrow(
-                () -> new NotFoundException("Workspace with id " + workspaceId + " not found")
+                () -> {
+                    log.error("Workspace with id " + workspaceId + " not found");
+
+                    throw new NotFoundException("Workspace with id " + workspaceId + " not found");
+                }
         );
 
         List<User> members = new ArrayList<>();

@@ -11,6 +11,7 @@ import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -20,6 +21,7 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class BoardService {
 
     private final BoardRepository boardRepository;
@@ -28,7 +30,10 @@ public class BoardService {
     public BoardResponse createBoard(BoardRequest boardRequest) {
         Board board = new Board(boardRequest);
         Workspace workspace = workspaceRepository.findById(boardRequest.getWorkspaceId()).orElseThrow(
-                () -> new NotFoundException("Workspace with id: " + boardRequest.getWorkspaceId() + " not found!")
+                () -> {
+                    log.error("Workspace with id:{} not found",boardRequest.getWorkspaceId());
+                    throw new NotFoundException("Workspace with id: " + boardRequest.getWorkspaceId() + " not found!");
+                }
         );
 
         workspace.addBoard(board);
@@ -42,7 +47,11 @@ public class BoardService {
 
     public SimpleResponse deleteBoardById(Long id, Board board) {
         Board board1 = boardRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("board with id: " + id + " not found!")
+                () -> {
+                    log.error("board with id: " + id + " not found!");
+
+                    throw new NotFoundException("board with id: " + id + " not found!");
+                }
         );
 
         if (board1.getIsArchive().equals(board.getIsArchive())) {
@@ -56,7 +65,10 @@ public class BoardService {
 
     public BoardResponse makeFavorite(Long id) {
         Board board = boardRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("Board with id %s not found", id))
+                () -> {
+                    log.error("Board with id %s not found", id);
+                    throw new NotFoundException(String.format("Board with id %s not found", id));
+                }
         );
 
         board.setIsFavorite(!board.getIsFavorite());
@@ -69,7 +81,11 @@ public class BoardService {
 
     public BoardResponse changeBackground(Long id, BoardRequest boardRequest) {
         Board board = boardRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("Board with %s id not found", id))
+                () -> {
+                    log.error("Board with %s id not found", id);
+
+                 throw  new NotFoundException(String.format("Board with %s id not found", id));
+                }
         );
 
         board.setBackground(boardRequest.getBackground());
@@ -84,7 +100,10 @@ public class BoardService {
 
     public BoardResponse updateTitle(Long id, BoardRequest boardRequest) {
         Board board = boardRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("Board with %s id not found", id))
+                () -> {
+                    log.error("Board with %s id not found", id);
+                    throw new NotFoundException(String.format("Board with %s id not found", id));
+                }
         );
 
         board.setTitle(boardRequest.getTitle());
@@ -99,7 +118,10 @@ public class BoardService {
 
     public BoardResponse getBoardById(Long id) {
         Board board = boardRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Board with id: " + id + " not found!")
+                () -> {
+                    log.error("Board with id: " + id + " not found!");
+                    throw new NotFoundException("Board with id: " + id + " not found!");
+                }
         );
 
         return new BoardResponse(
@@ -131,7 +153,11 @@ public class BoardService {
 
     public BoardResponse sendToArchive(Long id) {
         Board board = boardRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("Board with id %s not found", id))
+                () -> {
+                    log.error("Board with id %s not found", id);
+
+                    throw new NotFoundException(String.format("Board with id %s not found", id));
+                }
         );
 
         board.setIsArchive(!board.getIsArchive());

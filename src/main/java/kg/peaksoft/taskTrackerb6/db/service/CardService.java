@@ -8,6 +8,7 @@ import kg.peaksoft.taskTrackerb6.dto.response.*;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 @Transactional
 @RequiredArgsConstructor
 public class CardService {
@@ -31,29 +33,43 @@ public class CardService {
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String login = authentication.getName();
-        return userRepository.findByEmail(login).orElseThrow(() ->
-                new NotFoundException("User not found!"));
+        return userRepository.findByEmail(login).orElseThrow(() -> {
+            log.error("User not found!");
+
+
+            throw new NotFoundException("User not found!");
+
+        });
     }
 
 
     public SimpleResponse deleteCard(Long id) {
         User user = getAuthenticateUser();
         Card card = cardRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Card with id: " + id + " not found!")
+                () -> {log.error("Card with id: " + id + " not found!");
+
+                    throw new NotFoundException("Card with id: " + id + " not found!");
+                }
         );
 
         if (!user.equals(card.getCreator())) {
+            log.error("You can not delete this card!");
             throw new BadCredentialException("You can not delete this card!");
         }
 
         cardRepository.delete(card);
+        log.info("Card with id: " + id + " successfully deleted", "DELETE");
         return new SimpleResponse("Card with id: " + id + " successfully deleted", "DELETE");
     }
 
 
     public CardInnerPageResponse getCard(Long id) {
         Card card = cardRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Card with id: " + id + " not found!")
+                () -> {
+                    log.error("Card with id: " + id + " not found!");
+
+                    throw new NotFoundException("Card with id: " + id + " not found!");
+                }
         );
 
         return converter.convertToCardInnerPageResponse(card);
@@ -62,7 +78,11 @@ public class CardService {
 
     public List<CardResponse> getAllCardsByColumnId(Long id) {
         Column column = columnRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Column with id: " + id + " not found!")
+                () -> {
+                    log.error("Column with id: " + id + " not found!");
+
+                    throw new NotFoundException("Column with id: " + id + " not found!");
+                }
         );
 
         List<CardResponse> getAllCards = new ArrayList<>();
@@ -78,11 +98,16 @@ public class CardService {
 
     public CardInnerPageResponse updateTitle(UpdateCardTitleRequest request) {
         Card card = cardRepository.findById(request.getId()).orElseThrow(
-                () -> new NotFoundException("Card with id: " + request.getId() + " not found!")
+                () -> {
+                    log.error("Card with id: " + request.getId() + " not found!");
+                    throw new NotFoundException("Card with id: " + request.getId() + " not found!");
+                }
         );
 
         card.setTitle(request.getNewTitle());
+        log.info("Card with id:{} successfully updated!", card.getId());
         return converter.convertToCardInnerPageResponse(card);
+
     }
 
 
@@ -91,13 +116,18 @@ public class CardService {
         Card card = converter.convertToEntity(request);
         card.setCreator(user);
         card.setCreatedAt(LocalDate.now());
+
         return converter.convertToCardInnerPageResponse(cardRepository.save(card));
     }
 
 
     public CardInnerPageResponse sentToArchive(Long id) {
         Card card = cardRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Card with id: " + id + " not found!")
+                () -> {
+                    log.error("Card with id: " + id + " not found!");
+
+                    throw new NotFoundException("Card with id: " + id + " not found!");
+                }
         );
 
         Basket basket = new Basket();
@@ -112,7 +142,11 @@ public class CardService {
 
     public List<CardResponse> getAllArchivedCardsByBoardId(Long id) {
         Board board = boardRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Board with id: " + id + " not found!")
+                () -> {
+                   log.error("Board with id: " + id + " not found!");
+
+                  throw  new NotFoundException("Board with id: " + id + " not found!");
+    }
         );
 
         List<CardResponse> responses = new ArrayList<>();

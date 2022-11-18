@@ -14,6 +14,7 @@ import kg.peaksoft.taskTrackerb6.enums.Role;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.Authentication;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 @Transactional
 @RequiredArgsConstructor
 public class WorkspaceService {
@@ -70,7 +72,12 @@ public class WorkspaceService {
 
     public WorkspaceResponse getWorkspaceById(Long id) {
         Workspace workspace = workspaceRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("workspace with id: " + id + " not found!")
+                () -> {
+                    log.error("workspace with id: " + id + " not found!");
+
+
+                    throw new NotFoundException("workspace with id: " + id + " not found!");
+                }
         );
 
         return convertToResponse(workspace);
@@ -81,7 +88,12 @@ public class WorkspaceService {
         User user = getAuthenticateUser();
 
         Workspace workspace = workspaceRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("workspace with id: " + id + " not found!")
+                () -> {
+                    log.error("workspace with id: " + id + " not found!");
+
+
+                    throw new NotFoundException("workspace with id: " + id + " not found!");
+                }
         );
 
         if (!user.getEmail().equals(workspace.getLead().getEmail())) {
@@ -95,7 +107,11 @@ public class WorkspaceService {
 
     public WorkspaceResponse changeWorkspacesAction(Long id) {
         Workspace workspace = workspaceRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("workspace with id: " + id + " not found!")
+                () -> {
+                    log.error("workspace with id: " + id + " not found!");
+
+                    throw new NotFoundException("workspace with id: " + id + " not found!");
+                }
         );
 
         workspace.setIsFavorite(!workspace.getIsFavorite());
@@ -167,6 +183,7 @@ public class WorkspaceService {
         workspace.setName(request.getName());
         workspace.setIsFavorite(workspace.getIsFavorite());
         return workspace;
+
     }
 
 

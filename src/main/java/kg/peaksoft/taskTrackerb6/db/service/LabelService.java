@@ -6,12 +6,14 @@ import kg.peaksoft.taskTrackerb6.dto.request.LabelRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.LabelResponse;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @RequiredArgsConstructor
+@Slf4j
 @Service
 @Transactional
 public class LabelService {
@@ -20,7 +22,11 @@ public class LabelService {
 
     public LabelResponse updateLabel(Long id, LabelRequest labelRequest) {
         Label label = labelRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("Label with id %s not found", id))
+                () -> {
+                    log.error("Label with id %s not found", id);
+
+                    throw new NotFoundException(String.format("Label with id %s not found", id));
+                }
         );
 
         label.setDescription(labelRequest.getDescription());
@@ -31,7 +37,11 @@ public class LabelService {
 
     public LabelResponse getLabelById(Long id) {
         Label label = labelRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Label with id: " + id + " not found!")
+                () -> {
+                    log.error("Label with id: " + id + " not found!");
+
+                    throw new NotFoundException("Label with id: " + id + " not found!");
+                }
         );
 
         return mapToResponse(label);

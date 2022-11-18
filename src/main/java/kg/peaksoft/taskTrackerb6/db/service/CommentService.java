@@ -13,6 +13,7 @@ import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class CommentService {
 
@@ -31,7 +33,11 @@ public class CommentService {
 
     public CommentResponse saveComment(Long cardId, CommentRequest request){
         Card card = cardRepository.findById(cardId).orElseThrow(
-                ()-> new NotFoundException("Card with id: "+cardId+" not found")
+                ()-> {
+                    log.error("Card with id: " + cardId + " not found");
+
+                    throw new NotFoundException("Card with id: " + cardId + " not found");
+                }
         );
         Comment comment = new Comment();
         comment.setUser(getAuthenticatedUser());
@@ -45,7 +51,11 @@ public class CommentService {
 
     public CommentResponse editComment(Long id, CommentRequest request){
         Comment comment = commentRepository.findById(id).orElseThrow(
-                ()-> new NotFoundException("Comment with id "+id+" not found")
+                ()-> {
+                    log.error("Comment with id " + id + " not found");
+
+                    throw new NotFoundException("Comment with id " + id + " not found");
+                }
         );
 
         if (!getAuthenticatedUser().equals(comment.getUser())){
@@ -60,7 +70,10 @@ public class CommentService {
 
     public SimpleResponse deleteComment(Long id){
         Comment comment = commentRepository.findById(id).orElseThrow(
-                ()-> new NotFoundException("Comment with id: "+id+" not found")
+                ()-> {
+                    log.error("Comment with id: " + id + " not found");
+                  throw   new NotFoundException("Comment with id: " + id + " not found");
+                }
         );
 
         if (!getAuthenticatedUser().equals(comment.getUser())){
@@ -83,7 +96,11 @@ public class CommentService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String login = authentication.getName();
         return userRepository.findByEmail(login).orElseThrow(
-                ()-> new NotFoundException("User not found")
+                ()-> {
+                    log.error("User not found");
+
+                    throw new NotFoundException("User not found");
+                }
         );
     }
 

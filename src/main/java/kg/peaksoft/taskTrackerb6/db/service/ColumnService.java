@@ -9,12 +9,14 @@ import kg.peaksoft.taskTrackerb6.dto.response.ColumnResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ColumnService {
 
@@ -25,7 +27,11 @@ public class ColumnService {
         Column column = new Column();
         column.setTitle(columnRequest.getColumnName());
         Board board = boardRepository.findById(columnRequest.getBoardId()).orElseThrow(
-                () -> new NotFoundException("Board with id: " + column.getBoard().getId() + " not found")
+                () -> {
+                    log.error("Board with id: " + column.getBoard().getId() + " not found");
+
+                   throw  new NotFoundException("Board with id: " + column.getBoard().getId() + " not found");
+                }
         );
 
         board.addColumn(column);
@@ -36,7 +42,11 @@ public class ColumnService {
 
     public ColumnResponse updateColumn(Long id, String newTitle) {
         Column column = columnRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Column with id: " + id + " not found")
+                () -> {
+                    log.error("Column with id: " + id + " not found");
+
+                 throw   new NotFoundException("Column with id: " + id + " not found");
+                }
         );
 
         column.setTitle(newTitle);
@@ -46,7 +56,11 @@ public class ColumnService {
 
     public SimpleResponse deleteColumn(Long id) {
         Column column = columnRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Column with id: " + id + " not found")
+                () -> {
+                    log.error("Column with id: " + id + " not found");
+
+                    throw new NotFoundException("Column with id: " + id + " not found");
+                }
         );
 
         columnRepository.delete(column);
@@ -69,7 +83,11 @@ public class ColumnService {
 
     public ColumnResponse addToArchive(Long id) {
         Column column = columnRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Column with id: " + id + " not found")
+                () -> {
+                    log.error("Column with id: " + id + " not found");
+
+                    throw new NotFoundException("Column with id: " + id + " not found");
+                }
         );
 
         column.setIsArchive(true);
@@ -89,7 +107,11 @@ public class ColumnService {
 
     public ColumnResponse sendToBoard(Long id) {
         Column column = columnRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Column with id: " + id + " not found")
+                () -> {
+                    log.error("Column with id: " + id + " not found");
+
+                    throw new NotFoundException("Column with id: " + id + " not found");
+                }
         );
 
         column.setIsArchive(false);

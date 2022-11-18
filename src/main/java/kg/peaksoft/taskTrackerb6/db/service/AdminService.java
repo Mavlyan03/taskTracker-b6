@@ -9,6 +9,7 @@ import kg.peaksoft.taskTrackerb6.dto.response.ProfileResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.ProjectResponse;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,7 +19,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -46,6 +47,7 @@ public class AdminService {
         for (Workspace workspace : workspaces) {
             projectResponses.add(convertToProjectResponse(workspace));
         }
+        log.info("AllRroject");
         return projectResponses;
     }
 
@@ -76,7 +78,9 @@ public class AdminService {
     private User getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String login = authentication.getName();
-        return userRepository.findByEmail(login).orElseThrow(() ->
-                new NotFoundException("User not found!"));
-    }
+        return userRepository.findByEmail(login).orElseThrow(() -> {log.error("User not found!");
+
+                throw  new NotFoundException("User not found!");
+    });
+}
 }
