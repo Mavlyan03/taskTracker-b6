@@ -13,13 +13,13 @@ public class MemberResponse {
     private String firstName;
     private String lastName;
     private String email;
-    private String photoLink;
+    private String image;
 
-    public MemberResponse(Long id, String firstName, String lastName, String email, String photoLink) {
+    public MemberResponse(Long id, String firstName, String lastName, String email, String image) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.photoLink = photoLink;
+        this.image = image;
     }
 }

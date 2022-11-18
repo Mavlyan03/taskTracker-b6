@@ -12,4 +12,5 @@ public interface ChecklistRepository extends JpaRepository<Checklist, Long> {
 
     @Query("select c from Checklist c where c.card.id = ?1")
     List<Checklist> findAllChecklists(Long cardId);
+
 }

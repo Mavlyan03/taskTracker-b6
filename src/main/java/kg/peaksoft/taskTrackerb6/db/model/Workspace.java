@@ -26,7 +26,7 @@ public class Workspace {
 
     private Boolean isFavorite = false;
 
-    @ManyToMany(cascade = {ALL})
+    @OneToMany(cascade = {ALL}, mappedBy = "workspace")
     private List<Card> allIssues;
 
     @ManyToOne(cascade = {DETACH, MERGE, REFRESH})
@@ -55,5 +55,12 @@ public class Workspace {
             userWorkSpaces = new ArrayList<>();
         }
         userWorkSpaces.add(userWorkSpace);
+    }
+
+    public void addCard(Card card) {
+        if (allIssues == null) {
+            allIssues = new ArrayList<>();
+        }
+        allIssues.add(card);
     }
 }

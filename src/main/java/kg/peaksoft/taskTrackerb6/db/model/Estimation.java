@@ -38,9 +38,6 @@ public class Estimation {
     private String text;
 
     @OneToOne(cascade = {DETACH, REFRESH, PERSIST, MERGE})
-    private Card card;
-
-    @OneToOne(cascade = {DETACH, REFRESH, PERSIST, MERGE})
     private SubTask subTask;
 
     @OneToOne(cascade = {DETACH, REFRESH, PERSIST, MERGE})
