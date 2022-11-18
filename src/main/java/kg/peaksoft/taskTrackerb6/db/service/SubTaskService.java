@@ -139,7 +139,7 @@ public class SubTaskService {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
-                user.getPhotoLink()
+                user.getImage()
         );
     }
 
