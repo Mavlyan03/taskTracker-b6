@@ -11,9 +11,10 @@ import lombok.Setter;
 public class ResetPasswordResponse {
 
     private Long id;
-    private String fullName;
+    private String firstName;
+    private String lastName;
     private String email;
     private Role role;
-    private String jwtToken;
+    private String jwt;
     private String message;
 }

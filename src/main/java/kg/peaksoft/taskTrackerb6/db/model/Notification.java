@@ -1,12 +1,14 @@
 package kg.peaksoft.taskTrackerb6.db.model;
 
 
+import kg.peaksoft.taskTrackerb6.enums.NotificationType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 import static javax.persistence.CascadeType.*;
 
@@ -23,9 +25,17 @@ public class Notification {
     private Long id;
 
     @Column(length = 10000)
-    private String text;
+    private String message;
 
-    private boolean isRead = false;
+    private LocalDateTime createdAt;
+
+    private Boolean isRead = false;
+
+    @Enumerated(EnumType.STRING)
+    private NotificationType notificationType;
+
+    @OneToOne
+    private User fromUser;
 
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private User user;

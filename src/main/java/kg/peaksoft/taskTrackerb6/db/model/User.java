@@ -34,7 +34,7 @@ public class User implements UserDetails {
     @Column(name = "last_name")
     private String lastName;
 
-    private String photoLink;
+    private String image;
 
     private String email;
 
@@ -58,10 +58,10 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public User(String firstName, String lastName, String photoLink, String email, String password, Role role) {
+    public User(String firstName, String lastName, String image, String email, String password, Role role) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.photoLink = photoLink;
+        this.image = image;
         this.email = email;
         this.password = password;
         this.role = role;
@@ -110,4 +110,10 @@ public class User implements UserDetails {
         return true;
     }
 
+    public void addNotification(Notification notification) {
+        if (notifications == null) {
+            notifications = new ArrayList<>();
+        }
+        notifications.add(notification);
+    }
 }

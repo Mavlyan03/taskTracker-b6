@@ -95,6 +95,8 @@ public class CommentService {
     private User getAuthenticatedUser(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String login = authentication.getName();
+        return userRepository.findUserByEmail(login).orElseThrow(
+                ()-> new NotFoundException("User not found")
         return userRepository.findByEmail(login).orElseThrow(
                 ()-> {
                     log.error("User not found");
@@ -109,7 +111,7 @@ public class CommentService {
                 new CommentedUserResponse(comment.getUser().getId(),
                                           comment.getUser().getFirstName(),
                                           comment.getUser().getLastName(),
-                                          comment.getUser().getPhotoLink());
+                                          comment.getUser().getImage());
         return new CommentResponse (comment.getId(),
                                     comment.getText(),
                                     comment.getCreatedDate(),

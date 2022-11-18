@@ -42,22 +42,13 @@ public class WorkspaceService {
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String login = authentication.getName();
-        return userRepository.findByEmail(login).orElseThrow(() ->
+        return userRepository.findUserByEmail(login).orElseThrow(() ->
                 new NotFoundException("User not found!"));
     }
 
     public WorkspaceResponse createWorkspace(WorkspaceRequest workspaceRequest) throws MessagingException {
         User user = getAuthenticateUser();
         Workspace workspace = convertToEntity(workspaceRequest);
-
-        for (String email : workspaceRequest.getEmails()) {
-            boolean exists = userRepository.existsByEmail(email);
-            if (!exists) {
-                inviteMember(email, workspaceRequest.getLink());
-            }
-            inviteMember(email, workspaceRequest.getLink());
-        }
-
         UserWorkSpace userWorkSpace = new UserWorkSpace();
         userWorkSpace.setUser(user);
         userWorkSpace.setWorkspace(workspace);
@@ -152,6 +143,7 @@ public class WorkspaceService {
         for (Workspace workspace : workspaces) {
             favoriteWorkspaces.add(convertToFavoriteWorkspaceResponse(workspace));
         }
+
         return favoriteWorkspaces;
     }
 
@@ -162,26 +154,41 @@ public class WorkspaceService {
         for (Board board : boards) {
             favoriteBoards.add(convertToFavoriteBoardResponse(board));
         }
+
         return favoriteBoards;
     }
 
 
-    private void inviteMember(String email, String registrationLink) throws MessagingException {
-        MimeMessage mimeMessage = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-        helper.setSubject("[Task tracker] invitation");
-        helper.setFrom("tasktracker.b6@gmail.com");
-        helper.setTo(email);
-        helper.setText(registrationLink);
-        mailSender.send(mimeMessage);
-        new SimpleResponse("mail send", "OK");
-    }
-
-
-    private Workspace convertToEntity(WorkspaceRequest request) {
+    private Workspace convertToEntity(WorkspaceRequest request) throws MessagingException {
         Workspace workspace = new Workspace();
         workspace.setName(request.getName());
         workspace.setIsFavorite(workspace.getIsFavorite());
+
+        if (request.getEmails().isEmpty() || request.getEmails().get(0).equals("") || request.getEmails().get(0).isBlank()) {
+
+        } else {
+            for (String email : request.getEmails()) {
+                boolean exists = userRepository.existsUserByEmail(email);
+                if (!exists) {
+                    MimeMessage mimeMessage = mailSender.createMimeMessage();
+                    MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+                    helper.setSubject("[Task tracker] invitation to my workspace");
+                    helper.setFrom("tasktracker.b6@gmail.com");
+                    helper.setTo(email);
+                    helper.setText(request.getLink());
+                    mailSender.send(mimeMessage);
+                } else {
+                    MimeMessage mimeMessage = mailSender.createMimeMessage();
+                    MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+                    helper.setSubject("[Task tracker] invitation to my workspace");
+                    helper.setFrom("tasktracker.b6@gmail.com");
+                    helper.setTo(email);
+                    helper.setText(request.getLink()); 
+                    mailSender.send(mimeMessage);
+                }
+            }
+        }
+
         return workspace;
 
     }
@@ -202,7 +209,7 @@ public class WorkspaceService {
         creatorResponse.setId(user.getId());
         creatorResponse.setFirstName(user.getFirstName());
         creatorResponse.setLastName(user.getLastName());
-        creatorResponse.setPhoto(user.getPhotoLink());
+        creatorResponse.setImage(user.getImage());
         return creatorResponse;
     }
 
@@ -224,5 +231,4 @@ public class WorkspaceService {
                 board.getIsFavorite()
         );
     }
-
 }

@@ -36,7 +36,7 @@ public class AdminService {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
-                user.getPhotoLink(),
+                user.getImage(),
                 getAllProjectResponse());
     }
 
@@ -60,24 +60,27 @@ public class AdminService {
         authenticatedUser.setFirstName(adminProfileRequest.getFirstName());
         authenticatedUser.setLastName(adminProfileRequest.getLastName());
         authenticatedUser.setEmail(adminProfileRequest.getEmail());
-        if (adminProfileRequest.getPhotoLink() == null) {
-            authenticatedUser.setPhotoLink(authenticatedUser.getPhotoLink());
+        if (adminProfileRequest.getImage() == null) {
+            authenticatedUser.setImage(authenticatedUser.getImage());
         }
 
-        authenticatedUser.setPhotoLink(adminProfileRequest.getPhotoLink());
+        authenticatedUser.setImage(adminProfileRequest.getImage());
         authenticatedUser.setPassword(passwordEncoder.encode(adminProfileRequest.getPassword()));
         return new ProfileResponse(
                 authenticatedUser.getId(),
                 authenticatedUser.getFirstName(),
                 authenticatedUser.getLastName(),
                 authenticatedUser.getEmail(),
-                authenticatedUser.getPhotoLink(),
+                authenticatedUser.getImage(),
                 getAllProjectResponse());
     }
 
     private User getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String login = authentication.getName();
+        return userRepository.findUserByEmail(login).orElseThrow(() ->
+                new NotFoundException("User not found!"));
+    }
         return userRepository.findByEmail(login).orElseThrow(() -> {log.error("User not found!");
 
                 throw  new NotFoundException("User not found!");

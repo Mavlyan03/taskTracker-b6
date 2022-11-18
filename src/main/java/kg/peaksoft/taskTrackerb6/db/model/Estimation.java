@@ -38,13 +38,15 @@ public class Estimation {
     private String text;
 
     @OneToOne(cascade = {DETACH, REFRESH, PERSIST, MERGE})
-    private Card card;
-
-    @OneToOne(cascade = {DETACH, REFRESH, PERSIST, MERGE})
     private SubTask subTask;
 
     @OneToOne(cascade = {DETACH, REFRESH, PERSIST, MERGE})
     private User user;
+
+    public Estimation(LocalDate startDate, LocalDate dueDate) {
+        this.startDate = startDate;
+        this.dueDate = dueDate;
+    }
 
     public Estimation(LocalDate startDate, LocalDate dueDate, int reminder) {
         this.startDate = startDate;

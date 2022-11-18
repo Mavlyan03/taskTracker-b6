@@ -2,6 +2,7 @@ package kg.peaksoft.taskTrackerb6.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import kg.peaksoft.taskTrackerb6.db.service.AllIssuesService;
 import kg.peaksoft.taskTrackerb6.db.service.CardService;
 import kg.peaksoft.taskTrackerb6.dto.request.CardRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.UpdateCardTitleRequest;
@@ -11,6 +12,7 @@ import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import java.util.List;
 
 @RestController
@@ -53,7 +55,7 @@ public class CardApi {
     }
 
     @Operation(summary = "Get all cards", description = "Get all cards by column id")
-    @GetMapping("{columnId}")
+    @GetMapping("column/{columnId}")
     public List<CardResponse> getAllCardsByColumnId(@PathVariable Long columnId) {
         return cardService.getAllCardsByColumnId(columnId);
     }
@@ -62,5 +64,12 @@ public class CardApi {
     @GetMapping("archive-cards/{boardId}")
     public List<CardResponse> getAllArchivedCardsByBoardId(@PathVariable Long boardId) {
         return cardService.getAllArchivedCardsByBoardId(boardId);
+    }
+
+    @Operation(summary = "Move card", description = "Move card by id")
+    @GetMapping("move-card/{cardId}/{columnId}")
+    public List<CardResponse> moveCard(@PathVariable Long cardId,
+                                         @PathVariable Long columnId) {
+        return cardService.moveCard(cardId, columnId);
     }
 }
