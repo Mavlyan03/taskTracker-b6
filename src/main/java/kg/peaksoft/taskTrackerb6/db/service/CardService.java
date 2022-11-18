@@ -37,25 +37,28 @@ public class CardService {
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String login = authentication.getName();
-        return userRepository.findUserByEmail(login).orElseThrow(() ->
-                new NotFoundException("User not found!"));
-        return userRepository.findByEmail(login).orElseThrow(() -> {
-            log.error("User not found!");
-
-
-            throw new NotFoundException("User not found!");
-
-        });
+        return userRepository.findUserByEmail(login).orElseThrow(
+                () -> {
+                    log.error("User not found!");
+                    throw new NotFoundException("User not found!");
+                }
+        );
     }
 
     public List<CardResponse> moveCard(Long cardId, Long columnId) {
         User user = getAuthenticateUser();
         Card card = cardRepository.findById(cardId).orElseThrow(
-                () -> new NotFoundException("Card with id: " + cardId + " not found!")
+                () -> {
+                    log.error("Card with id: {} not found!", cardId);
+                    throw new NotFoundException("Card with id: " + cardId + " not found!");
+                }
         );
 
         Column changedColumn = columnRepository.findById(columnId).orElseThrow(
-                () -> new NotFoundException("Column with id: " + columnId + " not found!")
+                () -> {
+                    log.error("Column with id: {} not found!", columnId);
+                    throw new NotFoundException("Column with id: " + columnId + " not found!");
+                }
         );
 
         List<CardResponse> cardResponses = new ArrayList<>();
@@ -83,14 +86,15 @@ public class CardService {
             cardResponses.add(converter.convertToResponseForGetAll(card));
         }
 
+        log.info("Card with id: {} successfully moved!", cardId);
         return cardResponses;
     }
 
     public SimpleResponse deleteCard(Long id) {
         User user = getAuthenticateUser();
         Card card = cardRepository.findById(id).orElseThrow(
-                () -> {log.error("Card with id: " + id + " not found!");
-
+                () -> {
+                    log.error("Card with id: {} not found!", id);
                     throw new NotFoundException("Card with id: " + id + " not found!");
                 }
         );
@@ -101,7 +105,7 @@ public class CardService {
         }
 
         cardRepository.delete(card);
-        log.info("Card with id: " + id + " successfully deleted", "DELETE");
+        log.info("Card with id: {} successfully deleted", id);
         return new SimpleResponse("Card with id: " + id + " successfully deleted", "DELETE");
     }
 
@@ -109,8 +113,7 @@ public class CardService {
     public CardInnerPageResponse getCard(Long id) {
         Card card = cardRepository.findById(id).orElseThrow(
                 () -> {
-                    log.error("Card with id: " + id + " not found!");
-
+                    log.error("Card with id: {} not found!", id);
                     throw new NotFoundException("Card with id: " + id + " not found!");
                 }
         );
@@ -122,8 +125,7 @@ public class CardService {
     public List<CardResponse> getAllCardsByColumnId(Long id) {
         Column column = columnRepository.findById(id).orElseThrow(
                 () -> {
-                    log.error("Column with id: " + id + " not found!");
-
+                    log.error("Column with id: {} not found!", id);
                     throw new NotFoundException("Column with id: " + id + " not found!");
                 }
         );
@@ -150,7 +152,6 @@ public class CardService {
         card.setTitle(request.getNewTitle());
         log.info("Card with id:{} successfully updated!", card.getId());
         return converter.convertToCardInnerPageResponse(card);
-
     }
 
 
@@ -165,6 +166,7 @@ public class CardService {
         card.setWorkspace(workspace);
         workspace.addCard(card);
 
+        log.info("Card successfully created");
         return converter.convertToCardInnerPageResponse(cardRepository.save(card));
     }
 
@@ -172,8 +174,7 @@ public class CardService {
     public CardInnerPageResponse sentToArchive(Long id) {
         Card card = cardRepository.findById(id).orElseThrow(
                 () -> {
-                    log.error("Card with id: " + id + " not found!");
-
+                    log.error("Card with id: {} not found!", id);
                     throw new NotFoundException("Card with id: " + id + " not found!");
                 }
         );
@@ -184,6 +185,7 @@ public class CardService {
             basket.setCard(card);
         }
 
+        log.info("Card with id: {} successfully archived or unarchived", id);
         return converter.convertToCardInnerPageResponse(card);
     }
 
@@ -191,10 +193,9 @@ public class CardService {
     public List<CardResponse> getAllArchivedCardsByBoardId(Long id) {
         Board board = boardRepository.findById(id).orElseThrow(
                 () -> {
-                   log.error("Board with id: " + id + " not found!");
-
-                  throw  new NotFoundException("Board with id: " + id + " not found!");
-    }
+                    log.error("Board with id: {} not found!", id);
+                    throw new NotFoundException("Board with id: " + id + " not found!");
+                }
         );
 
         List<CardResponse> responses = new ArrayList<>();

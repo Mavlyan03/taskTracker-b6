@@ -41,14 +41,11 @@ public class ParticipantService {
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String login = authentication.getName();
-        return userRepository.findUserByEmail(login).orElseThrow(() ->
-                new NotFoundException("User not found!"));
-        return userRepository.findByEmail(login).orElseThrow(() -> {
-
-            log.error("User not found!");
-
-              throw  new NotFoundException("User not found!");
-        });
+        return userRepository.findUserByEmail(login).orElseThrow(() -> {
+                    log.error("User not found!");
+                    throw new NotFoundException("User not found!");
+                }
+        );
     }
 
     public ParticipantResponse mapToResponse(User user) {
@@ -65,25 +62,25 @@ public class ParticipantService {
 
         Workspace workspace = workspaceRepository.findById(workspaceId).orElseThrow(
                 () -> {
-                    log.error(" workspace with this id" + workspaceId + "not found");
-
-                    throw new NotFoundException(" workspace with this id" + workspaceId + "not found");
+                    log.error("Workspace with id: {} not found!", workspaceId);
+                    throw new NotFoundException("Workspace with id: " + workspaceId + " not found!");
                 }
         );
 
         User corpse = userRepository.findById(userId).orElseThrow(
                 () -> {
-                    log.error("User with this id " + userId + " not found");
-
-                  throw   new NotFoundException("User with this id " + userId + " not found");
+                    log.error("User with this id: {} not found!", userId);
+                    throw new NotFoundException("User with this id " + userId + " not found");
                 }
         );
 
         if (corpse.equals(killer)) {
+            log.error("You can not remove yourself!");
             throw new BadCredentialException("You can not remove yourself!");
         }
 
         if (workspace.getLead().equals(corpse)) {
+            log.error("This user is lead of workspace, you can not delete!");
             throw new BadCredentialsException("This user is lead of workspace, you can not delete!");
         }
 
@@ -93,15 +90,29 @@ public class ParticipantService {
         }
 
         workspaceUsers.remove(corpse);
-        return new SimpleResponse("deleted", "ok");
+        log.info("User with id: " + userId + " successfully deleted from workspace with id: {} ", workspaceId);
+        return new SimpleResponse("User successfully deleted from workspace!", "DELETE");
     }
 
     public SimpleResponse deleteParticipantFromBoard(Long id, Long boardId) {
-        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User with  id" + id + " not found"));
-        Board board = boardRepository.findById(boardId).orElseThrow(() -> new NotFoundException("Board with id" + boardId + " not found"));
+        User user = userRepository.findById(id).orElseThrow(
+                () -> {
+                    log.error("User with id: {} not found!", id);
+                    throw new NotFoundException("User with  id" + id + " not found!");
+                }
+        );
+
+        Board board = boardRepository.findById(boardId).orElseThrow(
+                () -> {
+                    log.error("Board with id: {} not found!", boardId);
+                    throw new NotFoundException("Board with id" + boardId + " not found!");
+                }
+        );
+
         board.getMembers().remove(user);
         user.setBoards(null);
-        return new SimpleResponse("deleted", "ok");
+        log.info("User with id: " + id + "successfully deleted from board with id: {}", boardId);
+        return new SimpleResponse("User successfully deleted from board!", "DELETE");
     }
 
     public List<ParticipantResponse> getAllParticipantFromBoard(Long boardId) {
@@ -110,15 +121,15 @@ public class ParticipantService {
             participantResponse.add(mapToResponse(user1));
         }
 
+        log.info("Get all participant from board");
         return participantResponse;
     }
 
     public List<ParticipantResponse> getAllParticipantFromWorkspace(Long workspaceId) {
         Workspace workspace = workspaceRepository.findById(workspaceId).orElseThrow(
                 () -> {
-                    log.error("Workspace with id " + workspaceId + " not found");
-
-                    throw new NotFoundException("Workspace with id " + workspaceId + " not found");
+                    log.error("Workspace with id: {} not found!", workspaceId);
+                    throw new NotFoundException("Workspace with id " + workspaceId + " not found!");
                 }
         );
 
@@ -131,6 +142,8 @@ public class ParticipantService {
         for (User member : members) {
             participantResponses.add(new ParticipantResponse(member));
         }
+
+        log.info("Get all participant from workspace");
         return participantResponses;
     }
 

@@ -12,10 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@RequiredArgsConstructor
-@Slf4j
 @Service
+@Slf4j
 @Transactional
+@RequiredArgsConstructor
 public class LabelService {
 
     private final LabelRepository labelRepository;
@@ -23,23 +23,21 @@ public class LabelService {
     public LabelResponse updateLabel(Long id, LabelRequest labelRequest) {
         Label label = labelRepository.findById(id).orElseThrow(
                 () -> {
-                    log.error("Label with id %s not found", id);
-
+                    log.error("Label with id: {} not found!", id);
                     throw new NotFoundException(String.format("Label with id %s not found", id));
                 }
         );
 
         label.setDescription(labelRequest.getDescription());
         labelRepository.save(label);
-        
+        log.info("Label successfully created");
         return mapToResponse(label);
     }
 
     public LabelResponse getLabelById(Long id) {
         Label label = labelRepository.findById(id).orElseThrow(
                 () -> {
-                    log.error("Label with id: " + id + " not found!");
-
+                    log.error("Label with id: {} not found!", id);
                     throw new NotFoundException("Label with id: " + id + " not found!");
                 }
         );
@@ -48,10 +46,11 @@ public class LabelService {
     }
 
     public List<LabelResponse> getAllLabelsByCardId(Long cardId) {
+        log.info("Get all label by card id");
         return labelRepository.getAllLabelResponses(cardId);
     }
 
     private LabelResponse mapToResponse(Label label) {
-        return new LabelResponse(label.getId(),label.getDescription(), label.getColor());
+        return new LabelResponse(label.getId(), label.getDescription(), label.getColor());
     }
 }

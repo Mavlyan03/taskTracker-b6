@@ -42,8 +42,12 @@ public class WorkspaceService {
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String login = authentication.getName();
-        return userRepository.findUserByEmail(login).orElseThrow(() ->
-                new NotFoundException("User not found!"));
+        return userRepository.findUserByEmail(login).orElseThrow(
+                () -> {
+                    log.error("User not found!");
+                    throw new NotFoundException("User not found!");
+                }
+        );
     }
 
     public WorkspaceResponse createWorkspace(WorkspaceRequest workspaceRequest) throws MessagingException {
@@ -57,6 +61,7 @@ public class WorkspaceService {
         workspace.addUserWorkSpace(userWorkSpace);
         workspace.setLead(user);
         userWorkSpaceRepository.save(userWorkSpace);
+        log.info("Workspace successfully created");
         return convertToResponse(workspaceRepository.save(workspace));
     }
 
@@ -64,10 +69,8 @@ public class WorkspaceService {
     public WorkspaceResponse getWorkspaceById(Long id) {
         Workspace workspace = workspaceRepository.findById(id).orElseThrow(
                 () -> {
-                    log.error("workspace with id: " + id + " not found!");
-
-
-                    throw new NotFoundException("workspace with id: " + id + " not found!");
+                    log.error("Workspace with id: {} not found!", id);
+                    throw new NotFoundException("Workspace with id: " + id + " not found!");
                 }
         );
 
@@ -80,43 +83,41 @@ public class WorkspaceService {
 
         Workspace workspace = workspaceRepository.findById(id).orElseThrow(
                 () -> {
-                    log.error("workspace with id: " + id + " not found!");
-
-
-                    throw new NotFoundException("workspace with id: " + id + " not found!");
+                    log.error("Workspace with id: {} not found!", id);
+                    throw new NotFoundException("Workspace with id: " + id + " not found!");
                 }
         );
 
         if (!user.getEmail().equals(workspace.getLead().getEmail())) {
+            log.error("You can not delete this workspace!");
             throw new BadCredentialException("You can not delete this workspace!");
         }
 
         workspaceRepository.delete(workspace);
-        return new SimpleResponse("workspace with id: " + id + " is deleted!", "DELETE");
+        log.info("Workspace with id: {} successfully deleted!", id);
+        return new SimpleResponse("Workspace with id: " + id + " successfully!", "DELETE");
     }
 
 
     public WorkspaceResponse changeWorkspacesAction(Long id) {
         Workspace workspace = workspaceRepository.findById(id).orElseThrow(
                 () -> {
-                    log.error("workspace with id: " + id + " not found!");
-
+                    log.error("workspace with id: {} not found!", id);
                     throw new NotFoundException("workspace with id: " + id + " not found!");
                 }
         );
 
         workspace.setIsFavorite(!workspace.getIsFavorite());
         Workspace workspace1 = workspaceRepository.save(workspace);
+        log.info("Workspace action with id: {} successfully change", id);
         return convertToResponse(workspace1);
     }
 
 
     public List<WorkspaceResponse> getAllUserWorkspaces() {
         User user = getAuthenticateUser();
-
         List<WorkspaceResponse> workspaceResponses = new ArrayList<>();
         List<Workspace> workspaces = new ArrayList<>();
-
         for (UserWorkSpace userWorkSpace : user.getUserWorkSpaces()) {
             if (userWorkSpace.getUser().equals(user)) {
                 workspaces.add(userWorkSpace.getWorkspace());
@@ -126,6 +127,8 @@ public class WorkspaceService {
         for (Workspace workspace : workspaces) {
             workspaceResponses.add(convertToResponse(workspace));
         }
+
+        log.info("Get all workspaces");
         return workspaceResponses;
     }
 
@@ -133,6 +136,7 @@ public class WorkspaceService {
     public List<FavoritesResponse> getAllFavorites() {
         List<FavoritesResponse> getFavorites = new ArrayList<>();
         getFavorites.add(new FavoritesResponse(getFavoriteWorkspacesList(), getFavoriteBoardsList()));
+        log.info("Get all favorite workspaces");
         return getFavorites;
     }
 
@@ -183,7 +187,7 @@ public class WorkspaceService {
                     helper.setSubject("[Task tracker] invitation to my workspace");
                     helper.setFrom("tasktracker.b6@gmail.com");
                     helper.setTo(email);
-                    helper.setText(request.getLink()); 
+                    helper.setText(request.getLink());
                     mailSender.send(mimeMessage);
                 }
             }

@@ -28,15 +28,19 @@ import kg.peaksoft.taskTrackerb6.dto.response.SubTaskResponse;
 import kg.peaksoft.taskTrackerb6.exceptions.NoSuchElementException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
 
 @Service
+@Slf4j
+@Transactional
 @RequiredArgsConstructor
 public class ChecklistService {
 
@@ -48,12 +52,26 @@ public class ChecklistService {
 
     public ChecklistResponse createChecklist(Long id, ChecklistRequest request) {
         User authUser = getAuthenticateUser();
-        Card card = cardRepository.findById(id).orElseThrow(() ->
-                new NoSuchElementException(Card.class, id));
-        Board board = boardRepository.findById(card.getBoard().getId()).orElseThrow(() ->
-                new NoSuchElementException(Board.class, id));
-        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(() ->
-                new NoSuchElementException(Workspace.class, id));
+        Card card = cardRepository.findById(id).orElseThrow(
+                () -> {
+                    log.error("No such element!");
+                    throw new NoSuchElementException(Card.class, id);
+                }
+        );
+
+        Board board = boardRepository.findById(card.getBoard().getId()).orElseThrow(
+                () -> {
+                    log.error("No such element!");
+                    throw new NoSuchElementException(Board.class, id);
+                }
+        );
+
+        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(
+                () -> {
+                    log.error("No such element!");
+                    throw new NoSuchElementException(Workspace.class, id);
+                }
+        );
 
         Checklist checklist = new Checklist();
         checklist.setTitle(request.getTitle());
@@ -63,6 +81,7 @@ public class ChecklistService {
                 members.add(convertToMemberResponse(userWorkSpace.getUser()));
             }
         }
+
         for (SubTaskRequest subTaskRequest : request.getSubTaskRequests()) {
             SubTask subTask = new SubTask(subTaskRequest.getDescription(), subTaskRequest.getIsDone());
             for (MemberResponse memberResponse : members) {
@@ -72,6 +91,7 @@ public class ChecklistService {
                     }
                 }
             }
+
             subTask.setChecklist(checklist);
             checklist.addSubTaskToChecklist(subTask);
             if (subTaskRequest.getEstimationRequest() != null) {
@@ -86,27 +106,42 @@ public class ChecklistService {
                 estimation.setSubTask(subTask);
             }
         }
+
         checklist.setCard(card);
         card.addChecklist(checklist);
+        log.info("Checklist successfully created");
         return convertToResponse(checklistRepository.save(checklist));
     }
 
     public ChecklistResponse updateTitle(UpdateChecklistTitleRequest request) {
-        Checklist checklist = checklistRepository.findById(request.getChecklistId()).orElseThrow(() ->
-                new NotFoundException("Checklist with id: " + request.getChecklistId() + " not found!"));
+        Checklist checklist = checklistRepository.findById(request.getChecklistId()).orElseThrow(
+                () -> {
+                    log.error("Checklist with id: {} not found!", request.getChecklistId());
+                    throw new NotFoundException("Checklist with id: " + request.getChecklistId() + " not found!");
+                }
+        );
+
         checklist.setTitle(request.getNewTitle());
+        log.info("Checklist title with id: {} successfully updated", request.getChecklistId());
         return convertToResponse(checklistRepository.save(checklist));
     }
 
     public SimpleResponse deleteChecklist(Long id) {
-        Checklist checklist = checklistRepository.findById(id).orElseThrow(() ->
-                new NotFoundException("Checklist with id: " + id + " not found!"));
+        Checklist checklist = checklistRepository.findById(id).orElseThrow(
+                () -> {
+                    log.error("Checklist with id: {} not found!", id);
+                    throw new NotFoundException("Checklist with id: " + id + " not found!");
+                }
+        );
+
         for (SubTask subTask : checklist.getSubTasks()) {
             subTask.setChecklist(null);
             subTask.setEstimation(null);
         }
+
         checklistRepository.delete(checklist);
-        return new SimpleResponse("Checklist with id " + id + " successfully deleted", "DELETED");
+        log.info("Checklist with id: {} successfully deleted!", id);
+        return new SimpleResponse("Checklist with id " + id + " successfully deleted", "DELETE");
     }
 
     public List<ChecklistResponse> findAllChecklistsByCardId(Long id) {
@@ -115,6 +150,8 @@ public class ChecklistService {
         for (Checklist checklist : checklists) {
             checklistResponses.add(convertToResponse(checklist));
         }
+
+        log.info("Get all checklists by card id");
         return checklistResponses;
     }
 
@@ -123,8 +160,8 @@ public class ChecklistService {
         if (checklist.getSubTasks() != null) {
             allSubTasks = checklist.getSubTasks();
         }
-        List<SubTaskResponse> subTaskResponses = new ArrayList<>();
 
+        List<SubTaskResponse> subTaskResponses = new ArrayList<>();
         int countOfSubTasks = 0;
         int countOfCompletedSubTask = 0;
         if (allSubTasks != null) {
@@ -134,6 +171,7 @@ public class ChecklistService {
                     countOfCompletedSubTask++;
                 }
             }
+
             for (SubTask subTask : allSubTasks) {
                 List<MemberResponse> memberResponses = new ArrayList<>();
                 EstimationResponse estimationResponse = new EstimationResponse();
@@ -150,6 +188,7 @@ public class ChecklistService {
                                         convertStartTimeToResponse(subTask.getEstimation().getDeadlineTime()),
                                         subTask.getEstimation().getReminder())));
                     }
+
                 } else {
                     for (User user : subTask.getWorkspacesUsers()) {
                         memberResponses.add(convertToMemberResponse(user));
@@ -168,6 +207,7 @@ public class ChecklistService {
                     }
                 }
             }
+
             int count;
             if (countOfCompletedSubTask <= 0) {
                 count = 0;
@@ -177,6 +217,7 @@ public class ChecklistService {
             checklist.setCount(count);
             checklistRepository.save(checklist);
         }
+
         return new ChecklistResponse(checklist.getId(), checklist.getTitle(),
                 countOfCompletedSubTask, countOfSubTasks,
                 checklist.getCount(), subTaskResponses);
@@ -200,13 +241,21 @@ public class ChecklistService {
     public User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String login = authentication.getName();
-        return userRepository.findUserByEmail(login).orElseThrow(() ->
-                new NoSuchElementException("User not found!"));
+        return userRepository.findUserByEmail(login).orElseThrow(
+                () -> {
+                    log.error("User not found!");
+                    throw new NoSuchElementException("User not found!");
+                }
+        );
     }
 
     public User convertMemberToUser(MemberRequest request) {
-        return userRepository.findUserByEmail(request.getEmail()).orElseThrow(() ->
-                new NoSuchElementException("Email not found!"));
+        return userRepository.findUserByEmail(request.getEmail()).orElseThrow(
+                () -> {
+                    log.error("Email not found!");
+                    throw new NoSuchElementException("Email not found!");
+                }
+        );
     }
 
     public MyTimeClass convertTimeToEntity(MyTimeClassRequest request) {
