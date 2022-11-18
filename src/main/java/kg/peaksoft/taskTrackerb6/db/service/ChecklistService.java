@@ -201,7 +201,7 @@ public class ChecklistService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String login = authentication.getName();
         return userRepository.findUserByEmail(login).orElseThrow(() ->
-                new NotFoundException("User not found!"));
+                new NoSuchElementException("User not found!"));
     }
 
     public User convertMemberToUser(MemberRequest request) {

@@ -71,14 +71,14 @@ public class SubTaskService {
 
     public SubTaskResponse updateDescription(Long id, SubTaskRequest request) {
         SubTask subTask = subTaskRepository.findById(id).orElseThrow(() ->
-                new NotFoundException("Subtask with id: " + id + " not found!"));
+                new NoSuchElementException(SubTask.class, id));
         subTask.setDescription(request.getDescription());
         return convertToResponse(subTaskRepository.save(subTask));
     }
 
     public SimpleResponse deleteSubTask(Long id) {
         SubTask subTask = subTaskRepository.findById(id).orElseThrow(() ->
-                new NotFoundException("Subtask with id: " + id + " not found!"));
+                new NoSuchElementException(SubTask.class, id));
         subTask.setEstimation(null);
         subTask.setChecklist(null);
         subTaskRepository.delete(subTask);
@@ -87,14 +87,14 @@ public class SubTaskService {
 
     public SubTaskResponse addToCompleted(Long subtaskId) {
         SubTask subTask = subTaskRepository.findById(subtaskId).orElseThrow(() ->
-                new NotFoundException("Subtask with id: " + subtaskId + " not found!"));
+                new NoSuchElementException(SubTask.class, subtaskId));
         subTask.setIsDone(true);
         return convertToResponse(subTaskRepository.save(subTask));
     }
 
     public SubTaskResponse uncheck(Long subtaskId) {
         SubTask subTask = subTaskRepository.findById(subtaskId).orElseThrow(() ->
-                new NotFoundException("Subtask with id: " + subtaskId + " not found!"));
+                new NoSuchElementException(SubTask.class, subtaskId));
         subTask.setIsDone(false);
         return convertToResponse(subTaskRepository.save(subTask));
     }
@@ -147,7 +147,7 @@ public class SubTaskService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String login = authentication.getName();
         return userRepository.findUserByEmail(login).orElseThrow(() ->
-                new NotFoundException("User not found!"));
+                new NoSuchElementException("User not found!"));
     }
 
 }
