@@ -159,7 +159,7 @@ public class WorkspaceService {
                     helper.setSubject("[Task tracker] invitation to my workspace");
                     helper.setFrom("tasktracker.b6@gmail.com");
                     helper.setTo(email);
-                    helper.setText(request.getLink());  // link to registration page
+                    helper.setText(request.getLink());
                     mailSender.send(mimeMessage);
                 } else {
                     MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -167,7 +167,7 @@ public class WorkspaceService {
                     helper.setSubject("[Task tracker] invitation to my workspace");
                     helper.setFrom("tasktracker.b6@gmail.com");
                     helper.setTo(email);
-                    helper.setText(request.getLink());  // link to workspace
+                    helper.setText(request.getLink()); 
                     mailSender.send(mimeMessage);
                 }
             }

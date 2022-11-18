@@ -23,11 +23,10 @@ import java.util.List;
 public class CardApi {
 
     private final CardService cardService;
-    private final AllIssuesService allIssuesService;
 
     @Operation(summary = "Create card", description = "Create new card")
     @PostMapping
-    public CardInnerPageResponse createCard(@RequestBody CardRequest request) throws MessagingException, InterruptedException {
+    public CardInnerPageResponse createCard(@RequestBody CardRequest request) {
         return cardService.createCard(request);
     }
 
