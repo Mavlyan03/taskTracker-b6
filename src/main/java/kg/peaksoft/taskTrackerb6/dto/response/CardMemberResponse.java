@@ -15,6 +15,6 @@ public class CardMemberResponse {
 
     public CardMemberResponse(User user) {
         this.id = user.getId();
-        this.image = user.getPhotoLink();
+        this.image = user.getImage();
     }
 }

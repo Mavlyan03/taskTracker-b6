@@ -192,7 +192,7 @@ public class WorkspaceService {
         creatorResponse.setId(user.getId());
         creatorResponse.setFirstName(user.getFirstName());
         creatorResponse.setLastName(user.getLastName());
-        creatorResponse.setPhoto(user.getPhotoLink());
+        creatorResponse.setImage(user.getImage());
         return creatorResponse;
     }
 

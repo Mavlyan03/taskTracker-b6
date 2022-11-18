@@ -78,15 +78,15 @@ public class AllIssuesService {
         return response;
     }
 
-    public SearchCard filterByCreatedDate(Long id, LocalDate fromDate, LocalDate to) {
+    public SearchCard filterByCreatedDate(Long id, LocalDate from, LocalDate to) {
         SearchCard response = new SearchCard();
-        if (fromDate != null && to != null) {
+        if (from != null && to != null) {
 
-            if (fromDate.isAfter(to)) {
+            if (from.isAfter(to)) {
                 throw new BadCredentialException("Please make a valid request");
             }
 
-            response.setResponses(allIssuesResponsesList(cardRepository.searchCardByCreatedAt(id, fromDate, to)));
+            response.setResponses(allIssuesResponsesList(cardRepository.searchCardByCreatedAt(id, from, to)));
         }
 
         return response;

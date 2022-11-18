@@ -14,6 +14,6 @@ import java.time.LocalDate;
 public class CardDatesRequest {
 
     private Long workspaceId;
-    private LocalDate fromDate;
+    private LocalDate from;
     private LocalDate to;
 }

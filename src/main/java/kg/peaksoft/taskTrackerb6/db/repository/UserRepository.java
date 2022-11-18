@@ -32,7 +32,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     )
     List<User> globalSearch(@Param("text") String text);
 
-    @Query("select new kg.peaksoft.taskTrackerb6.dto.response.CardMemberResponse(u.id, u.photoLink)" +
+    @Query("select new kg.peaksoft.taskTrackerb6.dto.response.CardMemberResponse(u.id, u.image)" +
             " from User u where u.id = ?1")
     List<User> getAllCardMembers(Long cardId);
 }

@@ -216,7 +216,7 @@ public class CardConverter {
     }
 
     private CommentedUserResponse convertToCommentedUserResponse(User user) {
-        return new CommentedUserResponse(user.getId(), user.getFirstName(), user.getLastName(), user.getPhotoLink());
+        return new CommentedUserResponse(user.getId(), user.getFirstName(), user.getLastName(), user.getImage());
     }
 
     private List<ChecklistResponse> getChecklistResponses(List<Checklist> checklists) {
@@ -245,7 +245,7 @@ public class CardConverter {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
-                user.getPhotoLink()
+                user.getImage()
         );
     }
 

@@ -1,4 +1,4 @@
-insert into users (id, first_name, last_name, photo_link, email, password, role)
+insert into users (id, first_name, last_name, image, email, password, role)
 values (1, 'Datka', 'Mamatzhanova', 'photoLink', 'datka@gmail.com',
         '$2a$12$0POgw5oJtXlmcuRhE5unzuoyjp0uwFif7/45xVKO1RB06Bg380LLW','SUPER_ADMIN'),
 

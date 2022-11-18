@@ -14,7 +14,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/allIssues")
+@RequestMapping("api/issues")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*", maxAge = 3600)
 @Tag(name = "All issues API", description = "All endpoints of all issues")
@@ -23,21 +23,21 @@ public class AllIssuesApi {
     private final AllIssuesService service;
 
     @Operation(summary = "Get all workspace cards", description = "Get all workspace cards by workspace id")
-    @GetMapping("all-issues/{workspaceId}")
+    @GetMapping("cards/{workspaceId}")
     public List<AllIssuesResponse> allIssues(@PathVariable Long workspaceId) {
         return service.allIssues(workspaceId);
     }
 
     @Operation(summary = "Filter by created date", description = "Filter cards by created date")
-    @GetMapping("dates/{id}")
+    @GetMapping("filter-dates/{id}")
     public SearchCard filterByCreatedDate(@PathVariable Long id,
-                                          @RequestParam("fromDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+                                          @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
                                           @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-        return service.filterByCreatedDate(id, fromDate, to);
+        return service.filterByCreatedDate(id, from, to);
     }
 
     @Operation(summary = "Filter by label's color", description = "Filter cards by label's color")
-    @GetMapping("colors/{id}")
+    @GetMapping("filter-colors/{id}")
     public List<AllIssuesResponse> filterByLabelColor(@PathVariable(value = "id") Long id,
                                                       @RequestParam(value = "colors") List<LabelsColor> colors) {
         return service.filterByLabelColor(id, colors);

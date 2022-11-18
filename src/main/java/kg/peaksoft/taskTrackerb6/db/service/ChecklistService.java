@@ -188,7 +188,7 @@ public class ChecklistService {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
-                user.getPhotoLink()
+                user.getImage()
         );
     }
 

@@ -12,6 +12,6 @@ public class CommentedUserResponse {
     private Long id;
     private String firstName;
     private String lastName;
-    private String photo;
+    private String image;
 
 }

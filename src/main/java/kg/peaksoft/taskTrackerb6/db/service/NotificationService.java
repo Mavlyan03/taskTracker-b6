@@ -47,7 +47,7 @@ public class NotificationService {
                 notification.getFromUser().getId(),
                 notification.getFromUser().getFirstName(),
                 notification.getFromUser().getLastName(),
-                notification.getFromUser().getPhotoLink(),
+                notification.getFromUser().getImage(),
                 notification.getCreatedAt(),
                 notification.getNotificationType(),
                 notification.getMessage()
