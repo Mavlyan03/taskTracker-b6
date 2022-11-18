@@ -1,12 +1,12 @@
 insert into users (id, first_name, last_name, photo_link, email, password, role)
-values (1, 'Datka', 'Mamatzhanova', 'photoLink', 'datka@gmail.com',
-        '$2a$12$0POgw5oJtXlmcuRhE5unzuoyjp0uwFif7/45xVKO1RB06Bg380LLW','SUPER_ADMIN'),
+values (1, 'Esen', 'Niyazov', 'photoLink', 'esen@gmail.com',
+        '$2a$12$m3cYSQU6bNoMc0B6PFFQku2eDX6fWEZOY/G/E9D77p7SCXlamH9Tq','SUPER_ADMIN'),
 
-       (2, 'Nurmuhammad', 'Nurbekov', 'photoLink', 'admin@gmail.com',
+       (2, 'Datka', 'Mamatzhanova', 'photoLink', 'admin@gmail.com',
         '$2a$12$TbmCs13/KkzrcHd.rSnZeOH5qvVc79nuGb/bYhbC3sT8dYK9unj2q', 'ADMIN'),
 
        (3, 'Nursultan', 'Askarov', 'users_photoLink', 'user@gmail.com',
-        '$2a$12$vkwGsKlu3LmvlxpkMz./QOHE9TrcGBU5yjPqTeqjuvjGoFk3pkSlS', 'USER');
+        '$2a$12$LcHYIlKllzvoMqfQpLOdqeNedFtk.SMb.CeRUyX/n7lBIPx00rtgW', 'USER');
 
 insert into workspaces (id, name, is_favorite, lead_id)
 values (1, 'Workspace Name', false,  1);

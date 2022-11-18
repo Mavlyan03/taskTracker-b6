@@ -137,7 +137,7 @@ public class ChecklistService {
             for (SubTask subTask : allSubTasks) {
                 List<MemberResponse> memberResponses = new ArrayList<>();
                 EstimationResponse estimationResponse = new EstimationResponse();
-                if (subTask.getWorkspacesUsers() == null) {
+                if (subTask.getWorkspacesMembers() == null) {
                     if (subTask.getEstimation() == null) {
                         subTaskResponses.add(new SubTaskResponse(subTask.getId(), subTask.getDescription(),
                                 subTask.getIsDone(), memberResponses, estimationResponse));
@@ -151,7 +151,7 @@ public class ChecklistService {
                                         subTask.getEstimation().getReminder())));
                     }
                 } else {
-                    for (User user : subTask.getWorkspacesUsers()) {
+                    for (User user : subTask.getWorkspacesMembers()) {
                         memberResponses.add(convertToMemberResponse(user));
                     }
                     if (subTask.getEstimation() != null) {

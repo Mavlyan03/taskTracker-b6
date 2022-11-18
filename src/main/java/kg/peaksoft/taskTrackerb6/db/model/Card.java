@@ -47,7 +47,7 @@ public class Card {
     @OneToMany(cascade = {ALL}, mappedBy = "card")
     private List<Checklist> checklists;
 
-    @OneToOne(cascade = {ALL})
+    @OneToOne(cascade = {ALL}, mappedBy = "card")
     private Estimation estimation;
 
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
