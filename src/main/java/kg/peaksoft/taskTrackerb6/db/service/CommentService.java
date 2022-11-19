@@ -37,7 +37,7 @@ public class CommentService {
         comment.setUser(getAuthenticatedUser());
         comment.setCard(card);
         comment.setText(request.getText());
-        comment.setCreatedDate(LocalDateTime.now());
+        comment.setCreatedAt(LocalDateTime.now());
         card.addComment(comment);
         commentRepository.save(comment);
         return convertToResponse(comment);
@@ -52,7 +52,7 @@ public class CommentService {
             throw new BadCredentialException("You cannot edit this comment");
         }
         comment.setText(request.getText());
-        comment.setCreatedDate(LocalDateTime.now());
+        comment.setCreatedAt(LocalDateTime.now());
         Comment comment1 = commentRepository.save(comment);
 
         return convertToResponse(comment1);
@@ -95,7 +95,7 @@ public class CommentService {
                                           comment.getUser().getImage());
         return new CommentResponse (comment.getId(),
                                     comment.getText(),
-                                    comment.getCreatedDate(),
+                                    comment.getCreatedAt(),
                                     commentedUserResponse);
     }
 }
