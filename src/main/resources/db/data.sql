@@ -33,13 +33,13 @@ values (1, 'First Checklist', 1, 1);
 insert into subtasks (id, description, is_done, checklist_id, estimation_id)
 values (1, 'Subtasks description ', false, 1, 1);
 
-insert into notifications (id, message, is_read, user_id, sub_task_id, card_id, column_id, estimation_id)
-values (1, 'First Text', false, 1, 1, 1, 1, 1);
+insert into notifications (id, message, created_at, notification_type, from_user_id, user_id, sub_task_id, card_id, column_id, estimation_id)
+values (1, 'First Text', '2022-10-31', 'ASSIGN', 1, 2, 1, 1, 1, 1);
 
 insert into labels (id, color, description, card_id)
 values (1, 'RED', 'White', 1);
 
-insert into comments (id, created_date, text, user_id, card_id)
+insert into comments (id, created_at, text, user_id, card_id)
 values (1, '2022-10-23', 'First text', 1, 1);
 
 insert into attachments (id, document_link, attached_date, card_id)
