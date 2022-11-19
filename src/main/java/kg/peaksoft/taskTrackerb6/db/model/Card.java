@@ -65,6 +65,9 @@ public class Card {
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private Board board;
 
+    @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    private Workspace workspace;
+
     public Card(String title, String description, Boolean isArchive, LocalDate createdAt, User creator) {
         this.title = title;
         this.description = description;

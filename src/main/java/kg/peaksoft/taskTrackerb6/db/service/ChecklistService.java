@@ -50,9 +50,9 @@ public class ChecklistService {
         User authUser = getAuthenticateUser();
         Card card = cardRepository.findById(id).orElseThrow(() ->
                 new NoSuchElementException(Card.class, id));
-        Board board = boardRepository.findById(card.getBoard().getId()).orElseThrow(()->
+        Board board = boardRepository.findById(card.getBoard().getId()).orElseThrow(() ->
                 new NoSuchElementException(Board.class, id));
-        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(()->
+        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(() ->
                 new NoSuchElementException(Workspace.class, id));
 
         Checklist checklist = new Checklist();
@@ -188,7 +188,7 @@ public class ChecklistService {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
-                user.getPhotoLink()
+                user.getImage()
         );
     }
 
@@ -201,12 +201,12 @@ public class ChecklistService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String login = authentication.getName();
         return userRepository.findUserByEmail(login).orElseThrow(() ->
-                new NotFoundException("User not found!"));
+                new NoSuchElementException("User not found!"));
     }
 
     public User convertMemberToUser(MemberRequest request) {
-        return userRepository.findUserByEmail(request.getEmail()).orElseThrow(()->
-                new NoSuchElementException("Email not found"));
+        return userRepository.findUserByEmail(request.getEmail()).orElseThrow(() ->
+                new NoSuchElementException("Email not found!"));
     }
 
     public MyTimeClass convertTimeToEntity(MyTimeClassRequest request) {

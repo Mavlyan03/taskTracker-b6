@@ -27,7 +27,7 @@ public class NotificationResponse {
         this.notifierId = notification.getFromUser().getId();
         this.firstName = notification.getFromUser().getFirstName();
         this.lastName = notification.getFromUser().getLastName();
-        this.image = notification.getFromUser().getPhotoLink();
+        this.image = notification.getFromUser().getImage();
         this.createdAt = notification.getCreatedAt();
         this.type = notification.getNotificationType();
         this.message = notification.getMessage();

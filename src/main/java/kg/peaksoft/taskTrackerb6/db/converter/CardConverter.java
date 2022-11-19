@@ -67,7 +67,6 @@ public class CardConverter {
         estimation.setStartTime(convertTimeToEntity(request.getEstimationRequest().getStartTime()));
         estimation.setDeadlineTime(convertTimeToEntity(request.getEstimationRequest().getDeadlineTime()));
         card.setEstimation(estimation);
-        estimation.setCard(card);
 
         List<MemberResponse> workspaceMember = new ArrayList<>();
         for (UserWorkSpace u : workspace.getUserWorkSpaces()) {
@@ -216,7 +215,7 @@ public class CardConverter {
     }
 
     private CommentedUserResponse convertToCommentedUserResponse(User user) {
-        return new CommentedUserResponse(user.getId(), user.getFirstName(), user.getLastName(), user.getPhotoLink());
+        return new CommentedUserResponse(user.getId(), user.getFirstName(), user.getLastName(), user.getImage());
     }
 
     private List<ChecklistResponse> getChecklistResponses(List<Checklist> checklists) {
@@ -245,7 +244,7 @@ public class CardConverter {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
-                user.getPhotoLink()
+                user.getImage()
         );
     }
 

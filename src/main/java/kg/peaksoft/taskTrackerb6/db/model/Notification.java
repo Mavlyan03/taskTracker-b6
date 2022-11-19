@@ -8,7 +8,6 @@ import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.*;
-
 import java.time.LocalDateTime;
 
 import static javax.persistence.CascadeType.*;
