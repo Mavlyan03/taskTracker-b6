@@ -25,7 +25,7 @@ public class Comment {
     @Column(length = 10000)
     private String text;
 
-    private LocalDateTime createdDate;
+    private LocalDateTime createdAt;
 
     @ManyToOne(cascade = {DETACH, MERGE, PERSIST, REFRESH})
     private User user;
@@ -33,8 +33,8 @@ public class Comment {
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private Card card;
 
-    public Comment(String text, LocalDateTime createdDate) {
+    public Comment(String text, LocalDateTime createdAt) {
         this.text = text;
-        this.createdDate = createdDate;
+        this.createdAt = createdAt;
     }
 }

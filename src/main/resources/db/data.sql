@@ -33,13 +33,13 @@ values (1, 10, 20),
 insert into estimations (id, start_date, start_time_id, due_date, deadline_time_id, reminder, text, card_id, user_id, sub_task_id)
 values (1, '2022-02-01', 1, '2022-12-12', 2, 5, 'First Text', 1, 1,  1);
 
-insert into notifications (id, message, is_read, user_id, sub_task_id, card_id, column_id, estimation_id)
-values (1, 'First Text', false, 1, 1, 1, 1, 1);
+insert into notifications (id, message, created_at, from_user_id, user_id, sub_task_id, card_id, column_id, estimation_id)
+values (1, 'First Text',  '2022-10-31', 1, 1, 1, 1, 1, 1);
 
 insert into labels (id, color, description, card_id)
 values (1, 'RED', 'White', 1);
 
-insert into comments (id, created_date, text, user_id, card_id)
+insert into comments (id, created_at, text, user_id, card_id)
 values (1, '2022-10-23', 'First text', 1, 1);
 
 insert into attachments (id, document_link, attached_date, card_id)

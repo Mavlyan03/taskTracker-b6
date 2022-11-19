@@ -21,7 +21,9 @@ public class Column {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "column_gen")
     @SequenceGenerator(name = "column_gen", sequenceName = "column_seq", allocationSize = 1, initialValue = 2)
     private Long id;
+
     private String title;
+
     private Boolean isArchive = false;
 
     @OneToMany(cascade = ALL, mappedBy = "column")
