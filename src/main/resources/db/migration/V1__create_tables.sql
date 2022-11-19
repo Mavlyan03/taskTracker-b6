@@ -23,7 +23,7 @@ create table users
     first_name varchar(255),
     last_name  varchar(255),
     password   varchar(255),
-    photo_link varchar(255),
+    image varchar(255),
     role       varchar(255)
 );
 
