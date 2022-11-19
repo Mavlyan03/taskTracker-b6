@@ -40,6 +40,9 @@ public class User implements UserDetails {
 
     private String password;
 
+    @OneToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    private List<Favorite> favorites;
+
     @OneToMany(cascade = {ALL}, mappedBy = "user")
     private List<Notification> notifications;
 
@@ -115,5 +118,12 @@ public class User implements UserDetails {
             notifications = new ArrayList<>();
         }
         notifications.add(notification);
+    }
+
+    public void addFavorite(Favorite favorite) {
+        if (favorites == null) {
+            favorites = new ArrayList<>();
+        }
+        favorites.add(favorite);
     }
 }
