@@ -180,7 +180,6 @@ create table notifications
     id                bigint not null
         primary key,
     created_at        timestamp,
-    is_read           boolean,
     message           varchar(10000),
     notification_type varchar(255),
     card_id           bigint
@@ -226,7 +225,7 @@ create table comments
 (
     id           bigint not null
         primary key,
-    created_date timestamp,
+    created_at timestamp,
     text         varchar(10000),
     card_id      bigint
         constraint fkq1d8ryms7bmgcdllfk7k50oe4

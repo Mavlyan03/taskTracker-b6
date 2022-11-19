@@ -34,7 +34,7 @@ insert into estimations (id, start_date, start_time_id, due_date, deadline_time_
 values (1, '2022-02-01', 1, '2022-12-12', 2, 5, 'First Text', 1, 1,  1);
 
 insert into notifications (id, message, created_at, notification_type, from_user_id, user_id, sub_task_id, card_id, column_id, estimation_id)
-values (1, 'First Text', '2022-10-31', 'ASSIGN' 1, 2, 1, 1, 1, 1);
+values (1, 'First Text', '2022-10-31', 'ASSIGN', 1, 2, 1, 1, 1, 1);
 
 insert into labels (id, color, description, card_id)
 values (1, 'RED', 'Complete this task immediately', 1);
@@ -61,4 +61,7 @@ insert into cards_members (card_id, members_id)
 values (1, 1);
 
 insert into subtasks_workspaces_members(sub_task_id, workspaces_members_id)
+values (1, 1);
+
+insert into workspaces_all_issues (workspace_id, all_issues_id)
 values (1, 1);
