@@ -8,6 +8,7 @@ import kg.peaksoft.taskTrackerb6.db.repository.BoardRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.UserWorkSpaceRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
+import kg.peaksoft.taskTrackerb6.dto.request.InviteToWorkspaceRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.WorkspaceRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.*;
 import kg.peaksoft.taskTrackerb6.enums.Role;
@@ -55,7 +56,12 @@ public class WorkspaceService {
         workspace.addUserWorkSpace(userWorkSpace);
         workspace.setLead(user);
         userWorkSpaceRepository.save(userWorkSpace);
-        return convertToResponse(workspaceRepository.save(workspace));
+        Workspace savedWorkspace = workspaceRepository.save(workspace);
+        return new WorkspaceResponse(
+                savedWorkspace.getId(),
+                savedWorkspace.getName(),
+                userRepository.getCreatorResponse(savedWorkspace.getLead().getId()),
+                savedWorkspace.getIsFavorite());
     }
 
 
@@ -64,7 +70,12 @@ public class WorkspaceService {
                 () -> new NotFoundException("workspace with id: " + id + " not found!")
         );
 
-        return convertToResponse(workspace);
+        return new WorkspaceResponse(
+                workspace.getId(),
+                workspace.getName(),
+                userRepository.getCreatorResponse(workspace.getLead().getId()),
+                workspace.getIsFavorite()
+        );
     }
 
 
@@ -91,7 +102,12 @@ public class WorkspaceService {
 
         workspace.setIsFavorite(!workspace.getIsFavorite());
         Workspace workspace1 = workspaceRepository.save(workspace);
-        return convertToResponse(workspace1);
+        return new WorkspaceResponse(
+                workspace1.getId(),
+                workspace1.getName(),
+                userRepository.getCreatorResponse(workspace1.getLead().getId()),
+                workspace1.getIsFavorite()
+        );
     }
 
 
@@ -108,7 +124,13 @@ public class WorkspaceService {
         }
 
         for (Workspace workspace : workspaces) {
-            workspaceResponses.add(convertToResponse(workspace));
+            workspaceResponses.add(new WorkspaceResponse(
+                            workspace.getId(),
+                            workspace.getName(),
+                            userRepository.getCreatorResponse(workspace.getLead().getId()),
+                            workspace.getIsFavorite()
+                    )
+            );
         }
         return workspaceResponses;
     }
@@ -148,17 +170,17 @@ public class WorkspaceService {
         workspace.setName(request.getName());
         workspace.setIsFavorite(workspace.getIsFavorite());
 
-        if (request.getEmails().isEmpty() || request.getEmails().get(0).equals("") || request.getEmails().get(0).isBlank()) {
+        if (request.getEmailAndEmailID().isEmpty() || request.getEmailAndEmailID().get(0).getEmail().equals("") || request.getEmailAndEmailID().get(0).getEmail().isBlank()) {
 
         } else {
-            for (String email : request.getEmails()) {
-                boolean exists = userRepository.existsUserByEmail(email);
+            for (InviteToWorkspaceRequest request1 : request.getEmailAndEmailID()) {
+                boolean exists = userRepository.existsUserByEmail(request1.getEmail());
                 if (!exists) {
                     MimeMessage mimeMessage = mailSender.createMimeMessage();
                     MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
                     helper.setSubject("[Task tracker] invitation to my workspace");
                     helper.setFrom("tasktracker.b6@gmail.com");
-                    helper.setTo(email);
+                    helper.setTo(request1.getEmail());
                     helper.setText(request.getLink());
                     mailSender.send(mimeMessage);
                 } else {
@@ -166,34 +188,14 @@ public class WorkspaceService {
                     MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
                     helper.setSubject("[Task tracker] invitation to my workspace");
                     helper.setFrom("tasktracker.b6@gmail.com");
-                    helper.setTo(email);
-                    helper.setText(request.getLink()); 
+                    helper.setTo(request1.getEmail());
+                    helper.setText(request.getLink());
                     mailSender.send(mimeMessage);
                 }
             }
         }
 
         return workspace;
-    }
-
-
-    private WorkspaceResponse convertToResponse(Workspace workspace) {
-        return new WorkspaceResponse(
-                workspace.getId(),
-                workspace.getName(),
-                convertToResponseCreator(workspace.getLead()),
-                workspace.getIsFavorite()
-        );
-    }
-
-
-    private CreatorResponse convertToResponseCreator(User user) {
-        CreatorResponse creatorResponse = new CreatorResponse();
-        creatorResponse.setId(user.getId());
-        creatorResponse.setFirstName(user.getFirstName());
-        creatorResponse.setLastName(user.getLastName());
-        creatorResponse.setImage(user.getImage());
-        return creatorResponse;
     }
 
 
