@@ -170,10 +170,10 @@ public class WorkspaceService {
         workspace.setName(request.getName());
         workspace.setIsFavorite(workspace.getIsFavorite());
 
-        if (request.getRequestEmailsAndID().isEmpty() || request.getRequestEmailsAndID().get(0).getEmail().equals("") || request.getRequestEmailsAndID().get(0).getEmail().isBlank()) {
+        if (request.getEmailAndEmailID().isEmpty() || request.getEmailAndEmailID().get(0).getEmail().equals("") || request.getEmailAndEmailID().get(0).getEmail().isBlank()) {
 
         } else {
-            for (InviteToWorkspaceRequest request1 : request.getRequestEmailsAndID()) {
+            for (InviteToWorkspaceRequest request1 : request.getEmailAndEmailID()) {
                 boolean exists = userRepository.existsUserByEmail(request1.getEmail());
                 if (!exists) {
                     MimeMessage mimeMessage = mailSender.createMimeMessage();
