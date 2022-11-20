@@ -1,6 +1,7 @@
 package kg.peaksoft.taskTrackerb6.db.repository;
 
 import kg.peaksoft.taskTrackerb6.db.model.User;
+import kg.peaksoft.taskTrackerb6.dto.response.CreatorResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -35,5 +36,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("select new kg.peaksoft.taskTrackerb6.dto.response.CardMemberResponse(u.id, u.image)" +
             " from User u where u.id = ?1")
     List<User> getAllCardMembers(Long cardId);
+
+    @Query("select new kg.peaksoft.taskTrackerb6.dto.response.CreatorResponse(" +
+            "u.id, " +
+            "u.firstName, " +
+            "u.lastName, " +
+            "u.image) from User u where u.id = :id")
+    CreatorResponse getCreatorResponse(Long id);
 }
 
