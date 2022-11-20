@@ -92,16 +92,15 @@ public class BoardService {
                 () -> new NotFoundException("Board with id: " + id + " not found!")
         );
 
-        board.setIsFavorite(false);
-        Board board1 = boardRepository.save(board);
         List<Favorite> favorites = user.getFavorites();
         for (Favorite favorite : favorites) {
-            if (favorite.getBoard().equals(board)) {
-//                favorite.setStatusChangedUser(null);
+            if (favorite.getBoard().getClass().equals(board.getClass())) {
+                board.setIsFavorite(false);
                 favoriteRepository.deleteFavorite(favorite.getId());
             }
         }
 
+        Board board1 = boardRepository.save(board);
         return new BoardResponse(board1.getId(),
                 board1.getTitle(),
                 board1.getIsFavorite(),

@@ -102,15 +102,15 @@ public class WorkspaceService {
                 () -> new NotFoundException("Workspace with id: " + id + " not found!")
         );
 
-        workspace.setIsFavorite(false);
-        Workspace workspace1 = workspaceRepository.save(workspace);
         List<Favorite> favorites = user.getFavorites();
         for (Favorite favorite : favorites) {
-            if (favorite.getWorkspace().equals(workspace1)) {
-
+            if (favorite.getWorkspace().getClass().equals(workspace.getClass())) {
+                workspace.setIsFavorite(false);
+                favorite.setStatusChangedUser(null);
                 favoriteRepository.deleteFavorite(favorite.getId());
             }
         }
+        Workspace workspace1 = workspaceRepository.save(workspace);
 
         return convertToResponse(workspace1);
     }
