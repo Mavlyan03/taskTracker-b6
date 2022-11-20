@@ -19,8 +19,8 @@ import static javax.persistence.CascadeType.*;
 public class SubTask {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sub_gen")
-    @SequenceGenerator(name = "sub_gen", sequenceName = "sub_seq", allocationSize = 1, initialValue = 2)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sub_task_gen")
+    @SequenceGenerator(name = "sub_task_gen", sequenceName = "sub_task_seq", allocationSize = 1, initialValue = 2)
     private Long id;
 
     @Column(length = 10000)
@@ -29,9 +29,9 @@ public class SubTask {
     private Boolean isDone = false;
 
     @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
-    private List<User> workspacesUsers;
+    private List<User> workspacesMembers;
 
-    @OneToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    @OneToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST}, mappedBy = "subTask")
     private Estimation estimation;
 
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
@@ -43,10 +43,10 @@ public class SubTask {
     }
 
     public void addMember(User user){
-        if (workspacesUsers == null){
-            workspacesUsers = new ArrayList<>();
+        if (workspacesMembers == null){
+            workspacesMembers = new ArrayList<>();
         }
-        workspacesUsers.add(user);
+        workspacesMembers.add(user);
     }
 
 }
