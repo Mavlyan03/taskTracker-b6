@@ -38,8 +38,21 @@ public class Workspace {
     @OneToMany(cascade = {ALL}, mappedBy = "workspace")
     private List<Board> boards;
 
-    public Workspace(String name, boolean isFavorite) {
+    public Workspace(String name, Boolean isFavorite) {
         this.name = name;
+        this.isFavorite = isFavorite;
+    }
+
+    public Workspace(Long id, String name, Boolean isFavorite) {
+        this.id = id;
+        this.name = name;
+        this.isFavorite = isFavorite;
+    }
+
+    public Workspace(Long id, String name, User lead, Boolean isFavorite) {
+        this.id = id;
+        this.name = name;
+        this.lead = lead;
         this.isFavorite = isFavorite;
     }
 

@@ -12,7 +12,7 @@ import java.util.List;
 public class WorkspaceRequest {
 
     private String name;
-    private List<String> emails;
+    private List<InviteToWorkspaceRequest> requestEmailsAndID;
     private String link;
 
 }
