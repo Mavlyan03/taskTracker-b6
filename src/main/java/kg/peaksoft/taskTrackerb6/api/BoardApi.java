@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("api/boards")
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyAuthority('ADMIN')")
+//@PreAuthorize("hasAnyAuthority('ADMIN')")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @Tag(name = "Board API", description = "All board endpoints for Admin")
 public class BoardApi {
