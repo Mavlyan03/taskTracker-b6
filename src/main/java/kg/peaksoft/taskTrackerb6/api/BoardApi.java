@@ -38,11 +38,11 @@ public class BoardApi {
         return boardService.makeFavorite(id);
     }
 
-    @Operation(summary = "Make not favorite", description = "Make board not favorite by id")
-    @PutMapping("/make-not-favorite/{id}")
-    public BoardResponse makeNotFavorite(@PathVariable Long id) {
-        return boardService.makeNotFavorite(id);
-    }
+//    @Operation(summary = "Make not favorite", description = "Make board not favorite by id")
+//    @PutMapping("/make-not-favorite/{id}")
+//    public BoardResponse makeNotFavorite(@PathVariable Long id) {
+//        return boardService.makeNotFavorite(id);
+//    }
 
     @Operation(summary = "Get board", description = "Get board by id")
     @GetMapping("{id}")
