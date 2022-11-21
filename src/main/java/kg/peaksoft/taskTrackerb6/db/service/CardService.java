@@ -54,7 +54,7 @@ public class CardService {
                 }
         );
 
-        Column changedColumn = columnRepository.findById(columnId).orElseThrow(
+        Column column = columnRepository.findById(columnId).orElseThrow(
                 () -> {
                     log.error("Column with id: {} not found!", columnId);
                     throw new NotFoundException("Column with id: " + columnId + " not found!");

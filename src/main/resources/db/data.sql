@@ -9,10 +9,11 @@ values (1, 'Esen', 'Niyazov', 'https://st-1.akipress.org/st_runews/.storage/limo
         '$2a$12$LcHYIlKllzvoMqfQpLOdqeNedFtk.SMb.CeRUyX/n7lBIPx00rtgW', 'USER');
 
 insert into workspaces (id, name, is_favorite, lead_id)
-values (1, 'Workspace Name', false,  1);
+values (1, 'Workspace Name', false,  1),
+       (2, 'Task Tracker', false, 2);
 
 insert into boards(id, title, background, is_archive, is_favorite, workspace_id)
-values (1, 'First Board', 'board_photo', false, false,  1);
+values (1, 'First Board', 'https://burst.shopifycdn.com/photos/city-lights-through-rain-window.jpg?width=1200&format=pjpg&exif=1&iptc=1', false, false,  1);
 
 insert into columns (id, title, is_archive, board_id)
 values (1, 'First Column', false, 1);
