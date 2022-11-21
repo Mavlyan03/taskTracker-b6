@@ -14,6 +14,7 @@ import kg.peaksoft.taskTrackerb6.enums.Role;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.Authentication;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 @Transactional
 @RequiredArgsConstructor
 public class WorkspaceService {
@@ -40,8 +42,12 @@ public class WorkspaceService {
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String login = authentication.getName();
-        return userRepository.findUserByEmail(login).orElseThrow(() ->
-                new NotFoundException("User not found!"));
+        return userRepository.findUserByEmail(login).orElseThrow(
+                () -> {
+                    log.error("User not found!");
+                    throw new NotFoundException("User not found!");
+                }
+        );
     }
 
     public WorkspaceResponse createWorkspace(WorkspaceRequest workspaceRequest) throws MessagingException {
@@ -55,6 +61,7 @@ public class WorkspaceService {
         workspace.addUserWorkSpace(userWorkSpace);
         workspace.setLead(user);
         userWorkSpaceRepository.save(userWorkSpace);
+        log.info("Workspace successfully created");
         Workspace savedWorkspace = workspaceRepository.save(workspace);
         return new WorkspaceResponse(
                 savedWorkspace.getId(),
@@ -66,7 +73,10 @@ public class WorkspaceService {
 
     public WorkspaceResponse getWorkspaceById(Long id) {
         Workspace workspace = workspaceRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("workspace with id: " + id + " not found!")
+                () -> {
+                    log.error("Workspace with id: {} not found!", id);
+                    throw new NotFoundException("Workspace with id: " + id + " not found!");
+                }
         );
 
         return new WorkspaceResponse(
@@ -77,30 +87,38 @@ public class WorkspaceService {
         );
     }
 
-
     public SimpleResponse deleteWorkspaceById(Long id) {
         User user = getAuthenticateUser();
 
         Workspace workspace = workspaceRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("workspace with id: " + id + " not found!")
+                () -> {
+                    log.error("Workspace with id: {} not found!", id);
+                    throw new NotFoundException("Workspace with id: " + id + " not found!");
+                }
         );
 
         if (!user.getEmail().equals(workspace.getLead().getEmail())) {
+            log.error("You can not delete this workspace!");
             throw new BadCredentialException("You can not delete this workspace!");
         }
 
         workspaceRepository.delete(workspace);
-        return new SimpleResponse("workspace with id: " + id + " is deleted!", "DELETE");
+        log.info("Workspace with id: {} successfully deleted!", id);
+        return new SimpleResponse("Workspace with id: " + id + " successfully!", "DELETE");
     }
 
 
     public WorkspaceResponse changeWorkspacesAction(Long id) {
         Workspace workspace = workspaceRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("workspace with id: " + id + " not found!")
+                () -> {
+                    log.error("Workspace with id: {} not found!", id);
+                    throw new NotFoundException("Workspace with id: " + id + " not found!");
+                }
         );
 
         workspace.setIsFavorite(!workspace.getIsFavorite());
         Workspace workspace1 = workspaceRepository.save(workspace);
+        log.info("Workspace action with id: {} successfully change", id);
         return new WorkspaceResponse(
                 workspace1.getId(),
                 workspace1.getName(),
@@ -112,10 +130,8 @@ public class WorkspaceService {
 
     public List<WorkspaceResponse> getAllUserWorkspaces() {
         User user = getAuthenticateUser();
-
         List<WorkspaceResponse> workspaceResponses = new ArrayList<>();
         List<Workspace> workspaces = new ArrayList<>();
-
         for (UserWorkSpace userWorkSpace : user.getUserWorkSpaces()) {
             if (userWorkSpace.getUser().equals(user)) {
                 workspaces.add(userWorkSpace.getWorkspace());
@@ -131,6 +147,8 @@ public class WorkspaceService {
                     )
             );
         }
+
+        log.info("Get all workspaces");
         return workspaceResponses;
     }
 
@@ -138,6 +156,7 @@ public class WorkspaceService {
     public List<FavoritesResponse> getAllFavorites() {
         List<FavoritesResponse> getFavorites = new ArrayList<>();
         getFavorites.add(new FavoritesResponse(getFavoriteWorkspacesList(), getFavoriteBoardsList()));
+        log.info("Get all favorite workspaces");
         return getFavorites;
     }
 
@@ -195,6 +214,7 @@ public class WorkspaceService {
         }
 
         return workspace;
+
     }
 
 

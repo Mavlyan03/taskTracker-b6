@@ -13,6 +13,7 @@ import kg.peaksoft.taskTrackerb6.enums.LabelsColor;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 @Transactional
 @RequiredArgsConstructor
 public class AllIssuesService {
@@ -33,7 +35,10 @@ public class AllIssuesService {
 
     public List<AllIssuesResponse> allIssues(Long workspaceId) {
         Workspace workspace = workspaceRepository.findById(workspaceId).orElseThrow(
-                () -> new NotFoundException("Workspace not found!")
+                () -> {
+                    log.error("Workspace with id: {} not found!", workspaceId);
+                    throw new NotFoundException("Workspace with id: " + workspaceId + " not found!");
+                }
         );
 
         List<AllIssuesResponse> allIssuesResponses = new ArrayList<>();
@@ -83,12 +88,14 @@ public class AllIssuesService {
         if (from != null && to != null) {
 
             if (from.isAfter(to)) {
-                throw new BadCredentialException("Please make a valid request");
+                log.error("Not valid request!");
+                throw new BadCredentialException("Not valid request!");
             }
 
             response.setResponses(allIssuesResponsesList(cardRepository.searchCardByCreatedAt(id, from, to)));
         }
 
+        log.info("Filter cards by created date");
         return response;
     }
 
@@ -98,6 +105,7 @@ public class AllIssuesService {
             responses.add(convertToResponse(card));
         }
 
+        log.info("Get all issues responses list!");
         return responses;
     }
 
@@ -115,6 +123,7 @@ public class AllIssuesService {
             }
         }
 
+        log.info("Filter cards by label's color!");
         return allIssues;
     }
 
@@ -131,6 +140,7 @@ public class AllIssuesService {
             }
         }
 
+        log.info("Get all member assigned cards");
         return memberAssignedCards;
     }
 }
