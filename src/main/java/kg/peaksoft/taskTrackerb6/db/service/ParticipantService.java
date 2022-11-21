@@ -69,8 +69,8 @@ public class ParticipantService {
 
         User corpse = userRepository.findById(userId).orElseThrow(
                 () -> {
-                    log.error("User with this id: {} not found!", userId);
-                    throw new NotFoundException("User with this id " + userId + " not found");
+                    log.error("User with id: {} not found!", userId);
+                    throw new NotFoundException("User with id: " + userId + " not found");
                 }
         );
 

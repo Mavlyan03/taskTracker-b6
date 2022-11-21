@@ -143,7 +143,7 @@ public class CardService {
     public CardInnerPageResponse updateTitle(UpdateCardTitleRequest request) {
         Card card = cardRepository.findById(request.getId()).orElseThrow(
                 () -> {
-                    log.error("Card with id: " + request.getId() + " not found!");
+                    log.error("Card with id: {} not found!", request.getId());
                     throw new NotFoundException("Card with id: " + request.getId() + " not found!");
                 }
         );

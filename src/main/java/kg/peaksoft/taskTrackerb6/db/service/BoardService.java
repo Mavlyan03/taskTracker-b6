@@ -49,8 +49,8 @@ public class BoardService {
     public SimpleResponse deleteBoardById(Long id, Board board) {
         Board board1 = boardRepository.findById(id).orElseThrow(
                 () -> {
-                    log.error("board with id: {} not found!", id);
-                    throw new NotFoundException("board with id: " + id + " not found!");
+                    log.error("Board with id: {} not found!", id);
+                    throw new NotFoundException("Board with id: " + id + " not found!");
                 }
         );
 
@@ -151,7 +151,7 @@ public class BoardService {
             archiveBoards.add(convertToArchiveBoardResponse(board));
         }
 
-        log.info("Get all arched boards");
+        log.info("Get all archived boards");
         return archiveBoards;
     }
 
@@ -159,7 +159,6 @@ public class BoardService {
         Board board = boardRepository.findById(id).orElseThrow(
                 () -> {
                     log.error("Board with id: {} not found", id);
-
                     throw new NotFoundException(String.format("Board with id %s not found", id));
                 }
         );

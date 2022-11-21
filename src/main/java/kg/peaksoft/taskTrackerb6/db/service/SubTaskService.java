@@ -43,15 +43,15 @@ public class SubTaskService {
 
         User currentUser = getCurrentUser();
         Checklist checklist = checklistRepository.findById(id).orElseThrow(() -> {
-                    log.error("No such element!");
+                    log.error("Checklist with id: {} not found!", id);
                     throw new NoSuchElementException(Checklist.class, id);
                 }
         );
 
         Workspace workspace = workspaceRepository.findById(checklist.getCard().getBoard().getWorkspace().getId()).orElseThrow(
                 () -> {
-                    log.error("No such element!");
-                    throw new NoSuchElementException(Workspace.class, id);
+                    log.error("Workspace with id: {} not found!", checklist.getCard().getBoard().getWorkspace().getId());
+                    throw new NoSuchElementException(Workspace.class, checklist.getCard().getBoard().getWorkspace().getId());
                 }
         );
 
@@ -91,7 +91,7 @@ public class SubTaskService {
 
     public SubTaskResponse updateDescription(Long id, SubTaskRequest request) {
         SubTask subTask = subTaskRepository.findById(id).orElseThrow(() -> {
-                    log.error("No such element!");
+                    log.error("SubTask with id: {} not found!", id);
                     throw new NoSuchElementException(SubTask.class, id);
                 }
         );
@@ -103,7 +103,7 @@ public class SubTaskService {
 
     public SimpleResponse deleteSubTask(Long id) {
         SubTask subTask = subTaskRepository.findById(id).orElseThrow(() -> {
-                    log.error("No such element!");
+                    log.error("SubTask with id: {} not found!", id);
                     throw new NoSuchElementException(SubTask.class, id);
                 }
         );
@@ -117,7 +117,7 @@ public class SubTaskService {
 
     public SubTaskResponse addToCompleted(Long subtaskId) {
         SubTask subTask = subTaskRepository.findById(subtaskId).orElseThrow(() -> {
-                    log.error("No such element!");
+                    log.error("SubTask with id: {} not found!", subtaskId);
                     throw new NoSuchElementException(SubTask.class, subtaskId);
                 }
         );
@@ -129,7 +129,7 @@ public class SubTaskService {
 
     public SubTaskResponse uncheck(Long subtaskId) {
         SubTask subTask = subTaskRepository.findById(subtaskId).orElseThrow(() -> {
-                    log.error("No such element!");
+                    log.error("SubTask with id: {} not found!", subtaskId);
                     throw new NoSuchElementException(SubTask.class, subtaskId);
                 }
         );

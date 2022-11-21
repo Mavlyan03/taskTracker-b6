@@ -97,7 +97,7 @@ public class CommentService {
             commentResponses.add(convertToResponse(comment));
         }
 
-        log.info("Get all comments by cards id");
+        log.info("Get all comments by card's id");
         return commentResponses;
     }
 

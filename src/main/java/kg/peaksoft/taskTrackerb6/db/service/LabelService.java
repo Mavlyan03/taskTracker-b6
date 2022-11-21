@@ -46,7 +46,7 @@ public class LabelService {
     }
 
     public List<LabelResponse> getAllLabelsByCardId(Long cardId) {
-        log.info("Get all label by card id");
+        log.info("Get all label by card's id");
         return labelRepository.getAllLabelResponses(cardId);
     }
 

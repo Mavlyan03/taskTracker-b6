@@ -54,21 +54,21 @@ public class ChecklistService {
         User authUser = getAuthenticateUser();
         Card card = cardRepository.findById(id).orElseThrow(
                 () -> {
-                    log.error("No such element!");
+                    log.error("Checklist with id: {} not found!", id);
                     throw new NoSuchElementException(Card.class, id);
                 }
         );
 
         Board board = boardRepository.findById(card.getBoard().getId()).orElseThrow(
                 () -> {
-                    log.error("No such element!");
+                    log.error("Checklist with id: {} not found!", id);
                     throw new NoSuchElementException(Board.class, id);
                 }
         );
 
         Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(
                 () -> {
-                    log.error("No such element!");
+                    log.error("Checklist with id: {} not found!", id);
                     throw new NoSuchElementException(Workspace.class, id);
                 }
         );
@@ -151,7 +151,7 @@ public class ChecklistService {
             checklistResponses.add(convertToResponse(checklist));
         }
 
-        log.info("Get all checklists by card id");
+        log.info("Get all checklists by card's id");
         return checklistResponses;
     }
 

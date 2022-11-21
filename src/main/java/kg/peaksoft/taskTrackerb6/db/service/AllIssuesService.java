@@ -37,7 +37,7 @@ public class AllIssuesService {
         Workspace workspace = workspaceRepository.findById(workspaceId).orElseThrow(
                 () -> {
                     log.error("Workspace with id: {} not found!", workspaceId);
-                    throw new NotFoundException("Workspace not found!");
+                    throw new NotFoundException("Workspace with id: " + workspaceId + " not found!");
                 }
         );
 

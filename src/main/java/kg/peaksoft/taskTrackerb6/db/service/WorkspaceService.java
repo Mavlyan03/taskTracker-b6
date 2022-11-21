@@ -63,7 +63,6 @@ public class WorkspaceService {
         workspace.setLead(user);
         userWorkSpaceRepository.save(userWorkSpace);
         log.info("Workspace successfully created");
-        return convertToResponse(workspaceRepository.save(workspace));
         Workspace savedWorkspace = workspaceRepository.save(workspace);
         return new WorkspaceResponse(
                 savedWorkspace.getId(),
@@ -114,15 +113,14 @@ public class WorkspaceService {
     public WorkspaceResponse changeWorkspacesAction(Long id) {
         Workspace workspace = workspaceRepository.findById(id).orElseThrow(
                 () -> {
-                    log.error("workspace with id: {} not found!", id);
-                    throw new NotFoundException("workspace with id: " + id + " not found!");
+                    log.error("Workspace with id: {} not found!", id);
+                    throw new NotFoundException("Workspace with id: " + id + " not found!");
                 }
         );
 
         workspace.setIsFavorite(!workspace.getIsFavorite());
         Workspace workspace1 = workspaceRepository.save(workspace);
         log.info("Workspace action with id: {} successfully change", id);
-        return convertToResponse(workspace1);
         return new WorkspaceResponse(
                 workspace1.getId(),
                 workspace1.getName(),

@@ -43,7 +43,7 @@ public class NotificationService {
             notificationResponses.add(new NotificationResponse(notification));
         }
 
-        log.info("Get all user notifications");
+        log.info("Get all user's notifications");
         return notificationResponses;
     }
 
