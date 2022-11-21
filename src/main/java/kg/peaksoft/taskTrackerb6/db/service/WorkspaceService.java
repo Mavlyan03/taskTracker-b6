@@ -88,7 +88,6 @@ public class WorkspaceService {
         );
     }
 
-
     public SimpleResponse deleteWorkspaceById(Long id) {
         User user = getAuthenticateUser();
 
