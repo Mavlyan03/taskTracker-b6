@@ -44,6 +44,8 @@ public class NotificationService {
         Notification notification = notificationRepository.findById(id).get();
         return new NotificationResponse(
                 notification.getId(),
+                notification.getBoard().getTitle(),
+                notification.getBoard().getBackground(),
                 notification.getFromUser().getId(),
                 notification.getFromUser().getFirstName(),
                 notification.getFromUser().getLastName(),

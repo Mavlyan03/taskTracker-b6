@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 public class NotificationResponse {
 
     private Long id;
+    private String boardTitle;
+    private String background;
     private Long notifierId;
     private String firstName;
     private String lastName;
@@ -24,6 +26,8 @@ public class NotificationResponse {
 
     public NotificationResponse(Notification notification) {
         this.id = notification.getId();
+        this.boardTitle = notification.getBoard().getTitle();
+        this.background = notification.getBoard().getBackground();
         this.notifierId = notification.getFromUser().getId();
         this.firstName = notification.getFromUser().getFirstName();
         this.lastName = notification.getFromUser().getLastName();
