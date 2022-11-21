@@ -103,7 +103,16 @@ public class WorkspaceService {
                 () -> new NotFoundException("workspace with id: " + id + " not found!")
         );
 
-        workspace.setIsFavorite(true);
+        List<Favorite> favorites = user.getFavorites();
+        for (Favorite favorite : favorites) {
+            if (favorite.getWorkspace().getClass().equals(workspace.getClass())) {
+                workspace.setIsFavorite(true);
+                Favorite favorite1 = new Favorite(user, workspace);
+                favoriteRepository.save(favorite1);
+                user.addFavorite(favorite1);
+            }
+        }
+
         Workspace workspace1 = workspaceRepository.save(workspace);
         return new WorkspaceResponse(
                 workspace1.getId(),
@@ -111,125 +120,88 @@ public class WorkspaceService {
                 userRepository.getCreatorResponse(workspace1.getLead().getId()),
                 workspace1.getIsFavorite()
         );
-        Favorite favorite = new Favorite(user, workspace1);
-        favoriteRepository.save(favorite);
-        user.addFavorite(favorite);
-        return convertToResponse(workspace1);
-    }
-
-    public WorkspaceResponse makeNotFavorite(Long id) {
-        User user = getAuthenticateUser();
-        Workspace workspace = workspaceRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Workspace with id: " + id + " not found!")
-        );
-
-        List<Favorite> favorites = user.getFavorites();
-        for (Favorite favorite : favorites) {
-            if (favorite.getWorkspace().getClass().equals(workspace.getClass())) {
-                workspace.setIsFavorite(false);
-                favorite.setStatusChangedUser(null);
-                favoriteRepository.deleteFavorite(favorite.getId());
-            }
-        }
-        Workspace workspace1 = workspaceRepository.save(workspace);
-
-        return convertToResponse(workspace1);
     }
 
 
-    public List<WorkspaceResponse> getAllUserWorkspaces() {
-        User user = getAuthenticateUser();
-
-        List<WorkspaceResponse> workspaceResponses = new ArrayList<>();
-        List<Workspace> workspaces = new ArrayList<>();
-
-        for (UserWorkSpace userWorkSpace : user.getUserWorkSpaces()) {
-            if (userWorkSpace.getUser().equals(user)) {
-                workspaces.add(userWorkSpace.getWorkspace());
-            }
-        }
-
-        for (Workspace workspace : workspaces) {
-            workspaceResponses.add(new WorkspaceResponse(
-                            workspace.getId(),
-                            workspace.getName(),
-                            userRepository.getCreatorResponse(workspace.getLead().getId()),
-                            workspace.getIsFavorite()
-                    )
+        public WorkspaceResponse makeNotFavorite (Long id){
+            User user = getAuthenticateUser();
+            Workspace workspace = workspaceRepository.findById(id).orElseThrow(
+                    () -> new NotFoundException("Workspace with id: " + id + " not found!")
             );
-        }
-        return workspaceResponses;
-    }
 
-
-    private Workspace convertToEntity(WorkspaceRequest request) throws MessagingException {
-        Workspace workspace = new Workspace();
-        workspace.setName(request.getName());
-        workspace.setIsFavorite(workspace.getIsFavorite());
-
-        if (request.getEmailAndEmailID().isEmpty() || request.getEmailAndEmailID().get(0).getEmail().equals("") || request.getEmailAndEmailID().get(0).getEmail().isBlank()) {
-
-        } else {
-            for (InviteToWorkspaceRequest request1 : request.getEmailAndEmailID()) {
-                boolean exists = userRepository.existsUserByEmail(request1.getEmail());
-                if (!exists) {
-                    MimeMessage mimeMessage = mailSender.createMimeMessage();
-                    MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-                    helper.setSubject("[Task tracker] invitation to my workspace");
-                    helper.setFrom("tasktracker.b6@gmail.com");
-                    helper.setTo(request1.getEmail());
-                    helper.setText(request.getLink());
-                    mailSender.send(mimeMessage);
-                } else {
-                    MimeMessage mimeMessage = mailSender.createMimeMessage();
-                    MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-                    helper.setSubject("[Task tracker] invitation to my workspace");
-                    helper.setFrom("tasktracker.b6@gmail.com");
-                    helper.setTo(request1.getEmail());
-                    helper.setText(request.getLink());
-                    mailSender.send(mimeMessage);
+            List<Favorite> favorites = user.getFavorites();
+            for (Favorite favorite : favorites) {
+                if (favorite.getWorkspace().getClass().equals(workspace.getClass())) {
+                    workspace.setIsFavorite(false);
+                    favorite.setStatusChangedUser(null);
+                    favoriteRepository.deleteFavorite(favorite.getId());
                 }
             }
+            Workspace workspace1 = workspaceRepository.save(workspace);
+
+            return new WorkspaceResponse(
+                    workspace1.getId(),
+                    workspace1.getName(),
+                    userRepository.getCreatorResponse(workspace1.getLead().getId()),
+                    workspace1.getIsFavorite());
         }
 
-        return workspace;
+
+        public List<WorkspaceResponse> getAllUserWorkspaces () {
+            User user = getAuthenticateUser();
+
+            List<WorkspaceResponse> workspaceResponses = new ArrayList<>();
+            List<Workspace> workspaces = new ArrayList<>();
+
+            for (UserWorkSpace userWorkSpace : user.getUserWorkSpaces()) {
+                if (userWorkSpace.getUser().equals(user)) {
+                    workspaces.add(userWorkSpace.getWorkspace());
+                }
+            }
+
+            for (Workspace workspace : workspaces) {
+                workspaceResponses.add(new WorkspaceResponse(
+                                workspace.getId(),
+                                workspace.getName(),
+                                userRepository.getCreatorResponse(workspace.getLead().getId()),
+                                workspace.getIsFavorite()
+                        )
+                );
+            }
+            return workspaceResponses;
+        }
+
+
+        private Workspace convertToEntity (WorkspaceRequest request) throws MessagingException {
+            Workspace workspace = new Workspace();
+            workspace.setName(request.getName());
+            workspace.setIsFavorite(workspace.getIsFavorite());
+
+            if (request.getEmailAndEmailID().isEmpty() || request.getEmailAndEmailID().get(0).getEmail().equals("") || request.getEmailAndEmailID().get(0).getEmail().isBlank()) {
+
+            } else {
+                for (InviteToWorkspaceRequest request1 : request.getEmailAndEmailID()) {
+                    boolean exists = userRepository.existsUserByEmail(request1.getEmail());
+                    if (!exists) {
+                        MimeMessage mimeMessage = mailSender.createMimeMessage();
+                        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+                        helper.setSubject("[Task tracker] invitation to my workspace");
+                        helper.setFrom("tasktracker.b6@gmail.com");
+                        helper.setTo(request1.getEmail());
+                        helper.setText(request.getLink());
+                        mailSender.send(mimeMessage);
+                    } else {
+                        MimeMessage mimeMessage = mailSender.createMimeMessage();
+                        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+                        helper.setSubject("[Task tracker] invitation to my workspace");
+                        helper.setFrom("tasktracker.b6@gmail.com");
+                        helper.setTo(request1.getEmail());
+                        helper.setText(request.getLink());
+                        mailSender.send(mimeMessage);
+                    }
+                }
+            }
+
+            return workspace;
+        }
     }
-
-
-    private WorkspaceResponse convertToResponse(Workspace workspace) {
-        return new WorkspaceResponse(
-                workspace.getId(),
-                workspace.getName(),
-                convertToResponseCreator(workspace.getLead()),
-                workspace.getIsFavorite()
-        );
-    }
-
-
-    private CreatorResponse convertToResponseCreator(User user) {
-        CreatorResponse creatorResponse = new CreatorResponse();
-        creatorResponse.setId(user.getId());
-        creatorResponse.setFirstName(user.getFirstName());
-        creatorResponse.setLastName(user.getLastName());
-        creatorResponse.setImage(user.getImage());
-        return creatorResponse;
-    }
-
-    private FavoriteWorkspaceResponse convertToFavoriteWorkspaceResponse(Workspace workspace) {
-        return new FavoriteWorkspaceResponse(
-                workspace.getId(),
-                workspace.getName(),
-                workspace.getIsFavorite()
-        );
-    }
-
-
-    private FavoriteBoardResponse convertToFavoriteBoardResponse(Board board) {
-        return new FavoriteBoardResponse(
-                board.getId(),
-                board.getTitle(),
-                board.getBackground(),
-                board.getIsFavorite()
-        );
-    }
-}
