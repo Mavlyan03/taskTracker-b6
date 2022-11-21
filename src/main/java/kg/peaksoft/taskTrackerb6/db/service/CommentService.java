@@ -45,7 +45,7 @@ public class CommentService {
         comment.setUser(getAuthenticatedUser());
         comment.setCard(card);
         comment.setText(request.getText());
-        comment.setCreatedDate(LocalDateTime.now());
+        comment.setCreatedAt(LocalDateTime.now());
         card.addComment(comment);
         commentRepository.save(comment);
         log.info("Comment successfully created");
@@ -66,7 +66,7 @@ public class CommentService {
         }
 
         comment.setText(request.getText());
-        comment.setCreatedDate(LocalDateTime.now());
+        comment.setCreatedAt(LocalDateTime.now());
         Comment comment1 = commentRepository.save(comment);
         log.info("Comment with id: {} successfully edited", id);
         return convertToResponse(comment1);
@@ -115,12 +115,12 @@ public class CommentService {
     public CommentResponse convertToResponse(Comment comment) {
         CommentedUserResponse commentedUserResponse =
                 new CommentedUserResponse(comment.getUser().getId(),
-                        comment.getUser().getFirstName(),
-                        comment.getUser().getLastName(),
-                        comment.getUser().getImage());
-        return new CommentResponse(comment.getId(),
-                comment.getText(),
-                comment.getCreatedDate(),
-                commentedUserResponse);
+                                          comment.getUser().getFirstName(),
+                                          comment.getUser().getLastName(),
+                                          comment.getUser().getImage());
+        return new CommentResponse (comment.getId(),
+                                    comment.getText(),
+                                    comment.getCreatedAt(),
+                                    commentedUserResponse);
     }
 }

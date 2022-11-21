@@ -72,7 +72,6 @@ public class CardService {
             card.setColumn(changedColumn);
             Notification notification = new Notification();
             notification.setCard(card);
-            notification.setIsRead(false);
             notification.setNotificationType(NotificationType.CHANGE_STATUS);
             notification.setFromUser(user);
             notification.setUser(card.getCreator());

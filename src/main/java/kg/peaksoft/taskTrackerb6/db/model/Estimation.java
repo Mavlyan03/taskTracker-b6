@@ -41,6 +41,9 @@ public class Estimation {
     private SubTask subTask;
 
     @OneToOne(cascade = {DETACH, REFRESH, PERSIST, MERGE})
+    private Card card;
+
+    @OneToOne(cascade = {DETACH, REFRESH, PERSIST, MERGE})
     private User user;
 
     public Estimation(LocalDate startDate, LocalDate dueDate) {

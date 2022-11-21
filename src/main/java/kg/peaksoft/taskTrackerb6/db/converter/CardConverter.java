@@ -82,7 +82,6 @@ public class CardConverter {
                     card.addMember(convertMemberToUser(m));
                     Notification notification = new Notification();
                     notification.setCard(card);
-                    notification.setIsRead(false);
                     notification.setNotificationType(NotificationType.ASSIGN);
                     notification.setFromUser(user);
                     notification.setUser(convertMemberToUser(m));
@@ -212,7 +211,7 @@ public class CardConverter {
 
     private CommentResponse convertCommentToResponse(Comment comment) {
         User user = getAuthenticateUser();
-        return new CommentResponse(comment.getId(), comment.getText(), comment.getCreatedDate(), convertToCommentedUserResponse(user));
+        return new CommentResponse(comment.getId(), comment.getText(), comment.getCreatedAt(), convertToCommentedUserResponse(user));
     }
 
     private CommentedUserResponse convertToCommentedUserResponse(User user) {
