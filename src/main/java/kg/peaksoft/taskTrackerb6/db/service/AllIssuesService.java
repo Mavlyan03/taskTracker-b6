@@ -88,8 +88,8 @@ public class AllIssuesService {
         if (from != null && to != null) {
 
             if (from.isAfter(to)) {
-                log.error("Please make a valid request!");
-                throw new BadCredentialException("Please make a valid request!");
+                log.error("Not valid request!");
+                throw new BadCredentialException("Not valid request!");
             }
 
             response.setResponses(allIssuesResponsesList(cardRepository.searchCardByCreatedAt(id, from, to)));

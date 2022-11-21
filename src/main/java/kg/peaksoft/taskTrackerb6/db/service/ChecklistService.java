@@ -54,21 +54,21 @@ public class ChecklistService {
         User authUser = getAuthenticateUser();
         Card card = cardRepository.findById(id).orElseThrow(
                 () -> {
-                    log.error("Checklist with id: {} not found!", id);
+                    log.error("Card with id: {} not found!", id);
                     throw new NoSuchElementException(Card.class, id);
                 }
         );
 
         Board board = boardRepository.findById(card.getBoard().getId()).orElseThrow(
                 () -> {
-                    log.error("Checklist with id: {} not found!", id);
+                    log.error("Board with id: {} not found!", id);
                     throw new NoSuchElementException(Board.class, id);
                 }
         );
 
         Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(
                 () -> {
-                    log.error("Checklist with id: {} not found!", id);
+                    log.error("Workspace with id: {} not found!", id);
                     throw new NoSuchElementException(Workspace.class, id);
                 }
         );

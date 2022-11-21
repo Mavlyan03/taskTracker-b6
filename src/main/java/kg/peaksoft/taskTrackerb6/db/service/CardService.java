@@ -184,7 +184,7 @@ public class CardService {
             basket.setCard(card);
         }
 
-        log.info("Card with id: {} successfully archived or unarchived", id);
+        log.info("Card with id: {} successfully archived", id);
         return converter.convertToCardInnerPageResponse(card);
     }
 
