@@ -8,7 +8,6 @@ import kg.peaksoft.taskTrackerb6.db.repository.BoardRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.UserWorkSpaceRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
-import kg.peaksoft.taskTrackerb6.dto.request.InviteToWorkspaceRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.WorkspaceRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.*;
 import kg.peaksoft.taskTrackerb6.enums.Role;
@@ -189,17 +188,17 @@ public class WorkspaceService {
         workspace.setName(request.getName());
         workspace.setIsFavorite(workspace.getIsFavorite());
 
-        if (request.getEmailAndEmailID().isEmpty() || request.getEmailAndEmailID().get(0).getEmail().equals("") || request.getEmailAndEmailID().get(0).getEmail().isBlank()) {
+        if (request.getEmails().isEmpty() || request.getEmails().get(0).equals("") || request.getEmails().get(0).isBlank()) {
 
         } else {
-            for (InviteToWorkspaceRequest request1 : request.getEmailAndEmailID()) {
-                boolean exists = userRepository.existsUserByEmail(request1.getEmail());
+            for (String email : request.getEmails()) {
+                boolean exists = userRepository.existsUserByEmail(email);
                 if (!exists) {
                     MimeMessage mimeMessage = mailSender.createMimeMessage();
                     MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
                     helper.setSubject("[Task tracker] invitation to my workspace");
                     helper.setFrom("tasktracker.b6@gmail.com");
-                    helper.setTo(request1.getEmail());
+                    helper.setTo(email);
                     helper.setText(request.getLink());
                     mailSender.send(mimeMessage);
                 } else {
@@ -207,7 +206,7 @@ public class WorkspaceService {
                     MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
                     helper.setSubject("[Task tracker] invitation to my workspace");
                     helper.setFrom("tasktracker.b6@gmail.com");
-                    helper.setTo(request1.getEmail());
+                    helper.setTo(email);
                     helper.setText(request.getLink());
                     mailSender.send(mimeMessage);
                 }

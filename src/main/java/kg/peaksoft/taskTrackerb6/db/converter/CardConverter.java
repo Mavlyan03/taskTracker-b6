@@ -86,6 +86,7 @@ public class CardConverter {
                     notification.setFromUser(user);
                     notification.setUser(convertMemberToUser(m));
                     notification.setCreatedAt(LocalDateTime.now());
+                    notification.setBoard(card.getBoard());
                     notification.setMessage("You has assigned to " + card.getId() + ", by " + user.getFirstName() + " " + user.getLastName());
                     notificationRepository.save(notification);
                     User recipient = convertMemberToUser(m);

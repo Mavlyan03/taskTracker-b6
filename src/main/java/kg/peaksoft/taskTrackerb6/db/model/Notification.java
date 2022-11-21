@@ -17,7 +17,7 @@ import static javax.persistence.CascadeType.*;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Notification {
+public class    Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "notification_gen")
@@ -49,5 +49,8 @@ public class Notification {
 
     @OneToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private Estimation estimation;
+
+    @OneToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    private Board board;
 
 }

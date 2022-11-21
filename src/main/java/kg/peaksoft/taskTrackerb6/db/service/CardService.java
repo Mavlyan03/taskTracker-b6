@@ -54,35 +54,35 @@ public class CardService {
                 }
         );
 
-        Column changedColumn = columnRepository.findById(columnId).orElseThrow(
+        Column column = columnRepository.findById(columnId).orElseThrow(
                 () -> {
                     log.error("Column with id: {} not found!", columnId);
                     throw new NotFoundException("Column with id: " + columnId + " not found!");
                 }
         );
 
+        Board board = boardRepository.findById(card.getBoard().getId()).get();
+
         List<CardResponse> cardResponses = new ArrayList<>();
-        for (Card c : changedColumn.getCards()) {
+        for (Card c : column.getCards()) {
             cardResponses.add(converter.convertToResponseForGetAll(c));
         }
 
-        if (!card.getColumn().equals(changedColumn)) {
+        if (!card.getColumn().equals(column)) {
             card.setMovedUser(user);
-            changedColumn.addCard(card);
-            card.setColumn(changedColumn);
+            column.addCard(card);
+            card.setColumn(column);
             Notification notification = new Notification();
             notification.setCard(card);
             notification.setNotificationType(NotificationType.CHANGE_STATUS);
             notification.setFromUser(user);
             notification.setUser(card.getCreator());
+            notification.setUser(card.getBoard().getWorkspace().getLead());
+            notification.setBoard(board);
             notification.setCreatedAt(LocalDateTime.now());
             notification.setMessage("Card status with id: " + cardId + " has changed by " + user.getFirstName() + " " + user.getLastName());
             notificationRepository.save(notification);
-            User recipient = card.getCreator();
-            User workspaceCreator = card.getBoard().getWorkspace().getLead();
-            workspaceCreator.setNotifications(List.of(notification));
-            recipient.addNotification(notification);
-            cardResponses.add(converter.convertToResponseForGetAll(card));
+            cardResponses.add(converter.convertToResponseForGetAll(cardRepository.save(card)));
         }
 
         log.info("Card with id: {} successfully moved!", cardId);
