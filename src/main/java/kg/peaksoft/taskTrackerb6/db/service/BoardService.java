@@ -69,32 +69,65 @@ public class BoardService {
         }
     }
 
-
     public BoardResponse makeFavorite(Long id) {
         User user = getAuthenticateUser();
         Board board = boardRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Board with id: " + id + " not found!")
         );
 
-        board.setIsFavorite(!board.getIsFavorite());
-        Boolean isTrue = !board.getIsFavorite();
-        Board board1 = boardRepository.save(board);
-        if (isTrue.equals(true)) {
-            Favorite favorite = new Favorite(user, board1);
-            user.addFavorite(favorite);
-        } else {
-            for (Favorite fav : user.getFavorites()) {
-                if (fav.getBoard().equals(board1)) {
-                    favoriteRepository.delete(fav);
-                }
+        List<Favorite> favorites = user.getFavorites();
+        for (Favorite fav : favorites) {
+            if (fav.getBoard().equals(board)) {
+                favoriteRepository.delete(fav);
+                favorites.remove(fav);
+                return new BoardResponse(
+                        board.getId(),
+                        board.getTitle(),
+                        false,
+                        board.getBackground()
+                );
             }
         }
 
-                return new BoardResponse(board1.getId(),
-                board1.getTitle(),
-                board1.getIsFavorite(),
-                board1.getBackground());
+        Favorite favorite = new Favorite(user, board);
+        favoriteRepository.save(favorite);
+        user.addFavorite(favorite);
+        return new BoardResponse(
+                board.getId(),
+                board.getTitle(),
+                true,
+                board.getBackground()
+        );
     }
+
+
+//    public BoardResponse makeFavorite(Long id) {
+//        User user = getAuthenticateUser();
+//        Board board = boardRepository.findById(id).orElseThrow(
+//                () -> new NotFoundException("Board with id: " + id + " not found!")
+//        );
+//
+//        Boolean isTrue = !board.getIsFavorite();
+//        board.setIsFavorite(!board.getIsFavorite());
+//        Board board1 = boardRepository.save(board);
+//        if (isTrue.equals(true)) {
+//            Favorite favorite = new Favorite(user, board1);
+//            favoriteRepository.save(favorite);
+//            user.addFavorite(favorite);
+//        } else if (isTrue.equals(false)){
+//
+//            for (Favorite fav : user.getFavorites()) {
+//                if (fav.getBoard().equals(board1)) {
+//                    favoriteRepository.delete(fav);
+//                }
+//            }
+//        }
+//
+//                return new BoardResponse(board1.getId(),
+//                board1.getTitle(),
+//                board1.getIsFavorite(),
+//                board1.getBackground());
+//    }
 
 
 //    public BoardResponse makeFavorite(Long id) {
@@ -217,6 +250,24 @@ public class BoardService {
                 board1.getIsFavorite(),
                 board1.getBackground()
         );
+    }
+
+    public List<BoardResponse> getAllBoardsByWorkspaceIdMyVersion(Long id) {
+        User user = getAuthenticateUser();
+        List<BoardResponse> boardResponses = new ArrayList<>();
+        List<Favorite> favorites = user.getFavorites();
+        Workspace workspace = workspaceRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Workspace with id: " + id + " not found!")
+        );
+
+        List<Board> boards = workspace.getBoards();
+        for (Favorite fav : favorites) {
+            if (boards.contains(fav.getBoard())) {
+                boardResponses.add(new BoardResponse(fav.getBoard()));
+            }
+        }
+
+        return boardResponses;
     }
 
     public List<BoardResponse> getAllBoardsByWorkspaceId(Long id) {

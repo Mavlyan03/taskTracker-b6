@@ -87,6 +87,6 @@ public class BoardApi {
     @Operation(summary = "Get all boards", description = "Get all boards by workspace id")
     @GetMapping("list/{id}")
     public List<BoardResponse> getAllBoardsByWorkspaceId(@PathVariable Long id) {
-        return boardService.getAllBoardsByWorkspaceId(id);
+        return boardService.getAllBoardsByWorkspaceIdMyVersion(id);
     }
 }

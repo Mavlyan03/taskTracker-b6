@@ -58,11 +58,11 @@ public class WorkspaceApi {
         return service.makeFavorite(id);
     }
 
-    @Operation(summary = "Make not favorite", description = "Make workspace not favorite by id")
-    @PutMapping("make-not-favorite/{id}")
-    public WorkspaceResponse makeNotFavorite(@PathVariable Long id) {
-        return service.makeNotFavorite(id);
-    }
+//    @Operation(summary = "Make not favorite", description = "Make workspace not favorite by id")
+//    @PutMapping("make-not-favorite/{id}")
+//    public WorkspaceResponse makeNotFavorite(@PathVariable Long id) {
+//        return service.makeNotFavorite(id);
+//    }
 
     @Operation(summary = "Get user workspaces", description = "Get all user workspaces")
     @GetMapping

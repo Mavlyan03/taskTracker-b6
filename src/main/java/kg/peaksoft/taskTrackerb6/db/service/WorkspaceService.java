@@ -1,10 +1,7 @@
 package kg.peaksoft.taskTrackerb6.db.service;
 
 
-import kg.peaksoft.taskTrackerb6.db.model.Favorite;
-import kg.peaksoft.taskTrackerb6.db.model.User;
-import kg.peaksoft.taskTrackerb6.db.model.UserWorkSpace;
-import kg.peaksoft.taskTrackerb6.db.model.Workspace;
+import kg.peaksoft.taskTrackerb6.db.model.*;
 import kg.peaksoft.taskTrackerb6.db.repository.BoardRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.UserWorkSpaceRepository;
@@ -96,57 +93,62 @@ public class WorkspaceService {
         return new SimpleResponse("workspace with id: " + id + " is deleted!", "DELETE");
     }
 
-
     public WorkspaceResponse makeFavorite(Long id) {
-        User user = getAuthenticateUser();
-        Workspace workspace = workspaceRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("workspace with id: " + id + " not found!")
-        );
-
-        List<Favorite> favorites = user.getFavorites();
-        for (Favorite fav : favorites) {
-            if (!fav.getWorkspace().equals(workspace)) {
-                workspace.setIsFavorite(true);
-                workspaceRepository.save(workspace);
-                Favorite favorite = new Favorite(user, workspace);
-                favoriteRepository.save(favorite);
-                user.addFavorite(favorite);
-            }
-        }
-
-        return new WorkspaceResponse(
-                workspace.getId(),
-                workspace.getName(),
-                userRepository.getCreatorResponse(workspace.getLead().getId()),
-                workspace.getIsFavorite()
-        );
-    }
-
-
-    public WorkspaceResponse makeNotFavorite(Long id) {
         User user = getAuthenticateUser();
         Workspace workspace = workspaceRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Workspace with id: " + id + " not found!")
         );
 
         List<Favorite> favorites = user.getFavorites();
-        for (Favorite favorite : favorites) {
-            if (favorite.getWorkspace().getClass().equals(workspace.getClass())) {
-                workspace.setIsFavorite(false);
-                favorite.setStatusChangedUser(null);
-                favoriteRepository.deleteFavorite(favorite.getId());
+        for (Favorite fav : favorites) {
+            if (fav.getWorkspace().equals(workspace)) {
+                favoriteRepository.delete(fav);
+                favorites.remove(fav);
+                return new WorkspaceResponse(
+                        workspace.getId(),
+                        workspace.getName(),
+                        userRepository.getCreatorResponse(workspace.getLead().getId()),
+                        false
+                );
             }
         }
 
-        Workspace workspace1 = workspaceRepository.save(workspace);
-
+        Favorite favorite = new Favorite(user, workspace);
+        favoriteRepository.save(favorite);
+        user.addFavorite(favorite);
         return new WorkspaceResponse(
-                workspace1.getId(),
-                workspace1.getName(),
-                userRepository.getCreatorResponse(workspace1.getLead().getId()),
-                workspace1.getIsFavorite());
+                workspace.getId(),
+                workspace.getName(),
+                userRepository.getCreatorResponse(workspace.getLead().getId()),
+                true
+        );
     }
 
+
+//    public WorkspaceResponse makeFavorite(Long id) {
+//        User user = getAuthenticateUser();
+//        Workspace workspace = workspaceRepository.findById(id).orElseThrow(
+//                () -> new NotFoundException("workspace with id: " + id + " not found!")
+//        );
+//
+//        List<Favorite> favorites = user.getFavorites();
+//        for (Favorite fav : favorites) {
+//            if (!fav.getWorkspace().equals(workspace)) {
+//                workspace.setIsFavorite(true);
+//                workspaceRepository.save(workspace);
+//                Favorite favorite = new Favorite(user, workspace);
+//                favoriteRepository.save(favorite);
+//                user.addFavorite(favorite);
+//            }
+//        }
+//
+//        return new WorkspaceResponse(
+//                workspace.getId(),
+//                workspace.getName(),
+//                userRepository.getCreatorResponse(workspace.getLead().getId()),
+//                workspace.getIsFavorite()
+//        );
+//    }
 
     public List<WorkspaceResponse> getAllUserWorkspaces() {
         User user = getAuthenticateUser();

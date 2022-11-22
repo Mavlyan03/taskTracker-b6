@@ -1,12 +1,9 @@
 package kg.peaksoft.taskTrackerb6.db.service;
 
-import kg.peaksoft.taskTrackerb6.db.model.Board;
+
 import kg.peaksoft.taskTrackerb6.db.model.Favorite;
 import kg.peaksoft.taskTrackerb6.db.model.User;
-import kg.peaksoft.taskTrackerb6.db.model.Workspace;
-import kg.peaksoft.taskTrackerb6.db.repository.BoardRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
-import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
 import kg.peaksoft.taskTrackerb6.dto.response.FavoriteResponse;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
