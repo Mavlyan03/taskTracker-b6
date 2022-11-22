@@ -21,6 +21,7 @@ import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.BadRequestException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -36,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 @Transactional
 @RequiredArgsConstructor
 public class UserService {
@@ -48,7 +50,8 @@ public class UserService {
     public AuthResponse registration(SignUpRequest signUpRequest) {
 
         if (repository.existsUserByEmail(signUpRequest.getEmail())) {
-            throw new BadRequestException("this email: " + signUpRequest.getEmail() + " is already in use!");
+            log.error("This email: {} is already in use!", signUpRequest.getEmail());
+            throw new BadRequestException("This email: " + signUpRequest.getEmail() + " is already in use!");
         }
 
         User user = convertToRegisterEntity(signUpRequest);
@@ -57,7 +60,7 @@ public class UserService {
         repository.save(user);
 
         String jwt = jwtUtil.generateToken(user.getEmail());
-
+        log.info("User successfully registered");
         return new AuthResponse(
                 user.getId(),
                 user.getFirstName(),
@@ -83,18 +86,23 @@ public class UserService {
     public AuthResponse login(SignInRequest signInRequest) {
 
         User user = repository.findUserByEmail(signInRequest.getEmail()).orElseThrow(
-                () -> new NotFoundException("user with this email: " + signInRequest.getEmail() + " not found!"));
+                () -> {
+                    log.error("User with this email: {} not found!", signInRequest.getEmail());
+                    throw new NotFoundException("User with this email: " + signInRequest.getEmail() + " not found!");
+                }
+        );
 
         if (signInRequest.getPassword().isBlank()) {
+            log.error("Password can not be empty!");
             throw new BadRequestException("password can not be empty!");
         }
 
         if (!passwordEncoder.matches(signInRequest.getPassword(), user.getPassword())) {
-            throw new BadCredentialException("incorrect password");
+            log.error("incorrect password!");
+            throw new BadCredentialException("incorrect password!");
         }
 
         String jwt = jwtUtil.generateToken(user.getEmail());
-
         return new AuthResponse(
                 user.getId(),
                 user.getFirstName(),
@@ -107,7 +115,10 @@ public class UserService {
 
     public SimpleResponse forgotPassword(String email, String link) throws MessagingException {
         User user = repository.findUserByEmail(email).orElseThrow(
-                () -> new NotFoundException("User with email: " + email + " not found!")
+                () -> {
+                    log.error("User with email: {} not found!", email);
+                    throw new NotFoundException("User with email: " + email + " not found!");
+                }
         );
 
         MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -122,7 +133,10 @@ public class UserService {
 
     public ResetPasswordResponse resetPassword(ResetPasswordRequest request) {
         User user = repository.findById(request.getUserId()).orElseThrow(
-                () -> new NotFoundException("user with id: " + request.getUserId() + " not found")
+                () -> {
+                    log.error("User with id: {} not found!", request.getUserId());
+                    throw new NotFoundException("User with id: " + request.getUserId() + " not found");
+                }
         );
 
         String oldPassword = user.getPassword();
@@ -165,7 +179,12 @@ public class UserService {
             user = repository.save(newUser);
         }
         user = repository.findUserByEmail(firebaseToken.getEmail()).orElseThrow(
-                () -> new NotFoundException("user with this email not found!"));
+                () -> {
+                    log.error("User with this email not found!");
+                    throw new NotFoundException("User with this email not found!");
+                }
+        );
+
         String token = jwtUtil.generateToken(user.getEmail());
         return new AuthResponse(
                 user.getId(),
@@ -185,7 +204,7 @@ public class UserService {
     }
 
     public List<SearchResponse> globalSearch(String text) {
-        List<SearchResponse> searchResponses= new ArrayList<>();
+        List<SearchResponse> searchResponses = new ArrayList<>();
         List<User> users = repository.globalSearch(text);
         for (User user : users) {
             searchResponses.add(mapToSearchResponse(user)

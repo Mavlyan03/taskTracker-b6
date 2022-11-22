@@ -18,14 +18,18 @@ import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SubTaskResponse;
 import kg.peaksoft.taskTrackerb6.exceptions.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
+@Transactional
 @RequiredArgsConstructor
 public class SubTaskService {
 
@@ -38,10 +42,18 @@ public class SubTaskService {
     public SubTaskResponse createSubTask(Long id, SubTaskRequest request) {
 
         User currentUser = getCurrentUser();
-        Checklist checklist = checklistRepository.findById(id).orElseThrow(() ->
-                new NoSuchElementException(Checklist.class, id));
-        Workspace workspace = workspaceRepository.findById(checklist.getCard().getBoard().getWorkspace().getId()).orElseThrow(() ->
-                new NoSuchElementException(Workspace.class, id));
+        Checklist checklist = checklistRepository.findById(id).orElseThrow(() -> {
+                    log.error("Checklist with id: {} not found!", id);
+                    throw new NoSuchElementException(Checklist.class, id);
+                }
+        );
+
+        Workspace workspace = workspaceRepository.findById(checklist.getCard().getBoard().getWorkspace().getId()).orElseThrow(
+                () -> {
+                    log.error("Workspace with id: {} not found!", checklist.getCard().getBoard().getWorkspace().getId());
+                    throw new NoSuchElementException(Workspace.class, checklist.getCard().getBoard().getWorkspace().getId());
+                }
+        );
 
         SubTask subTask = new SubTask();
         subTask.setIsDone(request.getIsDone());
@@ -50,6 +62,7 @@ public class SubTaskService {
         for (UserWorkSpace userWorkSpace : workspace.getUserWorkSpaces()) {
             memberResponses.add(convertToMemberResponse(userWorkSpace.getUser()));
         }
+
         for (MemberResponse memberResponse : memberResponses) {
             for (MemberRequest memberRequest : request.getMemberRequests()) {
                 if (memberResponse.getEmail().equals(memberRequest.getEmail())) {
@@ -57,6 +70,7 @@ public class SubTaskService {
                 }
             }
         }
+
         if (request.getEstimationRequest() != null) {
             Estimation estimation = new Estimation();
             estimation.setStartDate(request.getEstimationRequest().getStartDate());
@@ -68,37 +82,58 @@ public class SubTaskService {
             subTask.setEstimation(estimation);
             estimation.setSubTask(subTask);
         }
+
         subTask.setChecklist(checklist);
         checklist.addSubTaskToChecklist(subTask);
+        log.info("SubTask successfully created");
         return convertToResponse(subTaskRepository.save(subTask));
     }
 
     public SubTaskResponse updateDescription(Long id, SubTaskRequest request) {
-        SubTask subTask = subTaskRepository.findById(id).orElseThrow(() ->
-                new NoSuchElementException(SubTask.class, id));
+        SubTask subTask = subTaskRepository.findById(id).orElseThrow(() -> {
+                    log.error("SubTask with id: {} not found!", id);
+                    throw new NoSuchElementException(SubTask.class, id);
+                }
+        );
+
         subTask.setDescription(request.getDescription());
+        log.info("SubTask title with id: {} successfully updated", id);
         return convertToResponse(subTaskRepository.save(subTask));
     }
 
     public SimpleResponse deleteSubTask(Long id) {
-        SubTask subTask = subTaskRepository.findById(id).orElseThrow(() ->
-                new NoSuchElementException(SubTask.class, id));
+        SubTask subTask = subTaskRepository.findById(id).orElseThrow(() -> {
+                    log.error("SubTask with id: {} not found!", id);
+                    throw new NoSuchElementException(SubTask.class, id);
+                }
+        );
+
         subTask.setEstimation(null);
         subTask.setChecklist(null);
         subTaskRepository.delete(subTask);
-        return new SimpleResponse("Subtask with id " + id + " successfully deleted", "DELETED");
+        log.info("SubTask with id: {} successfully deleted!", id);
+        return new SimpleResponse("Subtask with id " + id + " successfully deleted!", "DELETE");
     }
 
     public SubTaskResponse addToCompleted(Long subtaskId) {
-        SubTask subTask = subTaskRepository.findById(subtaskId).orElseThrow(() ->
-                new NoSuchElementException(SubTask.class, subtaskId));
+        SubTask subTask = subTaskRepository.findById(subtaskId).orElseThrow(() -> {
+                    log.error("SubTask with id: {} not found!", subtaskId);
+                    throw new NoSuchElementException(SubTask.class, subtaskId);
+                }
+        );
+
         subTask.setIsDone(true);
+        log.info("SubTask with id: {} successfully completed!", subtaskId);
         return convertToResponse(subTaskRepository.save(subTask));
     }
 
     public SubTaskResponse uncheck(Long subtaskId) {
-        SubTask subTask = subTaskRepository.findById(subtaskId).orElseThrow(() ->
-                new NoSuchElementException(SubTask.class, subtaskId));
+        SubTask subTask = subTaskRepository.findById(subtaskId).orElseThrow(() -> {
+                    log.error("SubTask with id: {} not found!", subtaskId);
+                    throw new NoSuchElementException(SubTask.class, subtaskId);
+                }
+        );
+
         subTask.setIsDone(false);
         return convertToResponse(subTaskRepository.save(subTask));
     }
@@ -149,8 +184,12 @@ public class SubTaskService {
     public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String login = authentication.getName();
-        return userRepository.findUserByEmail(login).orElseThrow(() ->
-                new NoSuchElementException("User not found!"));
+        return userRepository.findUserByEmail(login).orElseThrow(
+                () -> {
+                    log.error("User not found!");
+                    throw new NoSuchElementException("User not found!");
+                }
+        );
     }
 
 }

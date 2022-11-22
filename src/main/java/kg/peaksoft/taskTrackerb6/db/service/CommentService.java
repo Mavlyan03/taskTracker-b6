@@ -13,15 +13,19 @@ import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
+@Transactional
 @RequiredArgsConstructor
 public class CommentService {
 
@@ -29,10 +33,14 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
 
-    public CommentResponse saveComment(Long cardId, CommentRequest request){
+    public CommentResponse saveComment(Long cardId, CommentRequest request) {
         Card card = cardRepository.findById(cardId).orElseThrow(
-                ()-> new NotFoundException("Card with id: "+cardId+" not found")
+                () -> {
+                    log.error("Card with id: {} not found!", cardId);
+                    throw new NotFoundException("Card with id: " + cardId + " not found!");
+                }
         );
+
         Comment comment = new Comment();
         comment.setUser(getAuthenticatedUser());
         comment.setCard(card);
@@ -40,54 +48,71 @@ public class CommentService {
         comment.setCreatedAt(LocalDateTime.now());
         card.addComment(comment);
         commentRepository.save(comment);
+        log.info("Comment successfully created");
         return convertToResponse(comment);
     }
 
-    public CommentResponse editComment(Long id, CommentRequest request){
+    public CommentResponse editComment(Long id, CommentRequest request) {
         Comment comment = commentRepository.findById(id).orElseThrow(
-                ()-> new NotFoundException("Comment with id "+id+" not found")
+                () -> {
+                    log.error("Comment with id: {} not found!", id);
+                    throw new NotFoundException("Comment with id " + id + " not found!");
+                }
         );
 
-        if (!getAuthenticatedUser().equals(comment.getUser())){
-            throw new BadCredentialException("You cannot edit this comment");
+        if (!getAuthenticatedUser().equals(comment.getUser())) {
+            log.error("You can not edit this comment!");
+            throw new BadCredentialException("You cannot edit this comment!");
         }
+
         comment.setText(request.getText());
         comment.setCreatedAt(LocalDateTime.now());
         Comment comment1 = commentRepository.save(comment);
-
+        log.info("Comment with id: {} successfully edited", id);
         return convertToResponse(comment1);
     }
 
-    public SimpleResponse deleteComment(Long id){
+    public SimpleResponse deleteComment(Long id) {
         Comment comment = commentRepository.findById(id).orElseThrow(
-                ()-> new NotFoundException("Comment with id: "+id+" not found")
+                () -> {
+                    log.error("Comment with id: {} not found!", id);
+                    throw new NotFoundException("Comment with id: " + id + " not found!");
+                }
         );
 
-        if (!getAuthenticatedUser().equals(comment.getUser())){
-            throw new BadCredentialException("You can not delete this comment");
+        if (!getAuthenticatedUser().equals(comment.getUser())) {
+            log.error("You can not delete this comment!");
+            throw new BadCredentialException("You can not delete this comment!");
         }
+
         commentRepository.delete(comment);
-        return new SimpleResponse("Comment with id: "+id+" successfully deleted", "DELETED");
+        log.info("Comment with id: {} successfully deleted!", id);
+        return new SimpleResponse("Comment with id: " + id + " successfully deleted", "DELETE");
     }
 
-    public List<CommentResponse> findAllComments(Long id){
+    public List<CommentResponse> findAllComments(Long id) {
         List<Comment> comments = commentRepository.findAllComments(id);
         List<CommentResponse> commentResponses = new ArrayList<>();
         for (Comment comment : comments) {
             commentResponses.add(convertToResponse(comment));
         }
+
+        log.info("Get all comments by card's id");
         return commentResponses;
     }
 
-    private User getAuthenticatedUser(){
+    private User getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String login = authentication.getName();
         return userRepository.findUserByEmail(login).orElseThrow(
-                ()-> new NotFoundException("User not found")
+                () -> {
+                    log.error("User not found!");
+                    throw new NotFoundException("User not found!");
+                }
         );
     }
 
-    public CommentResponse convertToResponse(Comment comment){
+    public CommentResponse convertToResponse(Comment comment) {
         CommentedUserResponse commentedUserResponse =
                 new CommentedUserResponse(comment.getUser().getId(),
                                           comment.getUser().getFirstName(),
