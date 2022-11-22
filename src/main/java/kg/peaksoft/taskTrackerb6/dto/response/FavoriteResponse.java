@@ -20,27 +20,12 @@ public class FavoriteResponse {
     private String workspaceOrBoard;
     private boolean isFavorite;
 
-//    public FavoriteResponse(Favorite favorite) {
-//        this.id = favorite.getId();
-//        if (favorite.getWorkspace() != null) {
-//            this.name = favorite.getWorkspace().getName();
-//            this.background = "Workspace has not have photo";
-//            this.workspaceOrBoard = "Workspace";
-//            this.isFavorite = favorite.getWorkspace().getIsFavorite();
-//        } else if (favorite.getBoard() != null) {
-//            this.name = favorite.getBoard().getTitle();
-//            this.background = favorite.getBoard().getBackground();
-//            this.workspaceOrBoard = "Board";
-//            this.isFavorite = favorite.getBoard().getIsFavorite();
-//        }
-//    }
-
     public FavoriteResponse(Workspace workspace) {
         this.id = workspace.getId();
         this.name = workspace.getName();
         this.background = "The workspace can not have photo";
         this.workspaceOrBoard = "WORKSPACE";
-        this.isFavorite = workspace.getIsFavorite();
+        this.isFavorite = true;
     }
 
     public FavoriteResponse(Board board) {
@@ -48,6 +33,6 @@ public class FavoriteResponse {
         this.name = board.getTitle();
         this.background = board.getBackground();
         this.workspaceOrBoard = "BOARD";
-        this.isFavorite = board.getIsFavorite();
+        this.isFavorite = true;
     }
 }

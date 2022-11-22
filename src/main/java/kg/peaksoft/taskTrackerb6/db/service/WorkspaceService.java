@@ -101,15 +101,17 @@ public class WorkspaceService {
 
         List<Favorite> favorites = user.getFavorites();
         for (Favorite fav : favorites) {
-            if (fav.getWorkspace().equals(workspace)) {
-                favoriteRepository.delete(fav);
-                favorites.remove(fav);
-                return new WorkspaceResponse(
-                        workspace.getId(),
-                        workspace.getName(),
-                        userRepository.getCreatorResponse(workspace.getLead().getId()),
-                        false
-                );
+            if (fav.getWorkspace() != null) {
+                if (fav.getWorkspace().equals(workspace)) {
+                    favoriteRepository.delete(fav);
+                    favorites.remove(fav);
+                    return new WorkspaceResponse(
+                            workspace.getId(),
+                            workspace.getName(),
+                            userRepository.getCreatorResponse(workspace.getLead().getId()),
+                            false
+                    );
+                }
             }
         }
 

@@ -77,15 +77,17 @@ public class BoardService {
 
         List<Favorite> favorites = user.getFavorites();
         for (Favorite fav : favorites) {
-            if (fav.getBoard().equals(board)) {
-                favoriteRepository.delete(fav);
-                favorites.remove(fav);
-                return new BoardResponse(
-                        board.getId(),
-                        board.getTitle(),
-                        false,
-                        board.getBackground()
-                );
+            if (fav.getBoard() != null) {
+                if (fav.getBoard().equals(board)) {
+                    favoriteRepository.delete(fav);
+                    favorites.remove(fav);
+                    return new BoardResponse(
+                            board.getId(),
+                            board.getTitle(),
+                            false,
+                            board.getBackground()
+                    );
+                }
             }
         }
 
