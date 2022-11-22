@@ -52,16 +52,13 @@ public class WorkspaceService {
     public WorkspaceResponse createWorkspace(WorkspaceRequest workspaceRequest) throws MessagingException {
         User user = getAuthenticateUser();
         Workspace workspace = convertToEntity(workspaceRequest);
-        UserWorkSpace userWorkSpace = new UserWorkSpace();
-        userWorkSpace.setUser(user);
-        userWorkSpace.setWorkspace(workspace);
-        userWorkSpace.setRole(Role.ADMIN);
+        UserWorkSpace userWorkSpace = new UserWorkSpace(user, workspace, Role.ADMIN);
         user.addUserWorkSpace(userWorkSpace);
         workspace.addUserWorkSpace(userWorkSpace);
         workspace.setLead(user);
         userWorkSpaceRepository.save(userWorkSpace);
-        log.info("Workspace successfully created");
         Workspace savedWorkspace = workspaceRepository.save(workspace);
+        log.info("Workspace successfully created");
         return new WorkspaceResponse(
                 savedWorkspace.getId(),
                 savedWorkspace.getName(),
@@ -202,6 +199,5 @@ public class WorkspaceService {
         }
 
         return workspace;
-
     }
 }
