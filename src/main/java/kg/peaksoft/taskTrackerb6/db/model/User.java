@@ -77,6 +77,13 @@ public class User implements UserDetails {
         userWorkSpaces.add(userWorkSpace);
     }
 
+    public void addNotification(Notification notification) {
+        if (notifications == null) {
+            notifications = new ArrayList<>();
+        }
+        notifications.add(notification);
+    }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

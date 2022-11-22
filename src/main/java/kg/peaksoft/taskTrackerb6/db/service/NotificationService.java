@@ -7,6 +7,7 @@ import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import kg.peaksoft.taskTrackerb6.dto.response.NotificationResponse;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 @Transactional
 @RequiredArgsConstructor
 public class NotificationService {
@@ -26,17 +28,22 @@ public class NotificationService {
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String login = authentication.getName();
-        return userRepository.findUserByEmail(login).orElseThrow(() ->
-                new NotFoundException("User not found!"));
+        return userRepository.findUserByEmail(login).orElseThrow(
+                () -> {
+                    log.error("User not found!");
+                    throw new NotFoundException("User not found!");
+                }
+        );
     }
 
     public List<NotificationResponse> getAllMyNotifications() {
         User user = getAuthenticateUser();
         List<NotificationResponse> notificationResponses = new ArrayList<>();
         for (Notification notification : user.getNotifications()) {
-             notificationResponses.add(new NotificationResponse(notification));
+            notificationResponses.add(new NotificationResponse(notification));
         }
 
+        log.info("Get all user's notifications");
         return notificationResponses;
     }
 
@@ -44,6 +51,8 @@ public class NotificationService {
         Notification notification = notificationRepository.findById(id).get();
         return new NotificationResponse(
                 notification.getId(),
+                notification.getBoard().getTitle(),
+                notification.getBoard().getBackground(),
                 notification.getFromUser().getId(),
                 notification.getFromUser().getFirstName(),
                 notification.getFromUser().getLastName(),
