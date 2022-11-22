@@ -2,14 +2,13 @@ package kg.peaksoft.taskTrackerb6.db.service;
 
 
 import kg.peaksoft.taskTrackerb6.db.model.*;
-import kg.peaksoft.taskTrackerb6.db.repository.BoardRepository;
+import kg.peaksoft.taskTrackerb6.db.repository.FavoriteRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.UserWorkSpaceRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
-import kg.peaksoft.taskTrackerb6.dto.request.InviteToWorkspaceRequest;
-import kg.peaksoft.taskTrackerb6.db.repository.*;
 import kg.peaksoft.taskTrackerb6.dto.request.WorkspaceRequest;
-import kg.peaksoft.taskTrackerb6.dto.response.*;
+import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.WorkspaceResponse;
 import kg.peaksoft.taskTrackerb6.enums.Role;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
@@ -147,31 +146,6 @@ public class WorkspaceService {
     }
 
 
-//    public WorkspaceResponse makeFavorite(Long id) {
-//        User user = getAuthenticateUser();
-//        Workspace workspace = workspaceRepository.findById(id).orElseThrow(
-//                () -> new NotFoundException("workspace with id: " + id + " not found!")
-//        );
-//
-//        List<Favorite> favorites = user.getFavorites();
-//        for (Favorite fav : favorites) {
-//            if (!fav.getWorkspace().equals(workspace)) {
-//                workspace.setIsFavorite(true);
-//                workspaceRepository.save(workspace);
-//                Favorite favorite = new Favorite(user, workspace);
-//                favoriteRepository.save(favorite);
-//                user.addFavorite(favorite);
-//            }
-//        }
-//
-//        return new WorkspaceResponse(
-//                workspace.getId(),
-//                workspace.getName(),
-//                userRepository.getCreatorResponse(workspace.getLead().getId()),
-//                workspace.getIsFavorite()
-//        );
-//    }
-
     public List<WorkspaceResponse> getAllUserWorkspaces() {
         User user = getAuthenticateUser();
         List<WorkspaceResponse> workspaceResponses = new ArrayList<>();
@@ -194,36 +168,6 @@ public class WorkspaceService {
 
         log.info("Get all workspaces");
         return workspaceResponses;
-    }
-
-
-    public List<FavoritesResponse> getAllFavorites() {
-        List<FavoritesResponse> getFavorites = new ArrayList<>();
-        getFavorites.add(new FavoritesResponse(getFavoriteWorkspacesList(), getFavoriteBoardsList()));
-        log.info("Get all favorite workspaces");
-        return getFavorites;
-    }
-
-
-    private List<FavoriteWorkspaceResponse> getFavoriteWorkspacesList() {
-        List<FavoriteWorkspaceResponse> favoriteWorkspaces = new ArrayList<>();
-        List<Workspace> workspaces = workspaceRepository.findAllByFavorites();
-        for (Workspace workspace : workspaces) {
-            favoriteWorkspaces.add(convertToFavoriteWorkspaceResponse(workspace));
-        }
-
-        return favoriteWorkspaces;
-    }
-
-
-    private List<FavoriteBoardResponse> getFavoriteBoardsList() {
-        List<FavoriteBoardResponse> favoriteBoards = new ArrayList<>();
-        List<Board> boards = boardRepository.findAllByFavorites();
-        for (Board board : boards) {
-            favoriteBoards.add(convertToFavoriteBoardResponse(board));
-        }
-
-        return favoriteBoards;
     }
 
 

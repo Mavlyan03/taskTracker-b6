@@ -105,13 +105,6 @@ public class BoardService {
             }
         }
 
-        board.setIsFavorite(!board.getIsFavorite());
-        Board board1 = boardRepository.save(board);
-        log.info("Board action successfully changed!");
-        return new BoardResponse(board1.getId(),
-                board1.getTitle(),
-                board1.getIsFavorite(),
-                board1.getBackground());
         Favorite favorite = new Favorite(user, board);
         favoriteRepository.save(favorite);
         user.addFavorite(favorite);
@@ -122,82 +115,6 @@ public class BoardService {
                 board.getBackground()
         );
     }
-
-
-//    public BoardResponse makeFavorite(Long id) {
-//        User user = getAuthenticateUser();
-//        Board board = boardRepository.findById(id).orElseThrow(
-//                () -> new NotFoundException("Board with id: " + id + " not found!")
-//        );
-//
-//        Boolean isTrue = !board.getIsFavorite();
-//        board.setIsFavorite(!board.getIsFavorite());
-//        Board board1 = boardRepository.save(board);
-//        if (isTrue.equals(true)) {
-//            Favorite favorite = new Favorite(user, board1);
-//            favoriteRepository.save(favorite);
-//            user.addFavorite(favorite);
-//        } else if (isTrue.equals(false)){
-//
-//            for (Favorite fav : user.getFavorites()) {
-//                if (fav.getBoard().equals(board1)) {
-//                    favoriteRepository.delete(fav);
-//                }
-//            }
-//        }
-//
-//                return new BoardResponse(board1.getId(),
-//                board1.getTitle(),
-//                board1.getIsFavorite(),
-//                board1.getBackground());
-//    }
-
-
-//    public BoardResponse makeFavorite(Long id) {
-//        User user = getAuthenticateUser();
-//        Board board = boardRepository.findById(id).orElseThrow(
-//                () -> new NotFoundException(String.format("Board with id %s not found", id))
-//        );
-//
-//        List<Favorite> favorites = user.getFavorites();
-//        for (Favorite fav : favorites) {
-//            if (fav.getBoard().equals(board)) {
-//
-//            }
-//        }
-//
-//        board.setIsFavorite(true);
-//        Board board1 = boardRepository.save(board);
-//        Favorite favorite = new Favorite(user, board1);
-//        favoriteRepository.save(favorite);
-//        user.addFavorite(favorite);
-//        return new BoardResponse(board1.getId(),
-//                board1.getTitle(),
-//                board1.getIsFavorite(),
-//                board1.getBackground());
-//    }
-//
-//    public BoardResponse makeNotFavorite(Long id) {
-//        User user = getAuthenticateUser();
-//        Board board = boardRepository.findById(id).orElseThrow(
-//                () -> new NotFoundException("Board with id: " + id + " not found!")
-//        );
-//
-//        List<Favorite> favorites = user.getFavorites();
-//        for (Favorite favorite : favorites) {
-//            if (favorite.getBoard().getClass().equals(board.getClass())) {
-//                board.setIsFavorite(false);
-//                favoriteRepository.deleteFavorite(favorite.getId());
-//            }
-//        }
-//
-//        Board board1 = boardRepository.save(board);
-//        return new BoardResponse(board1.getId(),
-//                board1.getTitle(),
-//                board1.getIsFavorite(),
-//                board1.getBackground());
-//    }
-
 
     public BoardResponse changeBackground(Long id, BoardRequest boardRequest) {
         Board board = boardRepository.findById(id).orElseThrow(
