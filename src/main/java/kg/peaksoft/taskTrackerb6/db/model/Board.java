@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static javax.persistence.CascadeType.*;
-import static javax.persistence.CascadeType.PERSIST;
 
 @Entity
 @Table(name = "boards")
@@ -23,7 +22,7 @@ public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "board_gen")
-    @SequenceGenerator(name = "board_gen", sequenceName = "board_seq", allocationSize = 1, initialValue = 2)
+    @SequenceGenerator(name = "board_gen", sequenceName = "board_seq", allocationSize = 1, initialValue = 3)
     private Long id;
 
     private String title;
@@ -42,7 +41,7 @@ public class Board {
     @OneToMany(cascade = ALL, mappedBy = "board")
     private List<Column> columns;
 
-    @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST}, mappedBy = "boards")
+    @ManyToMany(cascade = {DETACH, REFRESH, MERGE}, mappedBy = "boards")
     private List<User> members;
 
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})

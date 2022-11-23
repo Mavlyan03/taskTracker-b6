@@ -28,13 +28,13 @@ public class SubTask {
 
     private Boolean isDone = false;
 
-    @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    @ManyToMany(cascade = {DETACH, REFRESH, MERGE})
     private List<User> workspacesMembers;
 
-    @OneToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST}, mappedBy = "subTask")
+    @OneToOne(cascade = {ALL}, mappedBy = "subTask")
     private Estimation estimation;
 
-    @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
     private Checklist checklist;
 
     public SubTask(String description, Boolean isDone) {

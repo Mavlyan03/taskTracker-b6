@@ -1,8 +1,12 @@
 package kg.peaksoft.taskTrackerb6.db.service;
 
 import kg.peaksoft.taskTrackerb6.db.model.Board;
+import kg.peaksoft.taskTrackerb6.db.model.Favorite;
+import kg.peaksoft.taskTrackerb6.db.model.User;
 import kg.peaksoft.taskTrackerb6.db.model.Workspace;
 import kg.peaksoft.taskTrackerb6.db.repository.BoardRepository;
+import kg.peaksoft.taskTrackerb6.db.repository.FavoriteRepository;
+import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
 import kg.peaksoft.taskTrackerb6.dto.request.BoardRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.ArchiveBoardResponse;
@@ -12,6 +16,8 @@ import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -24,8 +30,17 @@ import java.util.List;
 @Slf4j
 public class BoardService {
 
+    private final UserRepository userRepository;
     private final BoardRepository boardRepository;
+    private final FavoriteRepository favoriteRepository;
     private final WorkspaceRepository workspaceRepository;
+
+    private User getAuthenticateUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String login = authentication.getName();
+        return userRepository.findUserByEmail(login).orElseThrow(() ->
+                new NotFoundException("User not found!"));
+    }
 
     public BoardResponse createBoard(BoardRequest boardRequest) {
         Board board = new Board(boardRequest);
@@ -66,6 +81,7 @@ public class BoardService {
     }
 
     public BoardResponse makeFavorite(Long id) {
+        User user = getAuthenticateUser();
         Board board = boardRepository.findById(id).orElseThrow(
                 () -> {
                     log.error("Board with id : {} not found", id);
@@ -73,13 +89,31 @@ public class BoardService {
                 }
         );
 
-        board.setIsFavorite(!board.getIsFavorite());
-        Board board1 = boardRepository.save(board);
-        log.info("Board action successfully changed!");
-        return new BoardResponse(board1.getId(),
-                board1.getTitle(),
-                board1.getIsFavorite(),
-                board1.getBackground());
+        List<Favorite> favorites = user.getFavorites();
+        for (Favorite fav : favorites) {
+            if (fav.getBoard() != null) {
+                if (fav.getBoard().equals(board)) {
+                    favoriteRepository.delete(fav);
+                    favorites.remove(fav);
+                    return new BoardResponse(
+                            board.getId(),
+                            board.getTitle(),
+                            false,
+                            board.getBackground()
+                    );
+                }
+            }
+        }
+
+        Favorite favorite = new Favorite(user, board);
+        favoriteRepository.save(favorite);
+        user.addFavorite(favorite);
+        return new BoardResponse(
+                board.getId(),
+                board.getTitle(),
+                true,
+                board.getBackground()
+        );
     }
 
     public BoardResponse changeBackground(Long id, BoardRequest boardRequest) {

@@ -30,7 +30,7 @@ public class Label {
     @Enumerated(EnumType.STRING)
     private LabelsColor color;
 
-    @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
     private Card card;
 
     @JsonCreator

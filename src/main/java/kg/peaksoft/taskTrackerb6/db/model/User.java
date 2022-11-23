@@ -40,16 +40,19 @@ public class User implements UserDetails {
 
     private String password;
 
+    @OneToMany(cascade = {ALL}, mappedBy = "statusChangedUser")
+    private List<Favorite> favorites;
+
     @OneToMany(cascade = {ALL}, mappedBy = "user")
     private List<Notification> notifications;
 
-    @OneToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST}, fetch = FetchType.EAGER, mappedBy = "lead")
+    @OneToMany(cascade = {DETACH, REFRESH, MERGE}, fetch = FetchType.EAGER, mappedBy = "lead")
     private List<Workspace> workspaces;
 
     @OneToMany(cascade = {ALL}, mappedBy = "user")
     public List<UserWorkSpace> userWorkSpaces;
 
-    @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    @ManyToMany(cascade = {DETACH, REFRESH, MERGE})
     private List<Board> boards;
 
     @OneToMany(cascade = {ALL}, mappedBy = "creator")
@@ -72,13 +75,6 @@ public class User implements UserDetails {
             userWorkSpaces = new ArrayList<>();
         }
         userWorkSpaces.add(userWorkSpace);
-    }
-
-    public void addNotification(Notification notification) {
-        if (notifications == null) {
-            notifications = new ArrayList<>();
-        }
-        notifications.add(notification);
     }
 
 
@@ -117,4 +113,17 @@ public class User implements UserDetails {
         return true;
     }
 
+    public void addNotification(Notification notification) {
+        if (notifications == null) {
+            notifications = new ArrayList<>();
+        }
+        notifications.add(notification);
+    }
+
+    public void addFavorite(Favorite favorite) {
+        if (favorites == null) {
+            favorites = new ArrayList<>();
+        }
+        favorites.add(favorite);
+    }
 }
