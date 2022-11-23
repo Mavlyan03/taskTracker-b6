@@ -9,7 +9,6 @@ import kg.peaksoft.taskTrackerb6.dto.response.ArchiveBoardResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.BoardResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -18,7 +17,6 @@ import java.util.List;
 @RestController
 @RequestMapping("api/boards")
 @RequiredArgsConstructor
-//@PreAuthorize("hasAnyAuthority('ADMIN')")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @Tag(name = "Board API", description = "All board endpoints for Admin")
 public class BoardApi {
@@ -37,12 +35,6 @@ public class BoardApi {
     public BoardResponse makeFavorite(@PathVariable Long id) {
         return boardService.makeFavorite(id);
     }
-
-//    @Operation(summary = "Make not favorite", description = "Make board not favorite by id")
-//    @PutMapping("/make-not-favorite/{id}")
-//    public BoardResponse makeNotFavorite(@PathVariable Long id) {
-//        return boardService.makeNotFavorite(id);
-//    }
 
     @Operation(summary = "Get board", description = "Get board by id")
     @GetMapping("{id}")
@@ -87,6 +79,6 @@ public class BoardApi {
     @Operation(summary = "Get all boards", description = "Get all boards by workspace id")
     @GetMapping("list/{id}")
     public List<BoardResponse> getAllBoardsByWorkspaceId(@PathVariable Long id) {
-        return boardService.getAllBoardsByWorkspaceIdMyVersion(id);
+        return boardService.getAllBoardsByWorkspaceId(id);
     }
 }

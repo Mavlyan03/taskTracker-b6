@@ -29,7 +29,7 @@ public class Column {
     @OneToMany(cascade = ALL, mappedBy = "column")
     private List<Card> cards;
 
-    @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
     private Board board;
 
     public void addCard(Card card) {

@@ -7,7 +7,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import static javax.persistence.CascadeType.*;
-import static javax.persistence.CascadeType.MERGE;
 
 @Entity
 @Table(name = "user_workspace_roles")
@@ -21,10 +20,10 @@ public class    UserWorkSpace {
     @SequenceGenerator(name = "user_workspace_roles_gen", sequenceName = "user_workspace_roles_seq",allocationSize = 1, initialValue = 2)
     private Long id;
 
-    @ManyToOne(cascade = {REFRESH, DETACH, PERSIST, MERGE})
+    @ManyToOne(cascade = {REFRESH, DETACH, MERGE})
     private User user;
 
-    @ManyToOne(cascade = {REFRESH, DETACH, PERSIST, MERGE})
+    @ManyToOne(cascade = {REFRESH, DETACH, MERGE})
     private Workspace workspace;
 
     @Enumerated(EnumType.STRING)

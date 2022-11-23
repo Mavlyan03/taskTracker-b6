@@ -2,7 +2,6 @@ package kg.peaksoft.taskTrackerb6.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kg.peaksoft.taskTrackerb6.db.model.Favorite;
 import kg.peaksoft.taskTrackerb6.db.service.FavoriteService;
 import kg.peaksoft.taskTrackerb6.db.service.WorkspaceService;
 import kg.peaksoft.taskTrackerb6.dto.request.WorkspaceRequest;
@@ -57,12 +56,6 @@ public class WorkspaceApi {
     public WorkspaceResponse makeFavorite(@PathVariable Long id) {
         return service.makeFavorite(id);
     }
-
-//    @Operation(summary = "Make not favorite", description = "Make workspace not favorite by id")
-//    @PutMapping("make-not-favorite/{id}")
-//    public WorkspaceResponse makeNotFavorite(@PathVariable Long id) {
-//        return service.makeNotFavorite(id);
-//    }
 
     @Operation(summary = "Get user workspaces", description = "Get all user workspaces")
     @GetMapping

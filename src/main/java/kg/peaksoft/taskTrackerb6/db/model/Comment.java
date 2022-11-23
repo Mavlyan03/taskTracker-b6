@@ -27,10 +27,10 @@ public class Comment {
 
     private LocalDateTime createdAt;
 
-    @ManyToOne(cascade = {DETACH, MERGE, PERSIST, REFRESH})
+    @ManyToOne(cascade = {DETACH, MERGE, REFRESH})
     private User user;
 
-    @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
     private Card card;
 
     public Comment(String text, LocalDateTime createdAt) {

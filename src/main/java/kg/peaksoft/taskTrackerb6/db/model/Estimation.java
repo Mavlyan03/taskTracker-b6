@@ -37,19 +37,14 @@ public class Estimation {
     @Column(length = 10000)
     private String text;
 
-    @OneToOne(cascade = {DETACH, REFRESH, PERSIST, MERGE})
+    @OneToOne(cascade = {DETACH, REFRESH, MERGE})
     private SubTask subTask;
 
-    @OneToOne(cascade = {DETACH, REFRESH, PERSIST, MERGE})
+    @OneToOne(cascade = {DETACH, REFRESH, MERGE})
     private Card card;
 
-    @OneToOne(cascade = {DETACH, REFRESH, PERSIST, MERGE})
+    @OneToOne(cascade = {DETACH, REFRESH, MERGE})
     private User user;
-
-    public Estimation(LocalDate startDate, LocalDate dueDate) {
-        this.startDate = startDate;
-        this.dueDate = dueDate;
-    }
 
     public Estimation(LocalDate startDate, LocalDate dueDate, int reminder) {
         this.startDate = startDate;

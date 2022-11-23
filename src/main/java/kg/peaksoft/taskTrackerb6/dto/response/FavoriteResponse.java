@@ -20,6 +20,7 @@ public class FavoriteResponse {
     private String workspaceOrBoard;
     private boolean isFavorite;
 
+
     public FavoriteResponse(Workspace workspace) {
         this.id = workspace.getId();
         this.name = workspace.getName();

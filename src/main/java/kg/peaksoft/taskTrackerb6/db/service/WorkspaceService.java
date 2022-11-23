@@ -56,8 +56,8 @@ public class WorkspaceService {
         user.addUserWorkSpace(userWorkSpace);
         workspace.addUserWorkSpace(userWorkSpace);
         workspace.setLead(user);
-        userWorkSpaceRepository.save(userWorkSpace);
         Workspace savedWorkspace = workspaceRepository.save(workspace);
+        userWorkSpaceRepository.save(userWorkSpace);
         log.info("Workspace successfully created");
         return new WorkspaceResponse(
                 savedWorkspace.getId(),
@@ -98,7 +98,7 @@ public class WorkspaceService {
             throw new BadCredentialException("You can not delete this workspace!");
         }
 
-        workspaceRepository.delete(workspace);
+        workspaceRepository.deleteById(workspace.getId());
         log.info("Workspace with id: {} successfully deleted!", id);
         return new SimpleResponse("Workspace with id: " + id + " successfully!", "DELETE");
     }
@@ -128,12 +128,10 @@ public class WorkspaceService {
             }
         }
 
-        workspace.setIsFavorite(!workspace.getIsFavorite());
-        Workspace workspace1 = workspaceRepository.save(workspace);
-        log.info("Workspace action with id: {} successfully change", id);
         Favorite favorite = new Favorite(user, workspace);
         favoriteRepository.save(favorite);
         user.addFavorite(favorite);
+        log.info("Workspace action with id: {} successfully change", id);
         return new WorkspaceResponse(
                 workspace.getId(),
                 workspace.getName(),

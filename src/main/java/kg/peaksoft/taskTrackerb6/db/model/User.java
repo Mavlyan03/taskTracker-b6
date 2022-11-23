@@ -40,19 +40,19 @@ public class User implements UserDetails {
 
     private String password;
 
-    @OneToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    @OneToMany(cascade = {ALL}, mappedBy = "statusChangedUser")
     private List<Favorite> favorites;
 
     @OneToMany(cascade = {ALL}, mappedBy = "user")
     private List<Notification> notifications;
 
-    @OneToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST}, fetch = FetchType.EAGER, mappedBy = "lead")
+    @OneToMany(cascade = {DETACH, REFRESH, MERGE}, fetch = FetchType.EAGER, mappedBy = "lead")
     private List<Workspace> workspaces;
 
     @OneToMany(cascade = {ALL}, mappedBy = "user")
     public List<UserWorkSpace> userWorkSpaces;
 
-    @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    @ManyToMany(cascade = {DETACH, REFRESH, MERGE})
     private List<Board> boards;
 
     @OneToMany(cascade = {ALL}, mappedBy = "creator")
