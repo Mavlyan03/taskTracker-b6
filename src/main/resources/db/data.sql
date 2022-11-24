@@ -51,7 +51,8 @@ insert into users_boards (members_id, boards_id)
 values (1, 1);
 
 insert into user_workspace_roles (id, user_id, workspace_id, role)
-values (1, 1, 1, 'SUPER_ADMIN');
+values (1, 1, 1, 'SUPER_ADMIN'),
+       (2, 2, 2, 'ADMIN');
 
 insert into cards_members (card_id, members_id)
 values (1, 1);
