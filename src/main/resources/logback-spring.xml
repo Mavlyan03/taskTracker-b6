@@ -1,6 +1,14 @@
 <configuration>
     <!-- Use shutdownHook so that we can close gracefully and finish the log drain -->
     <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                %green(%d{ISO8601}) %highlight(%-5level) [%blue(%t)] %yellow(%C{1.}): %msg%n%throwable
+            </pattern>
+        </encoder>
+    </appender>
+
     <appender name="LogzioLogbackAppender" class="io.logz.logback.LogzioLogbackAppender">
         <token>EzpcXgtYiHZUeeknxrinapCddzyZAQeO</token>
         <logzioUrl>https://listener.logz.io:8071</logzioUrl>
@@ -10,7 +18,7 @@
         </filter>
     </appender>
 
-    <root level="debug">
-        <appender-ref ref="LogzioLogbackAppender"/>
+    <root level="info">
+        <appender-ref ref="Console"/>
     </root>
 </configuration>
