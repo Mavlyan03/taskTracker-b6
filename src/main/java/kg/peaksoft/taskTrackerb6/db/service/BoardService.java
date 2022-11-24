@@ -207,6 +207,18 @@ public class BoardService {
     }
 
     public List<BoardResponse> getAllBoardsByWorkspaceId(Long id) {
+        User user = getAuthenticateUser();
+        Workspace workspace = workspaceRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Workspace with id: " + id + " not found!")
+        );
+
+        List<Board> workspaceBoards = workspace.getBoards();
+        List<Favorite> favorites = user.getFavorites();
+        List<Board> favoriteBoards = new ArrayList<>();
+        for (Favorite fav : favorites) {
+            favoriteBoards.add(fav.getBoard());
+        }
+
         return boardRepository.findAllBoards(id);
     }
 }
