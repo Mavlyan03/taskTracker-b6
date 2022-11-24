@@ -1,15 +1,14 @@
 package kg.peaksoft.taskTrackerb6.db.service;
 
-import kg.peaksoft.taskTrackerb6.db.model.Board;
-import kg.peaksoft.taskTrackerb6.db.model.User;
-import kg.peaksoft.taskTrackerb6.db.model.UserWorkSpace;
-import kg.peaksoft.taskTrackerb6.db.model.Workspace;
-import kg.peaksoft.taskTrackerb6.db.repository.BoardRepository;
+
+import kg.peaksoft.taskTrackerb6.db.model.*;
+import kg.peaksoft.taskTrackerb6.db.repository.FavoriteRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.UserWorkSpaceRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
 import kg.peaksoft.taskTrackerb6.dto.request.WorkspaceRequest;
-import kg.peaksoft.taskTrackerb6.dto.response.*;
+import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.WorkspaceResponse;
 import kg.peaksoft.taskTrackerb6.enums.Role;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
@@ -36,8 +35,8 @@ public class WorkspaceService {
     private final WorkspaceRepository workspaceRepository;
     private final UserRepository userRepository;
     private final UserWorkSpaceRepository userWorkSpaceRepository;
+    private final FavoriteRepository favoriteRepository;
     private final JavaMailSender mailSender;
-    private final BoardRepository boardRepository;
 
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -53,16 +52,13 @@ public class WorkspaceService {
     public WorkspaceResponse createWorkspace(WorkspaceRequest workspaceRequest) throws MessagingException {
         User user = getAuthenticateUser();
         Workspace workspace = convertToEntity(workspaceRequest);
-        UserWorkSpace userWorkSpace = new UserWorkSpace();
-        userWorkSpace.setUser(user);
-        userWorkSpace.setWorkspace(workspace);
-        userWorkSpace.setRole(Role.ADMIN);
+        UserWorkSpace userWorkSpace = new UserWorkSpace(user, workspace, Role.ADMIN);
         user.addUserWorkSpace(userWorkSpace);
         workspace.addUserWorkSpace(userWorkSpace);
         workspace.setLead(user);
+        Workspace savedWorkspace = workspaceRepository.save(workspace);
         userWorkSpaceRepository.save(userWorkSpace);
         log.info("Workspace successfully created");
-        Workspace savedWorkspace = workspaceRepository.save(workspace);
         return new WorkspaceResponse(
                 savedWorkspace.getId(),
                 savedWorkspace.getName(),
@@ -102,13 +98,13 @@ public class WorkspaceService {
             throw new BadCredentialException("You can not delete this workspace!");
         }
 
-        workspaceRepository.delete(workspace);
+        workspaceRepository.deleteById(workspace.getId());
         log.info("Workspace with id: {} successfully deleted!", id);
         return new SimpleResponse("Workspace with id: " + id + " successfully!", "DELETE");
     }
 
-
-    public WorkspaceResponse changeWorkspacesAction(Long id) {
+    public WorkspaceResponse makeFavorite(Long id) {
+        User user = getAuthenticateUser();
         Workspace workspace = workspaceRepository.findById(id).orElseThrow(
                 () -> {
                     log.error("Workspace with id: {} not found!", id);
@@ -116,70 +112,80 @@ public class WorkspaceService {
                 }
         );
 
-        workspace.setIsFavorite(!workspace.getIsFavorite());
-        Workspace workspace1 = workspaceRepository.save(workspace);
+        List<Favorite> favorites = user.getFavorites();
+        for (Favorite fav : favorites) {
+            if (fav.getWorkspace() != null) {
+                if (fav.getWorkspace().equals(workspace)) {
+                    favoriteRepository.delete(fav);
+                    favorites.remove(fav);
+                    return new WorkspaceResponse(
+                            workspace.getId(),
+                            workspace.getName(),
+                            userRepository.getCreatorResponse(workspace.getLead().getId()),
+                            false
+                    );
+                }
+            }
+        }
+
+        Favorite favorite = new Favorite(user, workspace);
+        favoriteRepository.save(favorite);
+        user.addFavorite(favorite);
         log.info("Workspace action with id: {} successfully change", id);
         return new WorkspaceResponse(
-                workspace1.getId(),
-                workspace1.getName(),
-                userRepository.getCreatorResponse(workspace1.getLead().getId()),
-                workspace1.getIsFavorite()
+                workspace.getId(),
+                workspace.getName(),
+                userRepository.getCreatorResponse(workspace.getLead().getId()),
+                true
         );
     }
 
 
     public List<WorkspaceResponse> getAllUserWorkspaces() {
         User user = getAuthenticateUser();
-        List<WorkspaceResponse> workspaceResponses = new ArrayList<>();
         List<Workspace> workspaces = new ArrayList<>();
+        List<WorkspaceResponse> workspaceResponses = new ArrayList<>();
         for (UserWorkSpace userWorkSpace : user.getUserWorkSpaces()) {
             if (userWorkSpace.getUser().equals(user)) {
                 workspaces.add(userWorkSpace.getWorkspace());
             }
         }
 
+        List<Workspace> favoriteWorkspaces = new ArrayList<>();
+        List<Favorite> favorites = user.getFavorites();
+        for (Favorite fav : favorites) {
+            if (fav.getWorkspace() != null) {
+                favoriteWorkspaces.add(fav.getWorkspace());
+            }
+        }
+
         for (Workspace workspace : workspaces) {
-            workspaceResponses.add(new WorkspaceResponse(
-                            workspace.getId(),
-                            workspace.getName(),
-                            userRepository.getCreatorResponse(workspace.getLead().getId()),
-                            workspace.getIsFavorite()
-                    )
-            );
+            if (favoriteWorkspaces.contains(workspace)) {
+                for (Workspace w : favoriteWorkspaces) {
+                    if (w.equals(workspace)) {
+                        workspaceResponses.add(new WorkspaceResponse(
+                                        workspace.getId(),
+                                        workspace.getName(),
+                                        userRepository.getCreatorResponse(workspace.getLead().getId()),
+                                        true
+                                )
+                        );
+                    }
+
+                }
+            } else {
+                workspaceResponses.add(new WorkspaceResponse(
+                                workspace.getId(),
+                                workspace.getName(),
+                                userRepository.getCreatorResponse(workspace.getLead().getId()),
+                                false
+                        )
+                );
+            }
         }
 
         log.info("Get all workspaces");
         return workspaceResponses;
-    }
-
-
-    public List<FavoritesResponse> getAllFavorites() {
-        List<FavoritesResponse> getFavorites = new ArrayList<>();
-        getFavorites.add(new FavoritesResponse(getFavoriteWorkspacesList(), getFavoriteBoardsList()));
-        log.info("Get all favorite workspaces");
-        return getFavorites;
-    }
-
-
-    private List<FavoriteWorkspaceResponse> getFavoriteWorkspacesList() {
-        List<FavoriteWorkspaceResponse> favoriteWorkspaces = new ArrayList<>();
-        List<Workspace> workspaces = workspaceRepository.findAllByFavorites();
-        for (Workspace workspace : workspaces) {
-            favoriteWorkspaces.add(convertToFavoriteWorkspaceResponse(workspace));
-        }
-
-        return favoriteWorkspaces;
-    }
-
-
-    private List<FavoriteBoardResponse> getFavoriteBoardsList() {
-        List<FavoriteBoardResponse> favoriteBoards = new ArrayList<>();
-        List<Board> boards = boardRepository.findAllByFavorites();
-        for (Board board : boards) {
-            favoriteBoards.add(convertToFavoriteBoardResponse(board));
-        }
-
-        return favoriteBoards;
     }
 
 
@@ -214,25 +220,5 @@ public class WorkspaceService {
         }
 
         return workspace;
-
-    }
-
-
-    private FavoriteWorkspaceResponse convertToFavoriteWorkspaceResponse(Workspace workspace) {
-        return new FavoriteWorkspaceResponse(
-                workspace.getId(),
-                workspace.getName(),
-                workspace.getIsFavorite()
-        );
-    }
-
-
-    private FavoriteBoardResponse convertToFavoriteBoardResponse(Board board) {
-        return new FavoriteBoardResponse(
-                board.getId(),
-                board.getTitle(),
-                board.getBackground(),
-                board.getIsFavorite()
-        );
     }
 }

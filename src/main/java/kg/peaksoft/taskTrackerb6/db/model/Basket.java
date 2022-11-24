@@ -7,6 +7,8 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.LocalDate;
 
+import static javax.persistence.CascadeType.*;
+
 @Entity
 @Table(name = "baskets")
 @Getter
@@ -21,12 +23,12 @@ public class Basket {
 
     private LocalDate archiveDate;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = ALL)
     private Board board;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = ALL)
     private Card card;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = ALL)
     private Column column;
 }

@@ -35,22 +35,22 @@ public class    Notification {
     @OneToOne
     private User fromUser;
 
-    @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
     private User user;
 
-    @OneToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    @OneToOne(cascade = {DETACH, REFRESH, MERGE})
     private SubTask subTask;
 
-    @OneToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    @OneToOne(cascade = {DETACH, REFRESH, MERGE})
     private Card card;
 
-    @OneToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    @OneToOne(cascade = {DETACH, REFRESH, MERGE})
     private kg.peaksoft.taskTrackerb6.db.model.Column column;
 
-    @OneToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    @OneToOne(cascade = {DETACH, REFRESH, MERGE})
     private Estimation estimation;
 
-    @OneToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    @OneToOne(cascade = {DETACH, REFRESH, MERGE})
     private Board board;
 
 }

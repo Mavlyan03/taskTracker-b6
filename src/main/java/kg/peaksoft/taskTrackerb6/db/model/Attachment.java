@@ -25,6 +25,6 @@ public class Attachment {
 
     private LocalDateTime attachedDate;
 
-    @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
     private Card card;
 }

@@ -35,13 +35,13 @@ public class Card {
 
     private LocalDate createdAt;
 
-    @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
     private User creator;
 
     @OneToOne
     private User movedUser;
 
-    @ManyToMany(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    @ManyToMany(cascade = {DETACH, REFRESH, MERGE})
     private List<User> members;
 
     @OneToMany(cascade = {ALL}, mappedBy = "card")
@@ -50,7 +50,7 @@ public class Card {
     @OneToOne(cascade = {ALL}, mappedBy = "card")
     private Estimation estimation;
 
-    @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
     private kg.peaksoft.taskTrackerb6.db.model.Column                                                       column;
 
     @OneToMany(cascade = {ALL}, mappedBy = "card")
@@ -62,10 +62,10 @@ public class Card {
     @OneToMany(cascade = {ALL}, mappedBy = "card")
     private List<Attachment> attachments;
 
-    @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
     private Board board;
 
-    @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
+    @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
     private Workspace workspace;
 
     public Card(String title, String description, Boolean isArchive, LocalDate createdAt, User creator) {
