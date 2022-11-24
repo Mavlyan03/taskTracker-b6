@@ -212,13 +212,40 @@ public class BoardService {
                 () -> new NotFoundException("Workspace with id: " + id + " not found!")
         );
 
-        List<Board> workspaceBoards = workspace.getBoards();
         List<Favorite> favorites = user.getFavorites();
-        List<Board> favoriteBoards = new ArrayList<>();
+        List<Board> userFavoriteBoards = new ArrayList<>();
+        List<Board> workspaceBoards = workspace.getBoards();
+        List<BoardResponse> boardResponses = new ArrayList<>();
         for (Favorite fav : favorites) {
-            favoriteBoards.add(fav.getBoard());
+            if (fav.getBoard() != null) {
+                userFavoriteBoards.add(fav.getBoard());
+            }
         }
 
-        return boardRepository.findAllBoards(id);
+        for (Board board : workspaceBoards) {
+            if (userFavoriteBoards.contains(board)) {
+                for (Board favBoard : userFavoriteBoards) {
+                    if (favBoard.equals(board)) {
+                        boardResponses.add(new BoardResponse(
+                                        board.getId(),
+                                        board.getTitle(),
+                                        true,
+                                        board.getBackground()
+                                )
+                        );
+                    }
+                }
+            }
+
+            boardResponses.add(new BoardResponse(
+                            board.getId(),
+                            board.getTitle(),
+                            false,
+                            board.getBackground()
+                    )
+            );
+        }
+
+        return boardResponses;
     }
 }
