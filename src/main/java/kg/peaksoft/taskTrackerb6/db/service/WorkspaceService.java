@@ -173,15 +173,15 @@ public class WorkspaceService {
                     }
 
                 }
+            } else {
+                workspaceResponses.add(new WorkspaceResponse(
+                                workspace.getId(),
+                                workspace.getName(),
+                                userRepository.getCreatorResponse(workspace.getLead().getId()),
+                                false
+                        )
+                );
             }
-
-            workspaceResponses.add(new WorkspaceResponse(
-                            workspace.getId(),
-                            workspace.getName(),
-                            userRepository.getCreatorResponse(workspace.getLead().getId()),
-                            false
-                    )
-            );
         }
 
         log.info("Get all workspaces");
