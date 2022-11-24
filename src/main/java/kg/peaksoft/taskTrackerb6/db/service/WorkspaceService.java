@@ -143,20 +143,43 @@ public class WorkspaceService {
 
     public List<WorkspaceResponse> getAllUserWorkspaces() {
         User user = getAuthenticateUser();
-        List<WorkspaceResponse> workspaceResponses = new ArrayList<>();
         List<Workspace> workspaces = new ArrayList<>();
+        List<WorkspaceResponse> workspaceResponses = new ArrayList<>();
         for (UserWorkSpace userWorkSpace : user.getUserWorkSpaces()) {
             if (userWorkSpace.getUser().equals(user)) {
                 workspaces.add(userWorkSpace.getWorkspace());
             }
         }
 
+        List<Workspace> favoriteWorkspaces = new ArrayList<>();
+        List<Favorite> favorites = user.getFavorites();
+        for (Favorite fav : favorites) {
+            if (fav.getWorkspace() != null) {
+                favoriteWorkspaces.add(fav.getWorkspace());
+            }
+        }
+
         for (Workspace workspace : workspaces) {
+            if (favoriteWorkspaces.contains(workspace)) {
+                for (Workspace w : favoriteWorkspaces) {
+                    if (w.equals(workspace)) {
+                        workspaceResponses.add(new WorkspaceResponse(
+                                        workspace.getId(),
+                                        workspace.getName(),
+                                        userRepository.getCreatorResponse(workspace.getLead().getId()),
+                                        true
+                                )
+                        );
+                    }
+
+                }
+            }
+
             workspaceResponses.add(new WorkspaceResponse(
                             workspace.getId(),
                             workspace.getName(),
                             userRepository.getCreatorResponse(workspace.getLead().getId()),
-                            workspace.getIsFavorite()
+                            false
                     )
             );
         }
