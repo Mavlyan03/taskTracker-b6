@@ -213,8 +213,8 @@ public class BoardService {
         );
 
         List<Favorite> favorites = user.getFavorites();
-        List<Board> userFavoriteBoards = new ArrayList<>();
         List<Board> workspaceBoards = workspace.getBoards();
+        List<Board> userFavoriteBoards = new ArrayList<>();
         List<BoardResponse> boardResponses = new ArrayList<>();
         for (Favorite fav : favorites) {
             if (fav.getBoard() != null) {
@@ -235,15 +235,15 @@ public class BoardService {
                         );
                     }
                 }
+            } else {
+                boardResponses.add(new BoardResponse(
+                                board.getId(),
+                                board.getTitle(),
+                                false,
+                                board.getBackground()
+                        )
+                );
             }
-
-            boardResponses.add(new BoardResponse(
-                            board.getId(),
-                            board.getTitle(),
-                            false,
-                            board.getBackground()
-                    )
-            );
         }
 
         return boardResponses;

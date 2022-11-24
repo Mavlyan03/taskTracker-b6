@@ -167,7 +167,7 @@ public class WorkspaceService {
                                         workspace.getId(),
                                         workspace.getName(),
                                         userRepository.getCreatorResponse(workspace.getLead().getId()),
-                                        workspace.getIsFavorite()
+                                        true
                                 )
                         );
                     }
