@@ -43,7 +43,7 @@ public class WorkspaceApi {
     @Operation(summary = "Get workspace", description = "Get workspace by workspace id")
     @GetMapping("/{id}")
     public List<BoardResponse> getById(@PathVariable Long id) {
-        return service.getWorkspaceById(id);
+        return service.getById(id);
     }
 
     @Operation(summary = "Delete workspace", description = "Delete workspace by workspace id")

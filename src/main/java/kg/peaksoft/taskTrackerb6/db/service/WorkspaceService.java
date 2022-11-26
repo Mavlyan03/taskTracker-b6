@@ -34,7 +34,6 @@ public class WorkspaceService {
     private final UserRepository userRepository;
     private final UserWorkSpaceRepository userWorkSpaceRepository;
     private final FavoriteRepository favoriteRepository;
-    private final BoardRepository boardRepository;
     private final JavaMailSender mailSender;
 
     private User getAuthenticateUser() {
@@ -66,33 +65,49 @@ public class WorkspaceService {
     }
 
 
-    public List<BoardResponse> getWorkspaceById(Long id) {
+    public List<BoardResponse> getById(Long id) {
+        User user = getAuthenticateUser();
         Workspace workspace = workspaceRepository.findById(id).orElseThrow(
-                () -> {
-                    log.error("Workspace with id: {} not found!", id);
-                    throw new NotFoundException("Workspace with id: " + id + " not found!");
-                }
+                () -> new NotFoundException("Workspace with id: " + id + " not found!")
         );
 
-        return boardRepository.findAllBoards(workspace.getId());
+        List<Favorite> favorites = user.getFavorites();
+        List<Board> workspaceBoards = workspace.getBoards();
+        List<Board> userFavoriteBoards = new ArrayList<>();
+        List<BoardResponse> boardResponses = new ArrayList<>();
+        for (Favorite fav : favorites) {
+            if (fav.getBoard() != null) {
+                userFavoriteBoards.add(fav.getBoard());
+            }
+        }
+
+        for (Board board : workspaceBoards) {
+            if (userFavoriteBoards.contains(board)) {
+                for (Board favBoard : userFavoriteBoards) {
+                    if (favBoard.equals(board)) {
+                        boardResponses.add(new BoardResponse(
+                                        board.getId(),
+                                        board.getTitle(),
+                                        true,
+                                        board.getBackground()
+                                )
+                        );
+                    }
+                }
+            } else {
+                boardResponses.add(new BoardResponse(
+                                board.getId(),
+                                board.getTitle(),
+                                false,
+                                board.getBackground()
+                        )
+                );
+            }
+        }
+
+        return boardResponses;
     }
 
-
-//    public WorkspaceResponse getWorkspaceById(Long id) {
-//        Workspace workspace = workspaceRepository.findById(id).orElseThrow(
-//                () -> {
-//                    log.error("Workspace with id: {} not found!", id);
-//                    throw new NotFoundException("Workspace with id: " + id + " not found!");
-//                }
-//        );
-//
-//        return new WorkspaceResponse(
-//                workspace.getId(),
-//                workspace.getName(),
-//                userRepository.getCreatorResponse(workspace.getLead().getId()),
-//                workspace.getIsFavorite()
-//        );
-//    }
 
     public SimpleResponse deleteWorkspaceById(Long id) {
         User user = getAuthenticateUser();
