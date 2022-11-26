@@ -2,11 +2,9 @@ package kg.peaksoft.taskTrackerb6.db.service;
 
 
 import kg.peaksoft.taskTrackerb6.db.model.*;
-import kg.peaksoft.taskTrackerb6.db.repository.FavoriteRepository;
-import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
-import kg.peaksoft.taskTrackerb6.db.repository.UserWorkSpaceRepository;
-import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
+import kg.peaksoft.taskTrackerb6.db.repository.*;
 import kg.peaksoft.taskTrackerb6.dto.request.WorkspaceRequest;
+import kg.peaksoft.taskTrackerb6.dto.response.BoardResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.WorkspaceResponse;
 import kg.peaksoft.taskTrackerb6.enums.Role;
@@ -36,6 +34,7 @@ public class WorkspaceService {
     private final UserRepository userRepository;
     private final UserWorkSpaceRepository userWorkSpaceRepository;
     private final FavoriteRepository favoriteRepository;
+    private final BoardRepository boardRepository;
     private final JavaMailSender mailSender;
 
     private User getAuthenticateUser() {
@@ -67,7 +66,7 @@ public class WorkspaceService {
     }
 
 
-    public WorkspaceResponse getWorkspaceById(Long id) {
+    public List<BoardResponse> getWorkspaceById(Long id) {
         Workspace workspace = workspaceRepository.findById(id).orElseThrow(
                 () -> {
                     log.error("Workspace with id: {} not found!", id);
@@ -75,13 +74,25 @@ public class WorkspaceService {
                 }
         );
 
-        return new WorkspaceResponse(
-                workspace.getId(),
-                workspace.getName(),
-                userRepository.getCreatorResponse(workspace.getLead().getId()),
-                workspace.getIsFavorite()
-        );
+        return boardRepository.findAllBoards(workspace.getId());
     }
+
+
+//    public WorkspaceResponse getWorkspaceById(Long id) {
+//        Workspace workspace = workspaceRepository.findById(id).orElseThrow(
+//                () -> {
+//                    log.error("Workspace with id: {} not found!", id);
+//                    throw new NotFoundException("Workspace with id: " + id + " not found!");
+//                }
+//        );
+//
+//        return new WorkspaceResponse(
+//                workspace.getId(),
+//                workspace.getName(),
+//                userRepository.getCreatorResponse(workspace.getLead().getId()),
+//                workspace.getIsFavorite()
+//        );
+//    }
 
     public SimpleResponse deleteWorkspaceById(Long id) {
         User user = getAuthenticateUser();

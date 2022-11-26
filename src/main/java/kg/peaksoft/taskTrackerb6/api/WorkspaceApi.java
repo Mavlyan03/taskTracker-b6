@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.peaksoft.taskTrackerb6.db.service.FavoriteService;
 import kg.peaksoft.taskTrackerb6.db.service.WorkspaceService;
 import kg.peaksoft.taskTrackerb6.dto.request.WorkspaceRequest;
+import kg.peaksoft.taskTrackerb6.dto.response.BoardResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.FavoriteResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.WorkspaceResponse;
@@ -41,7 +42,7 @@ public class WorkspaceApi {
 
     @Operation(summary = "Get workspace", description = "Get workspace by workspace id")
     @GetMapping("/{id}")
-    public WorkspaceResponse getById(@PathVariable Long id) {
+    public List<BoardResponse> getById(@PathVariable Long id) {
         return service.getWorkspaceById(id);
     }
 
