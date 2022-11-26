@@ -2,11 +2,9 @@ package kg.peaksoft.taskTrackerb6.db.service;
 
 
 import kg.peaksoft.taskTrackerb6.db.model.*;
-import kg.peaksoft.taskTrackerb6.db.repository.FavoriteRepository;
-import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
-import kg.peaksoft.taskTrackerb6.db.repository.UserWorkSpaceRepository;
-import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
+import kg.peaksoft.taskTrackerb6.db.repository.*;
 import kg.peaksoft.taskTrackerb6.dto.request.WorkspaceRequest;
+import kg.peaksoft.taskTrackerb6.dto.response.BoardResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.WorkspaceResponse;
 import kg.peaksoft.taskTrackerb6.enums.Role;
@@ -67,21 +65,49 @@ public class WorkspaceService {
     }
 
 
-    public WorkspaceResponse getWorkspaceById(Long id) {
+    public List<BoardResponse> getById(Long id) {
+        User user = getAuthenticateUser();
         Workspace workspace = workspaceRepository.findById(id).orElseThrow(
-                () -> {
-                    log.error("Workspace with id: {} not found!", id);
-                    throw new NotFoundException("Workspace with id: " + id + " not found!");
-                }
+                () -> new NotFoundException("Workspace with id: " + id + " not found!")
         );
 
-        return new WorkspaceResponse(
-                workspace.getId(),
-                workspace.getName(),
-                userRepository.getCreatorResponse(workspace.getLead().getId()),
-                workspace.getIsFavorite()
-        );
+        List<Favorite> favorites = user.getFavorites();
+        List<Board> workspaceBoards = workspace.getBoards();
+        List<Board> userFavoriteBoards = new ArrayList<>();
+        List<BoardResponse> boardResponses = new ArrayList<>();
+        for (Favorite fav : favorites) {
+            if (fav.getBoard() != null) {
+                userFavoriteBoards.add(fav.getBoard());
+            }
+        }
+
+        for (Board board : workspaceBoards) {
+            if (userFavoriteBoards.contains(board)) {
+                for (Board favBoard : userFavoriteBoards) {
+                    if (favBoard.equals(board)) {
+                        boardResponses.add(new BoardResponse(
+                                        board.getId(),
+                                        board.getTitle(),
+                                        true,
+                                        board.getBackground()
+                                )
+                        );
+                    }
+                }
+            } else {
+                boardResponses.add(new BoardResponse(
+                                board.getId(),
+                                board.getTitle(),
+                                false,
+                                board.getBackground()
+                        )
+                );
+            }
+        }
+
+        return boardResponses;
     }
+
 
     public SimpleResponse deleteWorkspaceById(Long id) {
         User user = getAuthenticateUser();
