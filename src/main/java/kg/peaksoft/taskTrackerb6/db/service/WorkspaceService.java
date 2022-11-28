@@ -5,6 +5,7 @@ import kg.peaksoft.taskTrackerb6.db.model.*;
 import kg.peaksoft.taskTrackerb6.db.repository.*;
 import kg.peaksoft.taskTrackerb6.dto.request.WorkspaceRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.BoardResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.WorkspaceInnerPageResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.WorkspaceResponse;
 import kg.peaksoft.taskTrackerb6.enums.Role;
@@ -65,12 +66,12 @@ public class WorkspaceService {
     }
 
 
-    public List<BoardResponse> getById(Long id) {
-        User user = getAuthenticateUser();
+    public WorkspaceInnerPageResponse getById(Long id) {
         Workspace workspace = workspaceRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Workspace with id: " + id + " not found!")
         );
 
+        User user = getAuthenticateUser();
         List<Favorite> favorites = user.getFavorites();
         List<Board> workspaceBoards = workspace.getBoards();
         List<Board> userFavoriteBoards = new ArrayList<>();
@@ -105,7 +106,11 @@ public class WorkspaceService {
             }
         }
 
-        return boardResponses;
+        return new WorkspaceInnerPageResponse(
+                workspace.getId(),
+                workspace.getName(),
+                boardResponses
+        );
     }
 
 
