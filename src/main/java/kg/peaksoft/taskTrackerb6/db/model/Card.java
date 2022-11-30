@@ -51,7 +51,7 @@ public class Card {
     private Estimation estimation;
 
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
-    private kg.peaksoft.taskTrackerb6.db.model.Column                                                       column;
+    private kg.peaksoft.taskTrackerb6.db.model.Column column;
 
     @OneToMany(cascade = {ALL}, mappedBy = "card")
     private List<Label> labels;

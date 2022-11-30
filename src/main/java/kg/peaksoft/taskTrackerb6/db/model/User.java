@@ -40,6 +40,7 @@ public class User implements UserDetails {
 
     private String password;
 
+
     @OneToMany(cascade = {ALL}, mappedBy = "statusChangedUser")
     private List<Favorite> favorites;
 
