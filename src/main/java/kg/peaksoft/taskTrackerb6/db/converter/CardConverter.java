@@ -49,7 +49,6 @@ public class CardConverter {
         Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).get();
         Card card = new Card(request.getTitle(), request.getDescription());
         card.setColumn(column);
-//        card.setBoard(board);
         column.addCard(card);
 
         for (LabelRequest l : request.getLabelRequests()) {

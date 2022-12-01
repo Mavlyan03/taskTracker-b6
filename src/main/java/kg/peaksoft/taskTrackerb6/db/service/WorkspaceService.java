@@ -141,9 +141,9 @@ public class WorkspaceService {
             throw new BadCredentialException("You can not delete this workspace!");
         }
 
-        for (Board b : workspace.getBoards()) {        //change
-            if (b.getColumns() != null) {                  //change
-                for (Column column : b.getColumns()) {     //change
+        for (Board b : workspace.getBoards()) {
+            if (b.getColumns() != null) {
+                for (Column column : b.getColumns()) {
                     for (Card card : column.getCards()) {
                         for (Attachment attachment : card.getAttachments()) {
                             attachmentRepository.deleteAttachment(attachment.getId());
@@ -155,10 +155,7 @@ public class WorkspaceService {
                                 if (estimation != null) {
                                     estimationRepository.deleteEstimation(estimation.getId());
                                 }
-//                                for (Estimation e : estimationRepository.getAllBySubTaskId(s.getId())) {
-//                                    estimationRepository.deleteEstimation(e.getId());
-//                                }
-//
+
                                 subTaskRepository.deleteSubTask(s.getId());
                             }
 
@@ -201,17 +198,6 @@ public class WorkspaceService {
                 }
             }
 
-//            List<Favorite> favorites = user.getFavorites();
-//            if (favorites != null) {
-//                for (Favorite fav : favorites) {
-//                    if (fav.getBoard() != null) {
-//                        if (fav.getBoard().equals(b)) {
-//                            favoriteRepository.deleteFavorite(fav.getId());
-//                        }
-//                    }
-//                }
-//            }
-
             List<Favorite> allFavorites = favoriteRepository.findAll();
             if (allFavorites.contains(b.getFavorite())) {
                 for (Favorite fav : allFavorites) {
@@ -226,19 +212,14 @@ public class WorkspaceService {
             boardRepository.deleteBoard(b.getId());
         }
 
-//        for (Favorite fav : user.getFavorites()) {
-//            if (fav.getWorkspace() != null) {
-//                if (fav.getWorkspace().equals(workspace)) {
-//                    favoriteRepository.deleteFavorite(fav.getId());
-//                }
-//            }
-//        }
-
         List<Favorite> allFavorites = favoriteRepository.findAll();
-        if (workspace.getFavorite() != null) {
-            favoriteRepository.deleteFavorite(workspace.getFavorite().getId());
-            if (allFavorites.contains(workspace.getFavorite())) {
-                favoriteRepository.deleteFavorite(workspace.getFavorite().getId());
+        if (allFavorites.contains(workspace.getFavorite())) {
+            for (Favorite fav : allFavorites) {
+                if (fav.getWorkspace() != null) {
+                    if (fav.getWorkspace().equals(workspace)) {
+                        favoriteRepository.deleteFavorite(fav.getId());
+                    }
+                }
             }
         }
 
@@ -248,26 +229,6 @@ public class WorkspaceService {
         return new SimpleResponse("Workspace with id: " + id + " successfully!", "DELETE");
     }
 
-
-//    public SimpleResponse deleteWorkspaceById(Long id) {
-//        User user = getAuthenticateUser();
-//
-//        Workspace workspace = workspaceRepository.findById(id).orElseThrow(
-//                () -> {
-//                    log.error("Workspace with id: {} not found!", id);
-//                    throw new NotFoundException("Workspace with id: " + id + " not found!");
-//                }
-//        );
-//
-//        if (!user.getEmail().equals(workspace.getLead().getEmail())) {
-//            log.error("You can not delete this workspace!");
-//            throw new BadCredentialException("You can not delete this workspace!");
-//        }
-//
-//        workspaceRepository.deleteById(workspace.getId());
-//        log.info("Workspace with id: {} successfully deleted!", id);
-//        return new SimpleResponse("Workspace with id: " + id + " successfully!", "DELETE");
-//    }
 
     public WorkspaceResponse makeFavorite(Long id) {
         User user = getAuthenticateUser();

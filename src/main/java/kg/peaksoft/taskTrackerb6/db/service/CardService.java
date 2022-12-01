@@ -32,7 +32,6 @@ public class CardService {
     private final BoardRepository boardRepository;
     private final CardConverter converter;
     private final NotificationRepository notificationRepository;
-    private final WorkspaceRepository workspaceRepository;
 
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -77,7 +76,6 @@ public class CardService {
             notification.setCard(card);
             notification.setNotificationType(NotificationType.CHANGE_STATUS);
             notification.setFromUser(user);
-//            notification.setUser(card.getCreator());
             notification.setUser(card.getColumn().getBoard().getWorkspace().getLead());
             notification.setBoard(board);
             notification.setCreatedAt(LocalDateTime.now());
@@ -158,13 +156,9 @@ public class CardService {
     public CardInnerPageResponse createCard(CardRequest request) {
         User user = getAuthenticateUser();
         Card card = converter.convertToEntity(request);
-        Board board = boardRepository.findById(card.getColumn().getBoard().getId()).get();
-        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).get();
         card.setCreator(user);
         card.setColumn(card.getColumn());
         card.setCreatedAt(LocalDate.now());
-        card.setWorkspace(workspace);
-
         log.info("Card successfully created");
         return converter.convertToCardInnerPageResponse(cardRepository.save(card));
     }

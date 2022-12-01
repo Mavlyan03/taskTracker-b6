@@ -14,7 +14,7 @@ import java.util.List;
 @Repository
 public interface CardRepository extends JpaRepository<Card, Long> {
 
-    @Query("select c from Card c where c.createdAt between :from and :to and c.workspace.id = :id")
+    @Query("select c from Card c where c.createdAt between :from and :to and c.column.board.workspace.id = :id")
     List<Card> searchCardByCreatedAt(Long id,
                                      @Param("from") LocalDate from,
                                      @Param("to") LocalDate to);
@@ -23,4 +23,7 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     @Modifying
     @Query("delete from Card c where c.id = :id")
     void deleteCard(Long id);
+
+    @Query("select c from Card c where c.column.board.workspace.id = :id")
+    List<Card> findAllByWorkspaceId(Long id);
 }

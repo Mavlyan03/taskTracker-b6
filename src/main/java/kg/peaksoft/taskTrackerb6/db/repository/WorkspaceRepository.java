@@ -12,16 +12,9 @@ import java.util.List;
 @Repository
 public interface WorkspaceRepository extends JpaRepository<Workspace, Long> {
 
-    @Query("select w from Workspace w where w.isFavorite = true")
-    List<Workspace> findAllByFavorites();
-
-    @Modifying
-    @Query("delete from Workspace w where w.id = :id")
-    void deleteById(Long id);
-
     @Transactional
     @Modifying
-    @Query("delete from Workspace w where w.id =id")
+    @Query("delete from Workspace w where w.id = :id")
     void deleteWorkspaceById(Long id);
 
 }

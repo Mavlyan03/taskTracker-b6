@@ -13,18 +13,8 @@ import java.util.List;
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
-    @Query("select b from Board b where b.isFavorite = true")
-    List<Board> findAllByFavorites();
-
     @Query("select b from Board b where b.isArchive = true")
     List<Board> findAllByIsArchive();
-
-    @Query("select new kg.peaksoft.taskTrackerb6.dto.response.BoardResponse(" +
-            "b.id," +
-            "b.title," +
-            "b.isFavorite," +
-            "b.background) from Board b where b.workspace.id = ?1 and b.isArchive = false")
-    List<BoardResponse> findAllBoards(Long id);
 
     @Transactional
     @Modifying
