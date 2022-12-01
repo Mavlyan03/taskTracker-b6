@@ -26,8 +26,8 @@ public class Workspace {
 
     private Boolean isFavorite = false;
 
-    @OneToMany(cascade = {ALL}, mappedBy = "workspace")
-    private List<Card> allIssues;
+//    @OneToMany(cascade = {ALL}, mappedBy = "workspace")
+//    private List<Card> allIssues;
 
     @ManyToOne(cascade = {DETACH, MERGE, REFRESH})
     private User lead;
@@ -37,6 +37,9 @@ public class Workspace {
 
     @OneToMany(cascade = {ALL}, mappedBy = "workspace")
     private List<Board> boards;
+
+    @OneToOne(cascade = ALL)
+    private Favorite favorite;
 
 
     public Workspace(String name, Boolean isFavorite) {
@@ -71,10 +74,10 @@ public class Workspace {
         userWorkSpaces.add(userWorkSpace);
     }
 
-    public void addCard(Card card) {
-        if (allIssues == null) {
-            allIssues = new ArrayList<>();
-        }
-        allIssues.add(card);
-    }
+//    public void addCard(Card card) {
+//        if (allIssues == null) {
+//            allIssues = new ArrayList<>();
+//        }
+//        allIssues.add(card);
+//    }
 }
