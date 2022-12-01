@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
@@ -16,4 +17,9 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     @Query("delete from Notification n where n.id = :id")
     void deleteNotification(Long id);
 
+    @Query("select n from Notification n where n.board.id = :id")
+    List<Notification> findAllByBoardId(Long id);
+
+    @Query("select n from Notification n where n.card.id = :id")
+    List<Notification> findAllByCardId(Long id);
 }
