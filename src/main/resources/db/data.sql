@@ -52,14 +52,11 @@ values (1, 1);
 insert into user_workspace_roles (id, user_id, workspace_id, role)
 values (1, 1, 1, 'SUPER_ADMIN');
 
-insert into workspaces_all_issues (workspace_id, all_issues_id)
-values (1, 1);
-
 insert into cards_members (card_id, members_id)
 values (1, 1);
 
 insert into subtasks_workspaces_members(sub_task_id, workspaces_members_id)
 values (1, 1);
 
-insert into workspaces_all_issues (workspace_id, all_issues_id)
-values (1, 1);
+-- insert into workspaces_all_issues (workspace_id, all_issues_id)
+-- values (1, 1);
