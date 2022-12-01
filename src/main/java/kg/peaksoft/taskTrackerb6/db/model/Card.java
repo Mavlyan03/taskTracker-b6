@@ -62,8 +62,8 @@ public class Card {
     @OneToMany(cascade = {ALL}, mappedBy = "card")
     private List<Attachment> attachments;
 
-    @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
-    private Board board;
+//    @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
+//    private Board board;
 
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
     private Workspace workspace;

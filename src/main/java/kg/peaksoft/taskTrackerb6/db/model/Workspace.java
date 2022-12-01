@@ -38,7 +38,7 @@ public class Workspace {
     @OneToMany(cascade = {ALL}, mappedBy = "workspace")
     private List<Board> boards;
 
-    @OneToOne(cascade = ALL)
+    @OneToOne(cascade = ALL, mappedBy = "workspace")
     private Favorite favorite;
 
 

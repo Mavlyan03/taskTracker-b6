@@ -59,7 +59,7 @@ public class ChecklistService {
                 }
         );
 
-        Board board = boardRepository.findById(card.getBoard().getId()).orElseThrow(
+        Board board = boardRepository.findById(card.getColumn().getBoard().getId()).orElseThrow(
                 () -> {
                     log.error("Board with id: {} not found!", id);
                     throw new NoSuchElementException(Board.class, id);

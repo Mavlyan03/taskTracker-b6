@@ -151,10 +151,14 @@ public class WorkspaceService {
 
                         for (Checklist c : checklistRepository.findAllChecklists(card.getId())) {
                             for (SubTask s : c.getSubTasks()) {
-                                for (Estimation e : estimationRepository.getAllBySubTaskId(s.getId())) {
-                                    estimationRepository.deleteEstimation(e.getId());
+                                Estimation estimation = s.getEstimation();
+                                if (estimation != null) {
+                                    estimationRepository.deleteEstimation(estimation.getId());
                                 }
-
+//                                for (Estimation e : estimationRepository.getAllBySubTaskId(s.getId())) {
+//                                    estimationRepository.deleteEstimation(e.getId());
+//                                }
+//
                                 subTaskRepository.deleteSubTask(s.getId());
                             }
 
@@ -177,6 +181,13 @@ public class WorkspaceService {
                         }
 
                         cardRepository.deleteCard(card.getId());
+                    }
+
+                    List<Notification> columnNotifications = notificationRepository.findAllByColumnId(column.getId());
+                    if (columnNotifications != null) {
+                        for (Notification notification : columnNotifications) {
+                            notificationRepository.deleteNotification(notification.getId());
+                        }
                     }
 
                     columnRepository.deleteColumn(column.getId());

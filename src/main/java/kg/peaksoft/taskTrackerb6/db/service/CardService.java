@@ -61,7 +61,7 @@ public class CardService {
                 }
         );
 
-        Board board = boardRepository.findById(card.getBoard().getId()).get();
+        Board board = boardRepository.findById(card.getColumn().getBoard().getId()).get();
 
         List<CardResponse> cardResponses = new ArrayList<>();
         for (Card c : column.getCards()) {
@@ -70,14 +70,15 @@ public class CardService {
 
         if (!card.getColumn().equals(column)) {
             card.setMovedUser(user);
+            card.setColumn(column);
             column.addCard(card);
             card.setColumn(column);
             Notification notification = new Notification();
             notification.setCard(card);
             notification.setNotificationType(NotificationType.CHANGE_STATUS);
             notification.setFromUser(user);
-            notification.setUser(card.getCreator());
-            notification.setUser(card.getBoard().getWorkspace().getLead());
+//            notification.setUser(card.getCreator());
+            notification.setUser(card.getColumn().getBoard().getWorkspace().getLead());
             notification.setBoard(board);
             notification.setCreatedAt(LocalDateTime.now());
             notification.setMessage("Card status with id: " + cardId + " has changed by " + user.getFirstName() + " " + user.getLastName());
@@ -157,13 +158,12 @@ public class CardService {
     public CardInnerPageResponse createCard(CardRequest request) {
         User user = getAuthenticateUser();
         Card card = converter.convertToEntity(request);
-        Board board = boardRepository.findById(card.getBoard().getId()).get();
+        Board board = boardRepository.findById(card.getColumn().getBoard().getId()).get();
         Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).get();
         card.setCreator(user);
         card.setColumn(card.getColumn());
         card.setCreatedAt(LocalDate.now());
         card.setWorkspace(workspace);
-        workspace.addCard(card);
 
         log.info("Card successfully created");
         return converter.convertToCardInnerPageResponse(cardRepository.save(card));

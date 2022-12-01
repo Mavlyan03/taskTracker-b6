@@ -22,4 +22,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     @Query("select n from Notification n where n.card.id = :id")
     List<Notification> findAllByCardId(Long id);
+
+    @Query("select n from Notification n where n.column.id = :id")
+    List<Notification> findAllByColumnId(Long id);
 }

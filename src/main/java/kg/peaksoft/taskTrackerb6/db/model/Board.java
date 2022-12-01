@@ -47,7 +47,7 @@ public class Board {
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
     private Workspace workspace;
 
-    @OneToOne(cascade = ALL)
+    @OneToOne(cascade = ALL, mappedBy = "board")
     private Favorite favorite;
 
     public void addColumn(Column column){
