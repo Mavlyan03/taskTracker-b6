@@ -9,7 +9,6 @@ import kg.peaksoft.taskTrackerb6.dto.response.ArchiveBoardResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.BoardResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -18,7 +17,6 @@ import java.util.List;
 @RestController
 @RequestMapping("api/boards")
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyAuthority('ADMIN')")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @Tag(name = "Board API", description = "All board endpoints for Admin")
 public class BoardApi {

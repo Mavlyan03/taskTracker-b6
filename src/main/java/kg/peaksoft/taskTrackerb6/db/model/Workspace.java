@@ -19,7 +19,7 @@ public class Workspace {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "workspace_gen")
-    @SequenceGenerator(name = "workspace_gen", sequenceName = "workspace_seq", allocationSize = 1, initialValue = 2)
+    @SequenceGenerator(name = "workspace_gen", sequenceName = "workspace_seq", allocationSize = 1, initialValue = 3)
     private Long id;
 
     private String name;
@@ -37,6 +37,7 @@ public class Workspace {
 
     @OneToMany(cascade = {ALL}, mappedBy = "workspace")
     private List<Board> boards;
+
 
     public Workspace(String name, Boolean isFavorite) {
         this.name = name;

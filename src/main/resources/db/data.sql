@@ -13,7 +13,8 @@ values (1, 'Workspace Name', false,  1),
        (2, 'Task Tracker', false, 2);
 
 insert into boards(id, title, background, is_archive, is_favorite, workspace_id)
-values (1, 'First Board', 'https://burst.shopifycdn.com/photos/city-lights-through-rain-window.jpg?width=1200&format=pjpg&exif=1&iptc=1', false, false,  1);
+values (1, 'First Board', 'https://burst.shopifycdn.com/photos/city-lights-through-rain-window.jpg?width=1200&format=pjpg&exif=1&iptc=1', false, false,  1),
+       (2, 'Backend', 'background', false, false, 2);
 
 insert into columns (id, title, is_archive, board_id)
 values (1, 'First Column', false, 1);
@@ -50,13 +51,11 @@ insert into users_boards (members_id, boards_id)
 values (1, 1);
 
 insert into user_workspace_roles (id, user_id, workspace_id, role)
-values (1, 1, 1, 'SUPER_ADMIN');
+values (1, 1, 1, 'SUPER_ADMIN'),
+       (2, 2, 2, 'ADMIN');
 
 insert into cards_members (card_id, members_id)
 values (1, 1);
 
 insert into subtasks_workspaces_members(sub_task_id, workspaces_members_id)
 values (1, 1);
-
--- insert into workspaces_all_issues (workspace_id, all_issues_id)
--- values (1, 1);

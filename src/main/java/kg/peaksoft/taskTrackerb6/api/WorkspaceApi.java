@@ -2,11 +2,10 @@ package kg.peaksoft.taskTrackerb6.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import kg.peaksoft.taskTrackerb6.db.service.FavoriteService;
 import kg.peaksoft.taskTrackerb6.db.service.WorkspaceService;
 import kg.peaksoft.taskTrackerb6.dto.request.WorkspaceRequest;
-import kg.peaksoft.taskTrackerb6.dto.response.FavoritesResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.WorkspaceResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.*;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -30,6 +29,7 @@ import java.util.List;
 public class WorkspaceApi {
 
     private final WorkspaceService service;
+    private final FavoriteService favoriteService;
 
     @Operation(summary = "Create workspace", description = "Create new workspace")
     @PostMapping
@@ -38,32 +38,32 @@ public class WorkspaceApi {
     }
 
     @Operation(summary = "Get workspace", description = "Get workspace by workspace id")
-    @GetMapping("{id}")
-    public WorkspaceResponse getById(@PathVariable Long id) {
-        return service.getWorkspaceById(id);
+    @GetMapping("/{id}")
+    public WorkspaceInnerPageResponse getById(@PathVariable Long id) {
+        return service.getById(id);
     }
 
     @Operation(summary = "Delete workspace", description = "Delete workspace by workspace id")
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public SimpleResponse deleteById(@PathVariable Long id) {
         return service.deleteWorkspaceById(id);
     }
 
-    @Operation(summary = "Change action", description = "Change workspace action by workspace id")
-    @PutMapping("action/{id}")
-    public WorkspaceResponse changeWorkspacesAction(@PathVariable Long id) {
-        return service.changeWorkspacesAction(id);
-    }
-
-    @Operation(summary = "All favorite workspaces and boards", description = "Get all favorite workspaces and boards")
-    @GetMapping("favorites")
-    public List<FavoritesResponse> getAllFavoriteWorkspacesAndBoards() {
-        return service.getAllFavorites();
+    @Operation(summary = "Make favorite", description = "Make workspace favorite by workspace id")
+    @PutMapping("/make-favorite/{id}")
+    public WorkspaceResponse makeFavorite(@PathVariable Long id) {
+        return service.makeFavorite(id);
     }
 
     @Operation(summary = "Get user workspaces", description = "Get all user workspaces")
     @GetMapping
     public List<WorkspaceResponse> getWorkspacesByUserId() {
         return service.getAllUserWorkspaces();
+    }
+
+    @Operation(summary = "Get all favorite workspaces and boards", description = "Get all user favorite workspaces and boards")
+    @GetMapping("/favorites")
+    public List<FavoriteResponse> getAllFavorite() {
+        return favoriteService.getAllUserFavoriteWorkspacesAndBoards();
     }
 }
