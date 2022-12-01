@@ -49,7 +49,6 @@ public class CardConverter {
         Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).get();
         Card card = new Card(request.getTitle(), request.getDescription());
         card.setColumn(column);
-        card.setBoard(board);
         column.addCard(card);
 
         for (LabelRequest l : request.getLabelRequests()) {
@@ -86,7 +85,7 @@ public class CardConverter {
                     notification.setFromUser(user);
                     notification.setUser(convertMemberToUser(m));
                     notification.setCreatedAt(LocalDateTime.now());
-                    notification.setBoard(card.getBoard());
+                    notification.setBoard(card.getColumn().getBoard());
                     notification.setMessage("You has assigned to " + card.getId() + ", by " + user.getFirstName() + " " + user.getLastName());
                     notificationRepository.save(notification);
                     User recipient = convertMemberToUser(m);

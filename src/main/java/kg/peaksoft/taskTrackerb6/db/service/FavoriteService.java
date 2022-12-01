@@ -3,7 +3,6 @@ package kg.peaksoft.taskTrackerb6.db.service;
 
 import kg.peaksoft.taskTrackerb6.db.model.Favorite;
 import kg.peaksoft.taskTrackerb6.db.model.User;
-import kg.peaksoft.taskTrackerb6.db.repository.FavoriteRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import kg.peaksoft.taskTrackerb6.dto.response.FavoriteResponse;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
@@ -22,7 +21,7 @@ import java.util.List;
 public class FavoriteService {
 
     private final UserRepository userRepository;
-    private final FavoriteRepository favoriteRepository;
+
 
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

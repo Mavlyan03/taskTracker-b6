@@ -19,8 +19,8 @@ values (1, 'First Board', 'https://burst.shopifycdn.com/photos/city-lights-throu
 insert into columns (id, title, is_archive, board_id)
 values (1, 'First Column', false, 1);
 
-insert into cards (id, title, description, is_archive, created_at, creator_id, board_id, column_id, workspace_id)
-values (1, 'First Card', 'First Description', false, '2022-10-31',  1, 1, 1, 1);
+insert into cards (id, title, description, is_archive, created_at, creator_id, moved_user_id, column_id)
+values (1, 'First Card', 'First Description', false, '2022-10-31', 1,  1, 1);
 
 insert into checklists (id, title, count, card_id)
 values (1, 'First Checklist', 1, 1);
@@ -35,8 +35,8 @@ values (1, 10, 20),
 insert into estimations (id, start_date, start_time_id, due_date, deadline_time_id, reminder, text, card_id, user_id, sub_task_id)
 values (1, '2022-02-01', 1, '2022-12-12', 2, 5, 'First Text', 1, 1,  1);
 
-insert into notifications (id, message, created_at, notification_type, from_user_id, user_id, sub_task_id, card_id, column_id, estimation_id, board_id)
-values (1, 'First Text', '2022-11-21T16:28', 'ASSIGN', 1, 2, 1, 1, 1, 1, 1);
+insert into notifications (id, message, created_at, notification_type, from_user_id, user_id, card_id, column_id, board_id)
+values (1, 'First Text', '2022-11-21T16:28', 'ASSIGN', 1, 2, 1, 1,  1);
 
 insert into labels (id, color, description, card_id)
 values (1, 'RED', 'Complete this task immediately', 1);
@@ -59,3 +59,5 @@ values (1, 1);
 
 insert into subtasks_workspaces_members(sub_task_id, workspaces_members_id)
 values (1, 1);
+
+
