@@ -34,9 +34,9 @@ public class MemberService {
     public AllMemberResponse getAllMembers(Long id) {
         Card card = cardRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Card with this ID is not found"));
-        Board board = boardRepository.findById(card.getBoard().getId()).orElseThrow(
+        Board board = boardRepository.findById(card.getColumn().getBoard().getId()).orElseThrow(
                 () -> new NotFoundException("Board with this ID is not found"));
-        Workspace workspace = workspaceRepository.findById(card.getWorkspace().getId()).orElseThrow(
+        Workspace workspace = workspaceRepository.findById(card.getColumn().getBoard().getWorkspace().getId()).orElseThrow(
                 () -> new NotFoundException("Workspace With this ID is not found"));
         AllMemberResponse members = new AllMemberResponse();
         List<MemberResponse> boardMembers = new ArrayList<>();
