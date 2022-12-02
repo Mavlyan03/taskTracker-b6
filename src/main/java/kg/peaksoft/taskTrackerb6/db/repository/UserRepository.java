@@ -2,6 +2,7 @@ package kg.peaksoft.taskTrackerb6.db.repository;
 
 import kg.peaksoft.taskTrackerb6.db.model.User;
 import kg.peaksoft.taskTrackerb6.dto.response.CreatorResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.MemberResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -43,5 +44,17 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "u.lastName, " +
             "u.image) from User u where u.id = :id")
     CreatorResponse getCreatorResponse(Long id);
+
+    @Query("select new kg.peaksoft.taskTrackerb6.dto.response.MemberResponse(" +
+            "u.id, " +
+            "u.firstName, " +
+            "u.lastName, " +
+            "u.email," +
+            " u.image ) from User u join UserWorkSpace w " +
+            "on w.workspace.id = :id and w.user.id = u.id where concat(u.firstName,' ',u.lastName,' ',u.email) like concat('%',:email,'%') ")
+    List<MemberResponse> searchByEmailOrName(@Param("email") String email, @Param("id") Long id);
+
+    @Query("select u from User u join UserWorkSpace w on w.user.id = u.id where w.id = ?1")
+    Optional<User> findUserByWorkSpaceId(Long id);
 }
 
