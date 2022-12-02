@@ -55,6 +55,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<MemberResponse> searchByEmailOrName(@Param("email") String email, @Param("id") Long id);
 
     @Query("select u from User u join UserWorkSpace w on w.user.id = u.id where w.id = ?1")
-     Optional<User> findUserByWorkSpaceId(Long id);
+    Optional<User> findUserByWorkSpaceId(Long id);
 }
 
