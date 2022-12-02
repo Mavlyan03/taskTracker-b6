@@ -2,7 +2,6 @@ package kg.peaksoft.taskTrackerb6.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kg.peaksoft.taskTrackerb6.db.service.AllIssuesService;
 import kg.peaksoft.taskTrackerb6.db.service.CardService;
 import kg.peaksoft.taskTrackerb6.dto.request.CardRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.UpdateCardTitleRequest;

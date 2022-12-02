@@ -2,11 +2,10 @@ package kg.peaksoft.taskTrackerb6.db.service;
 
 
 import kg.peaksoft.taskTrackerb6.db.model.*;
-import kg.peaksoft.taskTrackerb6.db.repository.FavoriteRepository;
-import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
-import kg.peaksoft.taskTrackerb6.db.repository.UserWorkSpaceRepository;
-import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
+import kg.peaksoft.taskTrackerb6.db.repository.*;
 import kg.peaksoft.taskTrackerb6.dto.request.WorkspaceRequest;
+import kg.peaksoft.taskTrackerb6.dto.response.BoardResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.WorkspaceInnerPageResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.WorkspaceResponse;
 import kg.peaksoft.taskTrackerb6.enums.Role;
@@ -37,6 +36,17 @@ public class WorkspaceService {
     private final UserWorkSpaceRepository userWorkSpaceRepository;
     private final FavoriteRepository favoriteRepository;
     private final JavaMailSender mailSender;
+    private final BoardRepository boardRepository;
+    private final CardRepository cardRepository;
+    private final ColumnRepository columnRepository;
+    private final LabelRepository labelRepository;
+    private final EstimationRepository estimationRepository;
+    private final NotificationRepository notificationRepository;
+    private final ChecklistRepository checklistRepository;
+    private final SubTaskRepository subTaskRepository;
+    private final AttachmentRepository attachmentRepository;
+    private final CommentRepository commentRepository;
+
 
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -67,22 +77,55 @@ public class WorkspaceService {
     }
 
 
-    public WorkspaceResponse getWorkspaceById(Long id) {
+    public WorkspaceInnerPageResponse getById(Long id) {
         Workspace workspace = workspaceRepository.findById(id).orElseThrow(
-                () -> {
-                    log.error("Workspace with id: {} not found!", id);
-                    throw new NotFoundException("Workspace with id: " + id + " not found!");
-                }
+                () -> new NotFoundException("Workspace with id: " + id + " not found!")
         );
 
-        return new WorkspaceResponse(
+        User user = getAuthenticateUser();
+        List<Favorite> favorites = user.getFavorites();
+        List<Board> workspaceBoards = workspace.getBoards();
+        List<Board> userFavoriteBoards = new ArrayList<>();
+        List<BoardResponse> boardResponses = new ArrayList<>();
+        for (Favorite fav : favorites) {
+            if (fav.getBoard() != null) {
+                userFavoriteBoards.add(fav.getBoard());
+            }
+        }
+
+        for (Board board : workspaceBoards) {
+            if (userFavoriteBoards.contains(board)) {
+                for (Board favBoard : userFavoriteBoards) {
+                    if (favBoard.equals(board)) {
+                        boardResponses.add(new BoardResponse(
+                                        board.getId(),
+                                        board.getTitle(),
+                                        true,
+                                        board.getBackground()
+                                )
+                        );
+                    }
+                }
+            } else {
+                boardResponses.add(new BoardResponse(
+                                board.getId(),
+                                board.getTitle(),
+                                false,
+                                board.getBackground()
+                        )
+                );
+            }
+        }
+
+        return new WorkspaceInnerPageResponse(
                 workspace.getId(),
                 workspace.getName(),
-                userRepository.getCreatorResponse(workspace.getLead().getId()),
-                workspace.getIsFavorite()
+                boardResponses
         );
     }
 
+
+    @Transactional
     public SimpleResponse deleteWorkspaceById(Long id) {
         User user = getAuthenticateUser();
 
@@ -98,10 +141,94 @@ public class WorkspaceService {
             throw new BadCredentialException("You can not delete this workspace!");
         }
 
-        workspaceRepository.deleteById(workspace.getId());
+        for (Board b : workspace.getBoards()) {
+            if (b.getColumns() != null) {
+                for (Column column : b.getColumns()) {
+                    for (Card card : column.getCards()) {
+                        for (Attachment attachment : card.getAttachments()) {
+                            attachmentRepository.deleteAttachment(attachment.getId());
+                        }
+
+                        for (Checklist c : checklistRepository.findAllChecklists(card.getId())) {
+                            for (SubTask s : c.getSubTasks()) {
+                                Estimation estimation = s.getEstimation();
+                                if (estimation != null) {
+                                    estimationRepository.deleteEstimation(estimation.getId());
+                                }
+
+                                subTaskRepository.deleteSubTask(s.getId());
+                            }
+
+                            checklistRepository.deleteChecklist(c.getId());
+                        }
+
+                        for (Comment comment : card.getComments()) {
+                            commentRepository.deleteComment(comment.getId());
+                        }
+
+                        for (Label label : card.getLabels()) {
+                            labelRepository.deleteLabel(label.getId());
+                        }
+
+                        List<Notification> cardNotification = notificationRepository.findAllByCardId(card.getId());
+                        if (cardNotification != null) {
+                            for (Notification n : cardNotification) {
+                                notificationRepository.deleteNotification(n.getId());
+                            }
+                        }
+
+                        cardRepository.deleteCard(card.getId());
+                    }
+
+                    List<Notification> columnNotifications = notificationRepository.findAllByColumnId(column.getId());
+                    if (columnNotifications != null) {
+                        for (Notification notification : columnNotifications) {
+                            notificationRepository.deleteNotification(notification.getId());
+                        }
+                    }
+
+                    columnRepository.deleteColumn(column.getId());
+                }
+            }
+
+            List<Notification> boarNotifications = notificationRepository.findAllByBoardId(b.getId());
+            if (boarNotifications != null) {
+                for (Notification n : boarNotifications) {
+                    notificationRepository.deleteNotification(n.getId());
+                }
+            }
+
+            List<Favorite> allFavorites = favoriteRepository.findAll();
+            if (allFavorites.contains(b.getFavorite())) {
+                for (Favorite fav : allFavorites) {
+                    if (fav.getBoard() != null) {
+                        if (fav.getBoard().equals(b)) {
+                            favoriteRepository.deleteFavorite(fav.getId());
+                        }
+                    }
+                }
+            }
+
+            boardRepository.deleteBoard(b.getId());
+        }
+
+        List<Favorite> allFavorites = favoriteRepository.findAll();
+        if (allFavorites.contains(workspace.getFavorite())) {
+            for (Favorite fav : allFavorites) {
+                if (fav.getWorkspace() != null) {
+                    if (fav.getWorkspace().equals(workspace)) {
+                        favoriteRepository.deleteFavorite(fav.getId());
+                    }
+                }
+            }
+        }
+
+        userWorkSpaceRepository.deleteUserWorkSpace(workspace.getId());
+        workspaceRepository.deleteWorkspaceById(workspace.getId());
         log.info("Workspace with id: {} successfully deleted!", id);
         return new SimpleResponse("Workspace with id: " + id + " successfully!", "DELETE");
     }
+
 
     public WorkspaceResponse makeFavorite(Long id) {
         User user = getAuthenticateUser();

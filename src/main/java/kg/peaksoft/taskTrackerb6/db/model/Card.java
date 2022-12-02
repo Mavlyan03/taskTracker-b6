@@ -51,7 +51,7 @@ public class Card {
     private Estimation estimation;
 
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
-    private kg.peaksoft.taskTrackerb6.db.model.Column                                                       column;
+    private kg.peaksoft.taskTrackerb6.db.model.Column column;
 
     @OneToMany(cascade = {ALL}, mappedBy = "card")
     private List<Label> labels;
@@ -62,11 +62,6 @@ public class Card {
     @OneToMany(cascade = {ALL}, mappedBy = "card")
     private List<Attachment> attachments;
 
-    @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
-    private Board board;
-
-    @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
-    private Workspace workspace;
 
     public Card(String title, String description, Boolean isArchive, LocalDate createdAt, User creator) {
         this.title = title;

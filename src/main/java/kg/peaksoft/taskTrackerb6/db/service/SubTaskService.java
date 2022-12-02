@@ -48,10 +48,10 @@ public class SubTaskService {
                 }
         );
 
-        Workspace workspace = workspaceRepository.findById(checklist.getCard().getBoard().getWorkspace().getId()).orElseThrow(
+        Workspace workspace = workspaceRepository.findById(checklist.getCard().getColumn().getBoard().getWorkspace().getId()).orElseThrow(
                 () -> {
-                    log.error("Workspace with id: {} not found!", checklist.getCard().getBoard().getWorkspace().getId());
-                    throw new NoSuchElementException(Workspace.class, checklist.getCard().getBoard().getWorkspace().getId());
+                    log.error("Workspace with id: {} not found!", checklist.getCard().getColumn().getBoard().getWorkspace().getId());
+                    throw new NoSuchElementException(Workspace.class, checklist.getCard().getColumn().getBoard().getWorkspace().getId());
                 }
         );
 

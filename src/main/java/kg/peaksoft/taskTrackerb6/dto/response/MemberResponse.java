@@ -1,5 +1,6 @@
 package kg.peaksoft.taskTrackerb6.dto.response;
 
+import kg.peaksoft.taskTrackerb6.db.model.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,5 +22,13 @@ public class MemberResponse {
         this.lastName = lastName;
         this.email = email;
         this.image = image;
+    }
+
+    public MemberResponse(User user) {
+        this.id = user.getId();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
+        this.email = user.getEmail();
+        this.image = user.getImage();
     }
 }

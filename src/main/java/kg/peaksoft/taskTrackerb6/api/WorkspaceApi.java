@@ -5,9 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.peaksoft.taskTrackerb6.db.service.FavoriteService;
 import kg.peaksoft.taskTrackerb6.db.service.WorkspaceService;
 import kg.peaksoft.taskTrackerb6.dto.request.WorkspaceRequest;
-import kg.peaksoft.taskTrackerb6.dto.response.FavoriteResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.WorkspaceResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.*;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -41,8 +39,8 @@ public class WorkspaceApi {
 
     @Operation(summary = "Get workspace", description = "Get workspace by workspace id")
     @GetMapping("/{id}")
-    public WorkspaceResponse getById(@PathVariable Long id) {
-        return service.getWorkspaceById(id);
+    public WorkspaceInnerPageResponse getById(@PathVariable Long id) {
+        return service.getById(id);
     }
 
     @Operation(summary = "Delete workspace", description = "Delete workspace by workspace id")

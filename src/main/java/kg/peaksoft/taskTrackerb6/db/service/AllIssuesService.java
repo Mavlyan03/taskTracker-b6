@@ -42,7 +42,7 @@ public class AllIssuesService {
         );
 
         List<AllIssuesResponse> allIssuesResponses = new ArrayList<>();
-        for (Card card : workspace.getAllIssues()) {
+        for (Card card : cardRepository.findAllByWorkspaceId(workspace.getId())) {
             allIssuesResponses.add(convertToResponse(card));
         }
 
@@ -111,7 +111,7 @@ public class AllIssuesService {
 
     public List<AllIssuesResponse> filterByLabelColor(Long id, List<LabelsColor> colors) {
         Workspace workspace = workspaceRepository.findById(id).get();
-        List<Card> workspaceCards = workspace.getAllIssues();
+        List<Card> workspaceCards = cardRepository.findAllByWorkspaceId(workspace.getId());
         List<AllIssuesResponse> allIssues = new ArrayList<>();
         for (Card card : workspaceCards) {
             for (Label label : card.getLabels()) {
@@ -130,7 +130,7 @@ public class AllIssuesService {
     public List<AllIssuesResponse> getAllMemberAssignedCards(Long workspaceId, Long memberId) {
         Workspace workspace = workspaceRepository.findById(workspaceId).get();
         User user = userRepository.findById(memberId).get();
-        List<Card> cards = workspace.getAllIssues();
+        List<Card> cards = cardRepository.findAllByWorkspaceId(workspace.getId());
         List<AllIssuesResponse> memberAssignedCards = new ArrayList<>();
         for (Card card : cards) {
             for (User member : card.getMembers()) {
