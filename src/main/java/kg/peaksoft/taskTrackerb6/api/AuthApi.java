@@ -57,7 +57,7 @@ public class AuthApi {
         return userService.authWithGoogle(token);
     }
 
-    @Operation(summary = "Global search", description = "Search by user e-mail, first and last name")
+    @Operation(summary = "Search members", description = "Search members by workspace id")
     @GetMapping("/globalSearch/{id}")
     public List<MemberResponse> globalSearch(@PathVariable Long id,
                                              @RequestParam String email) {
