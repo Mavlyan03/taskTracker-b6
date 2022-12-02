@@ -243,8 +243,9 @@ public class WorkspaceService {
         for (Favorite fav : favorites) {
             if (fav.getWorkspace() != null) {
                 if (fav.getWorkspace().equals(workspace)) {
-                    favoriteRepository.delete(fav);
-                    favorites.remove(fav);
+                    favoriteRepository.deleteFavorite(fav.getId());
+                    log.info("Favorite is deleted!");
+                    log.info("Workspace favorite with id: {} successfully changed to false", workspace.getId());
                     return new WorkspaceResponse(
                             workspace.getId(),
                             workspace.getName(),
@@ -258,7 +259,8 @@ public class WorkspaceService {
         Favorite favorite = new Favorite(user, workspace);
         favoriteRepository.save(favorite);
         user.addFavorite(favorite);
-        log.info("Workspace action with id: {} successfully change", id);
+        log.info("Workspace action with id: {} successfully changed to true", id);
+        log.info("Favorite is saved!");
         return new WorkspaceResponse(
                 workspace.getId(),
                 workspace.getName(),

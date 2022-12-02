@@ -93,8 +93,9 @@ public class BoardService {
         for (Favorite fav : favorites) {
             if (fav.getBoard() != null) {
                 if (fav.getBoard().equals(board)) {
-                    favoriteRepository.delete(fav);
-                    favorites.remove(fav);
+                    favoriteRepository.deleteFavorite(fav.getId());
+                    log.info("Favorite is deleted!");
+                    log.info("Board's favorite with id: {} successfully change to false", board.getId());
                     return new BoardResponse(
                             board.getId(),
                             board.getTitle(),
@@ -107,7 +108,9 @@ public class BoardService {
 
         Favorite favorite = new Favorite(user, board);
         favoriteRepository.save(favorite);
+        log.info("Favorite is saved!");
         user.addFavorite(favorite);
+        log.info("Board's favorite with id: {} successfully change to true", board.getId());
         return new BoardResponse(
                 board.getId(),
                 board.getTitle(),
