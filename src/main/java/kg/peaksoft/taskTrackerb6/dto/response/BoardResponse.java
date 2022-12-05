@@ -14,6 +14,7 @@ public class BoardResponse {
     private String title;
     private Boolean isFavorite;
     private String background;
+    private Long workspaceId;
 
     public BoardResponse(Board board) {
         this.id = board.getId();

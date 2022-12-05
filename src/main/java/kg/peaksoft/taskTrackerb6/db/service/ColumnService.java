@@ -2,6 +2,7 @@ package kg.peaksoft.taskTrackerb6.db.service;
 
 import kg.peaksoft.taskTrackerb6.db.model.Board;
 import kg.peaksoft.taskTrackerb6.db.model.Column;
+import kg.peaksoft.taskTrackerb6.db.model.Workspace;
 import kg.peaksoft.taskTrackerb6.db.repository.BoardRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.ColumnRepository;
 import kg.peaksoft.taskTrackerb6.dto.request.ColumnRequest;
@@ -39,7 +40,11 @@ public class ColumnService {
         column.setBoard(board);
         Column column1 = columnRepository.save(column);
         log.info("Column successfully created");
-        return new ColumnResponse(column1.getId(), column1.getTitle(), column1.getBoard().getId());
+        return new ColumnResponse(
+                column1.getId(),
+                column1.getTitle(),
+                column1.getBoard().getId(),
+                board.getWorkspace().getId());
     }
 
     public ColumnResponse updateColumn(Long id, String newTitle) {
@@ -53,7 +58,10 @@ public class ColumnService {
         column.setTitle(newTitle);
         Column column1 = columnRepository.save(column);
         log.info("Column title with id: {} successfully updated", id);
-        return new ColumnResponse(column1.getId(), column1.getTitle(), column1.getBoard().getId());
+        return new ColumnResponse(
+                column1.getId(),
+                column1.getTitle(),
+                column1.getBoard().getId());
     }
 
     public SimpleResponse deleteColumn(Long id) {
