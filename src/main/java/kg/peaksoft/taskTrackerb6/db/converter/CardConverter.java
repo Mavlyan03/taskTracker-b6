@@ -39,113 +39,113 @@ public class CardConverter {
                 new NotFoundException("User not found!"));
     }
 
-    public Card convertToEntity(CardRequest request) {
-        User user = getAuthenticateUser();
-        Column column = columnRepository.findById(request.getColumnId()).orElseThrow(
-                () -> new NotFoundException("Column with id: " + request.getColumnId() + " not found!")
-        );
-
-        Board board = boardRepository.findById(column.getBoard().getId()).get();
-        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).get();
-        Card card = new Card(request.getTitle(), request.getDescription());
-        card.setColumn(column);
-        column.addCard(card);
-
-        for (LabelRequest l : request.getLabelRequests()) {
-            Label label = new Label(l.getDescription(), l.getColor());
-            label.setCard(card);
-            card.addLabel(label);
-        }
-
-        Estimation estimation = new Estimation(
-                request.getEstimationRequest().getStartDate(),
-                request.getEstimationRequest().getDueDate(),
-                request.getEstimationRequest().getReminder());
-
-        estimation.setUser(user);
-        estimation.setStartTime(convertTimeToEntity(request.getEstimationRequest().getStartTime()));
-        estimation.setDeadlineTime(convertTimeToEntity(request.getEstimationRequest().getDeadlineTime()));
-        card.setEstimation(estimation);
-
-        List<MemberResponse> workspaceMember = new ArrayList<>();
-        for (UserWorkSpace u : workspace.getUserWorkSpaces()) {
-            if (!user.equals(u.getUser())) {
-                workspaceMember.add(convertToMemberResponse(u.getUser()));
-            }
-
-        }
-
-        for (MemberResponse memberResponse : workspaceMember) {
-            for (MemberRequest m : request.getMemberRequests()) {
-                if (memberResponse.getEmail().equals(m.getEmail())) {
-                    card.addMember(convertMemberToUser(m));
-                    Notification notification = new Notification();
-                    notification.setCard(card);
-                    notification.setNotificationType(NotificationType.ASSIGN);
-                    notification.setFromUser(user);
-                    notification.setUser(convertMemberToUser(m));
-                    notification.setCreatedAt(LocalDateTime.now());
-                    notification.setBoard(card.getColumn().getBoard());
-                    notification.setMessage("You has assigned to " + card.getId() + ", by " + user.getFirstName() + " " + user.getLastName());
-                    notificationRepository.save(notification);
-                    User recipient = convertMemberToUser(m);
-                    recipient.addNotification(notification);
-                }
-            }
-        }
-
-        for (ChecklistRequest c : request.getChecklistRequests()) {
-            Checklist checklist = new Checklist(c.getTitle());
-
-            List<MemberResponse> members = new ArrayList<>();
-            for (UserWorkSpace u : workspace.getUserWorkSpaces()) {
-                if (!user.equals(u.getUser())){
-                    members.add(convertToMemberResponse(u.getUser()));
-                }
-            }
-
-            for (SubTaskRequest s : c.getSubTaskRequests()) {
-                SubTask subTask = new SubTask(s.getDescription(), s.getIsDone());
-                for (MemberResponse memberResponse : members) {
-                    for (MemberRequest memberRequest : s.getMemberRequests()) {
-                        if (memberResponse.getEmail().equals(memberRequest.getEmail())){
-                            subTask.addMember(convertMemberToUser(memberRequest));
-                        }
-                    }
-                }
-                checklist.addSubTaskToChecklist(subTask);
-                subTask.setChecklist(checklist);
-                if (s.getEstimationRequest() != null){
-                    Estimation estimation1 = new Estimation();
-                        estimation1.setStartDate(s.getEstimationRequest().getStartDate());
-                        estimation1.setDueDate(s.getEstimationRequest().getDueDate());
-                        estimation1.setReminder(s.getEstimationRequest().getReminder());
-                        estimation1.setUser(user);
-                        estimation1.setStartTime(convertTimeToEntity(s.getEstimationRequest().getStartTime()));
-                        estimation1.setDeadlineTime(convertTimeToEntity(s.getEstimationRequest().getDeadlineTime()));
-                        subTask.setEstimation(estimation1);
-                        estimation1.setSubTask(subTask);
-                }
-            }
-            card.addChecklist(checklist);
-            checklist.setCard(card);
-        }
-
-        for (CommentRequest commentRequest : request.getCommentRequests()) {
-            Comment comment = new Comment(commentRequest.getText(), LocalDateTime.now());
-            comment.setUser(user);
-            comment.setCard(card);
-            card.addComment(comment);
-        }
-
-        return card;
-    }
+//    public Card convertToEntity(CardRequest request) {
+//        User user = getAuthenticateUser();
+//        Column column = columnRepository.findById(request.getColumnId()).orElseThrow(
+//                () -> new NotFoundException("Column with id: " + request.getColumnId() + " not found!")
+//        );
+//
+//        Board board = boardRepository.findById(column.getBoard().getId()).get();
+//        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).get();
+//        Card card = new Card(request.getTitle(), request.getDescription());
+//        card.setColumn(column);
+//        column.addCard(card);
+//
+//        for (LabelRequest l : request.getLabelRequests()) {
+//            Label label = new Label(l.getDescription(), l.getColor());
+//            label.setCard(card);
+//            card.addLabel(label);
+//        }
+//
+//        Estimation estimation = new Estimation(
+//                request.getEstimationRequest().getStartDate(),
+//                request.getEstimationRequest().getDueDate(),
+//                request.getEstimationRequest().getReminder());
+//
+//        estimation.setUser(user);
+//        estimation.setStartTime(convertTimeToEntity(request.getEstimationRequest().getStartTime()));
+//        estimation.setDeadlineTime(convertTimeToEntity(request.getEstimationRequest().getDeadlineTime()));
+//        card.setEstimation(estimation);
+//
+//        List<MemberResponse> workspaceMember = new ArrayList<>();
+//        for (UserWorkSpace u : workspace.getUserWorkSpaces()) {
+//            if (!user.equals(u.getUser())) {
+//                workspaceMember.add(convertToMemberResponse(u.getUser()));
+//            }
+//
+//        }
+//
+//        for (MemberResponse memberResponse : workspaceMember) {
+//            for (MemberRequest m : request.getMemberRequests()) {
+//                if (memberResponse.getEmail().equals(m.getEmail())) {
+//                    card.addMember(convertMemberToUser(m));
+//                    Notification notification = new Notification();
+//                    notification.setCard(card);
+//                    notification.setNotificationType(NotificationType.ASSIGN);
+//                    notification.setFromUser(user);
+//                    notification.setUser(convertMemberToUser(m));
+//                    notification.setCreatedAt(LocalDateTime.now());
+//                    notification.setBoard(card.getColumn().getBoard());
+//                    notification.setMessage("You has assigned to " + card.getId() + ", by " + user.getFirstName() + " " + user.getLastName());
+//                    notificationRepository.save(notification);
+//                    User recipient = convertMemberToUser(m);
+//                    recipient.addNotification(notification);
+//                }
+//            }
+//        }
+//
+//        for (ChecklistRequest c : request.getChecklistRequests()) {
+//            Checklist checklist = new Checklist(c.getTitle());
+//
+//            List<MemberResponse> members = new ArrayList<>();
+//            for (UserWorkSpace u : workspace.getUserWorkSpaces()) {
+//                if (!user.equals(u.getUser())){
+//                    members.add(convertToMemberResponse(u.getUser()));
+//                }
+//            }
+//
+//            for (SubTaskRequest s : c.getSubTaskRequests()) {
+//                SubTask subTask = new SubTask(s.getDescription(), s.getIsDone());
+//                for (MemberResponse memberResponse : members) {
+//                    for (MemberRequest memberRequest : s.getMemberRequests()) {
+//                        if (memberResponse.getEmail().equals(memberRequest.getEmail())){
+//                            subTask.addMember(convertMemberToUser(memberRequest));
+//                        }
+//                    }
+//                }
+//                checklist.addSubTaskToChecklist(subTask);
+//                subTask.setChecklist(checklist);
+//                if (s.getEstimationRequest() != null){
+//                    Estimation estimation1 = new Estimation();
+//                        estimation1.setStartDate(s.getEstimationRequest().getStartDate());
+//                        estimation1.setDueDate(s.getEstimationRequest().getDueDate());
+//                        estimation1.setReminder(s.getEstimationRequest().getReminder());
+//                        estimation1.setUser(user);
+//                        estimation1.setStartTime(convertTimeToEntity(s.getEstimationRequest().getStartTime()));
+//                        estimation1.setDeadlineTime(convertTimeToEntity(s.getEstimationRequest().getDeadlineTime()));
+//                        subTask.setEstimation(estimation1);
+//                        estimation1.setSubTask(subTask);
+//                }
+//            }
+//            card.addChecklist(checklist);
+//            checklist.setCard(card);
+//        }
+//
+//        for (CommentRequest commentRequest : request.getCommentRequests()) {
+//            Comment comment = new Comment(commentRequest.getText(), LocalDateTime.now());
+//            comment.setUser(user);
+//            comment.setCard(card);
+//            card.addComment(comment);
+//        }
+//
+//        return card;
+//    }
 
     public CardInnerPageResponse convertToCardInnerPageResponse(Card card) {
-        CardInnerPageResponse response = new CardInnerPageResponse();
-        response.setId(card.getId());
-        response.setTitle(card.getTitle());
-        response.setDescription(card.getDescription());
+        CardInnerPageResponse response = new CardInnerPageResponse(card);
+//        response.setId(card.getId());
+//        response.setTitle(card.getTitle());
+//        response.setDescription(card.getDescription());
         if (card.getLabels() != null) {
             response.setLabelResponses(labelRepository.getAllLabelResponses(card.getId()));
         }
@@ -162,6 +162,8 @@ public class CardConverter {
         if (card.getComments() != null) {
             response.setCommentResponses(getCommentResponses(card.getComments()));
         }
+
+
         return response;
     }
 

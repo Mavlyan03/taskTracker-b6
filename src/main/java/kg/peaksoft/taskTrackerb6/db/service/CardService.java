@@ -140,6 +140,7 @@ public class CardService {
 
 
     public CardInnerPageResponse updateTitle(UpdateCardTitleRequest request) {
+        User user = getAuthenticateUser();
         Card card = cardRepository.findById(request.getId()).orElseThrow(
                 () -> {
                     log.error("Card with id: {} not found!", request.getId());
@@ -147,21 +148,14 @@ public class CardService {
                 }
         );
 
+        if (!card.getCreator().equals(user)) {
+            throw new BadCredentialException("You can not update this card title!");
+        }
+
         card.setTitle(request.getNewTitle());
         log.info("Card with id:{} successfully updated!", card.getId());
         return converter.convertToCardInnerPageResponse(card);
     }
-
-
-//    public CardInnerPageResponse createCard(CardRequest request) {
-//        User user = getAuthenticateUser();
-//        Card card = converter.convertToEntity(request);
-//        card.setCreator(user);
-//        card.setColumn(card.getColumn());
-//        card.setCreatedAt(LocalDate.now());
-//        log.info("Card successfully created");
-//        return converter.convertToCardInnerPageResponse(cardRepository.save(card));
-//    }
 
 
     public CardInnerPageResponse createCard(CardRequest request) {
@@ -175,7 +169,7 @@ public class CardService {
         column.addCard(card);
         card.setCreatedAt(LocalDate.now());
         Card save = cardRepository.save(card);
-        return new CardInnerPageResponse()
+        return converter.convertToCardInnerPageResponse(save);
     }
 
 
