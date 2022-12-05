@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.security.Principal;
 import java.util.List;
 
 @Repository
@@ -17,4 +18,10 @@ public interface WorkspaceRepository extends JpaRepository<Workspace, Long> {
     @Query("delete from Workspace w where w.id = :id")
     void deleteWorkspaceById(Long id);
 
+//    @Query("select new kg.peaksoft.taskTrackerb6.dto.response.WorkspaceResponse(" +
+//            "w.id, " +
+//            "w.name," +
+//            "w.isFavorite" +
+//            ") from Workspace w WHERE W.lead.email = ?1")
+//    List<Workspace> findAll(String email);
 }

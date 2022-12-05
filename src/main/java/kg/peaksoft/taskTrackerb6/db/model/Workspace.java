@@ -26,7 +26,7 @@ public class Workspace {
 
     private Boolean isFavorite = false;
 
-    @ManyToOne(cascade = {DETACH, MERGE, REFRESH})
+    @ManyToOne(cascade = {DETACH, MERGE, REFRESH, PERSIST})
     private User lead;
 
     @OneToMany(cascade = {ALL}, mappedBy = "workspace")

@@ -273,47 +273,45 @@ public class WorkspaceService {
     public List<WorkspaceResponse> getAllUserWorkspaces() {
         User user = getAuthenticateUser();
         List<Workspace> workspaces = new ArrayList<>();
-        List<WorkspaceResponse> workspaceResponses = new ArrayList<>();
-        for (UserWorkSpace userWorkSpace : user.getUserWorkSpaces()) {
+        List<UserWorkSpace> userWorkSpaces = user.getUserWorkSpaces();
+        for (UserWorkSpace userWorkSpace : userWorkSpaces) {
             if (userWorkSpace.getUser().equals(user)) {
                 workspaces.add(userWorkSpace.getWorkspace());
             }
         }
 
         List<Workspace> favoriteWorkspaces = new ArrayList<>();
-        List<Favorite> favorites = user.getFavorites();
-        for (Favorite fav : favorites) {
+        List<Favorite> userFavorites = user.getFavorites();
+        for (Favorite fav : userFavorites) {
             if (fav.getWorkspace() != null) {
                 favoriteWorkspaces.add(fav.getWorkspace());
             }
         }
 
+        List<WorkspaceResponse> workspaceResponses = new ArrayList<>();
         for (Workspace workspace : workspaces) {
             if (favoriteWorkspaces.contains(workspace)) {
                 for (Workspace w : favoriteWorkspaces) {
                     if (w.equals(workspace)) {
                         workspaceResponses.add(new WorkspaceResponse(
-                                        workspace.getId(),
-                                        workspace.getName(),
-                                        userRepository.getCreatorResponse(workspace.getLead().getId()),
-                                        true
-                                )
-                        );
-                    }
-
-                }
-            } else {
-                workspaceResponses.add(new WorkspaceResponse(
                                 workspace.getId(),
                                 workspace.getName(),
                                 userRepository.getCreatorResponse(workspace.getLead().getId()),
-                                false
-                        )
+                                true)
+                        );
+                    }
+                }
+            } else {
+                workspaceResponses.add(new WorkspaceResponse(
+                        workspace.getId(),
+                        workspace.getName(),
+                        userRepository.getCreatorResponse(workspace.getLead().getId()),
+                        false)
                 );
             }
         }
 
-        log.info("Get all workspaces");
+        log.info("Get all user workspaces");
         return workspaceResponses;
     }
 

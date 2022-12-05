@@ -14,5 +14,11 @@ public class WorkspaceResponse {
     private Long id;
     private String name;
     private CreatorResponse lead;
-    private boolean action;
+    private Boolean action;
+
+    public WorkspaceResponse(Long id, String name, Boolean action) {
+        this.id = id;
+        this.name = name;
+        this.action = action;
+    }
 }
