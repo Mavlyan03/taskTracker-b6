@@ -39,7 +39,7 @@ public class ColumnService {
         column.setBoard(board);
         Column column1 = columnRepository.save(column);
         log.info("Column successfully created");
-        return new ColumnResponse(column1.getId(), column1.getTitle(), column1.getBoard().getId());
+        return columnRepository.getColumnResponse(column1.getId());
     }
 
     public ColumnResponse updateColumn(Long id, String newTitle) {
@@ -53,7 +53,7 @@ public class ColumnService {
         column.setTitle(newTitle);
         Column column1 = columnRepository.save(column);
         log.info("Column title with id: {} successfully updated", id);
-        return new ColumnResponse(column1.getId(), column1.getTitle(), column1.getBoard().getId());
+        return columnRepository.getColumnResponse(column1.getId());
     }
 
     public SimpleResponse deleteColumn(Long id) {
@@ -73,16 +73,13 @@ public class ColumnService {
         List<Column> columns = columnRepository.findAllColumns(id);
         List<ColumnResponse> columnResponses = new ArrayList<>();
         for (Column column : columns) {
-            columnResponses.add(convertToResponse(column));
+            columnResponses.add(columnRepository.getColumnResponse(column.getId()));
         }
 
         log.info("Get all columns");
         return columnResponses;
     }
 
-    private ColumnResponse convertToResponse(Column column) {
-        return new ColumnResponse(column.getId(), column.getTitle(), column.getBoard().getId());
-    }
 
     public ColumnResponse addToArchive(Long id) {
         Column column = columnRepository.findById(id).orElseThrow(
@@ -93,16 +90,16 @@ public class ColumnService {
         );
 
         column.setIsArchive(true);
-        Column line1 = columnRepository.save(column);
+        Column column1 = columnRepository.save(column);
         log.info("Column with id: {} successfully archived", id);
-        return convertToResponse(line1);
+        return columnRepository.getColumnResponse(column1.getId());
     }
 
     public List<ColumnResponse> findAllArchivedColumns() {
         List<Column> columns = columnRepository.findAllArchivedColumns();
         List<ColumnResponse> columnResponses = new ArrayList<>();
         for (Column column : columns) {
-            columnResponses.add(convertToResponse(column));
+            columnResponses.add(columnRepository.getColumnResponse(column.getId()));
         }
 
         log.info("Get all archived columns");
@@ -119,6 +116,6 @@ public class ColumnService {
 
         column.setIsArchive(false);
         log.info("Column with id: {} successfully unarchive", id);
-        return convertToResponse(columnRepository.save(column));
+        return columnRepository.getColumnResponse(column.getId());
     }
 }

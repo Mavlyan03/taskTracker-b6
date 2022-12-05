@@ -12,4 +12,5 @@ public class ColumnResponse {
     private Long id;
     private String columnName;
     private Long boardId;
+    private Long workspaceId;
 }

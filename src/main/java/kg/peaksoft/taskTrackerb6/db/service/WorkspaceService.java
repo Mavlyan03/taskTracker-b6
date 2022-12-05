@@ -98,21 +98,21 @@ public class WorkspaceService {
                 for (Board favBoard : userFavoriteBoards) {
                     if (favBoard.equals(board)) {
                         boardResponses.add(new BoardResponse(
-                                        board.getId(),
-                                        board.getTitle(),
-                                        true,
-                                        board.getBackground()
-                                )
+                                board.getId(),
+                                board.getTitle(),
+                                true,
+                                board.getBackground(),
+                                workspace.getId())
                         );
                     }
                 }
             } else {
                 boardResponses.add(new BoardResponse(
-                                board.getId(),
-                                board.getTitle(),
-                                false,
-                                board.getBackground()
-                        )
+                        board.getId(),
+                        board.getTitle(),
+                        false,
+                        board.getBackground(),
+                        workspace.getId())
                 );
             }
         }
