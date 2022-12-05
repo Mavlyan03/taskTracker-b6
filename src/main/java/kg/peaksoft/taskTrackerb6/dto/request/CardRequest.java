@@ -14,10 +14,10 @@ public class CardRequest {
     private Long columnId;
     private String title;
     private String description;
-    private List<LabelRequest> labelRequests;
-    private EstimationRequest estimationRequest;
-    private List<MemberRequest> memberRequests;
-    private List<ChecklistRequest> checklistRequests;
-    private List<CommentRequest> commentRequests;
+//    private List<LabelRequest> labelRequests;
+//    private EstimationRequest estimationRequest;
+//    private List<MemberRequest> memberRequests;
+//    private List<ChecklistRequest> checklistRequests;
+//    private List<CommentRequest> commentRequests;
 
 }

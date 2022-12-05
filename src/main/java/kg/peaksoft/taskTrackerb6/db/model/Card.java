@@ -1,5 +1,6 @@
 package kg.peaksoft.taskTrackerb6.db.model;
 
+import kg.peaksoft.taskTrackerb6.dto.response.CreatorResponse;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -74,6 +75,12 @@ public class Card {
     public Card(String title, String description) {
         this.title = title;
         this.description = description;
+    }
+
+    public Card(String title, String description, User user) {
+        this.title = title;
+        this.description = description;
+        this.creator = user;
     }
 
     public void addLabel(Label label) {

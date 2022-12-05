@@ -153,14 +153,29 @@ public class CardService {
     }
 
 
+//    public CardInnerPageResponse createCard(CardRequest request) {
+//        User user = getAuthenticateUser();
+//        Card card = converter.convertToEntity(request);
+//        card.setCreator(user);
+//        card.setColumn(card.getColumn());
+//        card.setCreatedAt(LocalDate.now());
+//        log.info("Card successfully created");
+//        return converter.convertToCardInnerPageResponse(cardRepository.save(card));
+//    }
+
+
     public CardInnerPageResponse createCard(CardRequest request) {
+        Column column = columnRepository.findById(request.getColumnId()).orElseThrow(
+                () -> new NotFoundException("Column with id: " + request.getColumnId() + " not found!")
+        );
+
         User user = getAuthenticateUser();
-        Card card = converter.convertToEntity(request);
-        card.setCreator(user);
-        card.setColumn(card.getColumn());
+        Card card = new Card(request.getTitle(), request.getDescription(), user);
+        card.setColumn(column);
+        column.addCard(card);
         card.setCreatedAt(LocalDate.now());
-        log.info("Card successfully created");
-        return converter.convertToCardInnerPageResponse(cardRepository.save(card));
+        Card save = cardRepository.save(card);
+        return new CardInnerPageResponse()
     }
 
 
