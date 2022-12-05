@@ -2,7 +2,6 @@ package kg.peaksoft.taskTrackerb6.db.service;
 
 import kg.peaksoft.taskTrackerb6.db.model.Board;
 import kg.peaksoft.taskTrackerb6.db.model.Column;
-import kg.peaksoft.taskTrackerb6.db.model.Workspace;
 import kg.peaksoft.taskTrackerb6.db.repository.BoardRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.ColumnRepository;
 import kg.peaksoft.taskTrackerb6.dto.request.ColumnRequest;
@@ -41,11 +40,6 @@ public class ColumnService {
         Column column1 = columnRepository.save(column);
         log.info("Column successfully created");
         return columnRepository.getColumnResponse(column1.getId());
-//                new ColumnResponse(
-//                column1.getId(),
-//                column1.getTitle(),
-//                column1.getBoard().getId(),
-//                board.getWorkspace().getId());
     }
 
     public ColumnResponse updateColumn(Long id, String newTitle) {
@@ -60,11 +54,6 @@ public class ColumnService {
         Column column1 = columnRepository.save(column);
         log.info("Column title with id: {} successfully updated", id);
         return columnRepository.getColumnResponse(column1.getId());
-//                new ColumnResponse(
-//                column1.getId(),
-//                column1.getTitle(),
-//                column1.getBoard().getId(),
-//                column1.getBoard().getWorkspace().getId());
     }
 
     public SimpleResponse deleteColumn(Long id) {
@@ -91,13 +80,6 @@ public class ColumnService {
         return columnResponses;
     }
 
-//    private ColumnResponse convertToResponse(Column column) {
-//        return new ColumnResponse(
-//                column.getId(),
-//                column.getTitle(),
-//                column.getBoard().getId(),
-//                column.getBoard().getWorkspace().getId());
-//    }
 
     public ColumnResponse addToArchive(Long id) {
         Column column = columnRepository.findById(id).orElseThrow(
@@ -110,7 +92,6 @@ public class ColumnService {
         column.setIsArchive(true);
         Column column1 = columnRepository.save(column);
         log.info("Column with id: {} successfully archived", id);
-//        return convertToResponse(line1);
         return columnRepository.getColumnResponse(column1.getId());
     }
 
@@ -118,7 +99,6 @@ public class ColumnService {
         List<Column> columns = columnRepository.findAllArchivedColumns();
         List<ColumnResponse> columnResponses = new ArrayList<>();
         for (Column column : columns) {
-//            columnResponses.add(convertToResponse(column));
             columnResponses.add(columnRepository.getColumnResponse(column.getId()));
         }
 
@@ -136,7 +116,6 @@ public class ColumnService {
 
         column.setIsArchive(false);
         log.info("Column with id: {} successfully unarchive", id);
-//        return convertToResponse(columnRepository.save(column));
         return columnRepository.getColumnResponse(column.getId());
     }
 }
