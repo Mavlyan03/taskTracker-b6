@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.peaksoft.taskTrackerb6.db.service.FavoriteService;
 import kg.peaksoft.taskTrackerb6.db.service.WorkspaceService;
+import kg.peaksoft.taskTrackerb6.dto.request.UpdateCardTitleRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.WorkspaceRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.*;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +59,7 @@ public class WorkspaceApi {
     @Operation(summary = "Get user workspaces", description = "Get all user workspaces")
     @GetMapping
     public List<WorkspaceResponse> getWorkspacesByUserId() {
-        return service.getAllUserWorkspaces();
+        return service.getAllUserWorkspace();
     }
 
     @Operation(summary = "Get all favorite workspaces and boards", description = "Get all user favorite workspaces and boards")
@@ -66,4 +67,12 @@ public class WorkspaceApi {
     public List<FavoriteResponse> getAllFavorite() {
         return favoriteService.getAllUserFavoriteWorkspacesAndBoards();
     }
+
+    @Operation(summary = "Update workspace name", description = "Update workspace name by id")
+    @PutMapping("/update")
+    public WorkspaceResponse update(@RequestBody UpdateCardTitleRequest request) {
+        return service.updateWorkspaceName(request);
+    }
+
+
 }
