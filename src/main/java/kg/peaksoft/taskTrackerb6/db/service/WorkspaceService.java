@@ -3,6 +3,7 @@ package kg.peaksoft.taskTrackerb6.db.service;
 
 import kg.peaksoft.taskTrackerb6.db.model.*;
 import kg.peaksoft.taskTrackerb6.db.repository.*;
+import kg.peaksoft.taskTrackerb6.dto.request.UpdateCardTitleRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.WorkspaceRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.BoardResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.WorkspaceInnerPageResponse;
@@ -266,6 +267,26 @@ public class WorkspaceService {
                 workspace.getName(),
                 userRepository.getCreatorResponse(workspace.getLead().getId()),
                 true
+        );
+    }
+
+    public WorkspaceResponse updateWorkspaceName(UpdateCardTitleRequest request) {
+        User user = getAuthenticateUser();
+        Workspace workspace = workspaceRepository.findById(request.getId()).orElseThrow(
+                () -> new NotFoundException("Workspace with id: " + request.getId() + " not found!")
+        );
+
+        if (!workspace.getLead().equals(user)) {
+            throw new BadCredentialException("You can not update this workspace name!");
+        }
+
+        workspace.setName(request.getNewTitle());
+        Workspace saved = workspaceRepository.save(workspace);
+        return new WorkspaceResponse(
+                saved.getId(),
+                saved.getName(),
+                userRepository.getCreatorResponse(workspace.getLead().getId()),
+                saved.getIsFavorite()
         );
     }
 
