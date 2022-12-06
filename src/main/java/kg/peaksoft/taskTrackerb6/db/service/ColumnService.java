@@ -149,28 +149,28 @@ public class ColumnService {
         return columnRepository.getColumnResponse(column1.getId());
     }
 
-//
-//    public List<ColumnResponse> findAllArchivedColumns() {
-//        List<Column> columns = columnRepository.findAllArchivedColumns();
-//        List<ColumnResponse> columnResponses = new ArrayList<>();
-//        for (Column column : columns) {
-//            columnResponses.add(columnRepository.getColumnResponse(column.getId()));
-//        }
-//
-//        log.info("Get all archived columns");
-//        return columnResponses;
-//    }
-//
-//    public ColumnResponse sendToBoard(Long id) {
-//        Column column = columnRepository.findById(id).orElseThrow(
-//                () -> {
-//                    log.error("Column with id: {} not found!", id);
-//                    throw new NotFoundException("Column with id: " + id + " not found!");
-//                }
-//        );
-//
-//        column.setIsArchive(false);
-//        log.info("Column with id: {} successfully unarchive", id);
-//        return columnRepository.getColumnResponse(column.getId());
-//    }
+
+    public List<ColumnResponse> findAllArchivedColumns() {
+        List<Column> columns = columnRepository.findAllArchivedColumns();
+        List<ColumnResponse> columnResponses = new ArrayList<>();
+        for (Column column : columns) {
+            columnResponses.add(columnRepository.getColumnResponse(column.getId()));
+        }
+
+        log.info("Get all archived columns");
+        return columnResponses;
+    }
+
+    public ColumnResponse sendToBoard(Long id) {
+        Column column = columnRepository.findById(id).orElseThrow(
+                () -> {
+                    log.error("Column with id: {} not found!", id);
+                    throw new NotFoundException("Column with id: " + id + " not found!");
+                }
+        );
+
+        column.setIsArchive(false);
+        log.info("Column with id: {} successfully unarchive", id);
+        return columnRepository.getColumnResponse(column.getId());
+    }
 }

@@ -35,6 +35,14 @@ public class Column {
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
     private Board board;
 
+    public Column(Long id, String title, Boolean isArchive, User user, Board board) {
+        this.id = id;
+        this.title = title;
+        this.isArchive = isArchive;
+        this.creator = user;
+        this.board = board;
+    }
+
     public void addCard(Card card) {
         if (cards == null) {
             cards = new ArrayList<>();
