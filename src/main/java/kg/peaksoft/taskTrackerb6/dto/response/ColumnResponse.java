@@ -13,4 +13,6 @@ public class ColumnResponse {
     private String columnName;
     private Long boardId;
     private Long workspaceId;
+
+
 }
