@@ -22,6 +22,7 @@ public class CardInnerPageResponse {
     private List<MemberResponse> memberResponses;
     private List<ChecklistResponse> checklistResponses;
     private List<CommentResponse> commentResponses;
+    private CreatorResponse creator;
     private Boolean isArchive;
     private Long columnId;
     private Long boardId;

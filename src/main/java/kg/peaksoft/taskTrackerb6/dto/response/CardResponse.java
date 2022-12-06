@@ -19,6 +19,7 @@ public class CardResponse {
     private int numberOfMembers;
     private int numberOfSubTasks;
     private int numberOfCompletedSubTask;
+    private CreatorResponse creator;
     private Boolean isArchive;
     private Long columnId;
     private Long boardId;

@@ -29,6 +29,9 @@ public class Column {
     @OneToMany(cascade = ALL, mappedBy = "column")
     private List<Card> cards;
 
+    @ManyToOne
+    private User creator;
+
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
     private Board board;
 

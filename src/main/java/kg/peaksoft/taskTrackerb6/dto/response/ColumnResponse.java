@@ -11,6 +11,8 @@ public class ColumnResponse {
 
     private Long id;
     private String columnName;
+    private Boolean isArchived;
+    private CreatorResponse creator;
     private Long boardId;
     private Long workspaceId;
 }

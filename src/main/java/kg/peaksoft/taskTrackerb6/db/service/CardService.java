@@ -198,9 +198,9 @@ public class CardService {
             throw new BadCredentialException("You can not archive this card!");
         }
 
-        Basket basket = new Basket();
         card.setIsArchive(!card.getIsArchive());
         if (card.getIsArchive().equals(true)) {
+            Basket basket = new Basket();
             basket.setCard(card);
             basket.setArchivedUser(user);
             basketRepository.save(basket);
@@ -222,22 +222,23 @@ public class CardService {
     }
 
 
-    public List<CardResponse> getAllArchivedCardsByBoardId(Long id) {
+    public ArchiveResponse getAllArchivedCardsByBoardId(Long id) {
         Board board = boardRepository.findById(id).orElseThrow(
-                () -> {
-                    log.error("Board with id: {} not found!", id);
-                    throw new NotFoundException("Board with id: " + id + " not found!");
-                }
+                () -> new NotFoundException("Board with id: " + id + " not found!")
         );
 
-        List<CardResponse> responses = new ArrayList<>();
-        for (Column column : board.getColumns()) {
-            for (Card c : column.getCards()) {
-                if (c.getIsArchive().equals(true)) {
-                    responses.add(converter.convertToResponseForGetAll(c));
+        ArchiveResponse archiveResponse = new ArchiveResponse();
+        List<Column> columns = board.getColumns();
+        List<CardResponse> archivedCardResponse = new ArrayList<>();
+        for (Column column : columns) {
+            for (Card card : column.getCards()) {
+                if (card.getIsArchive().equals(true)) {
+                    archivedCardResponse.add(converter.convertToResponseForGetAll(card));
                 }
             }
         }
-        return responses;
+
+        archiveResponse.setCardResponses(archivedCardResponse);
+        return archiveResponse;
     }
 }
