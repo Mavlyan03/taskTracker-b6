@@ -25,8 +25,8 @@ values (1, 'First Board',
         false, false, 1),
        (2, 'Backend', 'background', false, false, 2);
 
-insert into columns (id, title, is_archive, board_id)
-values (1, 'First Column', false, 1);
+insert into columns (id, title, is_archive, board_id, creator_id)
+values (1, 'First Column', false, 1, 1);
 
 insert into cards (id, title, description, is_archive, created_at, creator_id, moved_user_id, column_id)
 values (1, 'First Card', 'First Description', false, '2022-10-31', 1, 1, 1);

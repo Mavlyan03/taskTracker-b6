@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.peaksoft.taskTrackerb6.db.service.ColumnService;
 import kg.peaksoft.taskTrackerb6.dto.request.ColumnRequest;
+import kg.peaksoft.taskTrackerb6.dto.request.UpdateColumnTitle;
 import kg.peaksoft.taskTrackerb6.dto.response.ColumnResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import lombok.RequiredArgsConstructor;
@@ -28,9 +29,8 @@ public class ColumnApi {
 
     @Operation(summary = "Update column", description = "Update column title by column id")
     @PutMapping("update/{id}")
-    public ColumnResponse updateColumn(@PathVariable Long id,
-                                       @RequestBody String newTitle) {
-        return columnService.updateColumn(id, newTitle);
+    public ColumnResponse updateColumn(@RequestBody UpdateColumnTitle columnTitle) {
+        return columnService.updateColumn(columnTitle);
     }
 
     @Operation(summary = "Delete column", description = "Delete column by column id")
@@ -42,24 +42,12 @@ public class ColumnApi {
     @Operation(summary = "Send to archive", description = "Send column to archive")
     @PutMapping("archive/{id}")
     public ColumnResponse sendToArchive(@PathVariable Long id) {
-        return columnService.addToArchive(id);
-    }
-
-    @Operation(summary = "Unarchive", description = "Unarchive column by id")
-    @PutMapping("unarchive/{id}")
-    public ColumnResponse sendToBoard(@PathVariable Long id) {
-        return columnService.sendToBoard(id);
+        return columnService.sentToArchive(id);
     }
 
     @Operation(summary = "Get all columns", description = "Get all columns by board id")
     @GetMapping("{id}")
     public List<ColumnResponse> findAllColumnsByBoardId(@PathVariable Long id) {
         return columnService.findAllColumns(id);
-    }
-
-    @Operation(summary = "Get archived columns", description = "Get all archived columns")
-    @GetMapping("archive-columns")
-    public List<ColumnResponse> findAllLinesByArchive() {
-        return columnService.findAllArchivedColumns();
     }
 }

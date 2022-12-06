@@ -3,6 +3,7 @@ package kg.peaksoft.taskTrackerb6.db.service;
 import kg.peaksoft.taskTrackerb6.db.model.*;
 import kg.peaksoft.taskTrackerb6.db.repository.*;
 import kg.peaksoft.taskTrackerb6.dto.request.ColumnRequest;
+import kg.peaksoft.taskTrackerb6.dto.request.UpdateColumnTitle;
 import kg.peaksoft.taskTrackerb6.dto.response.ColumnResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
@@ -28,6 +29,7 @@ public class ColumnService {
     private final UserRepository userRepository;
     private final WorkspaceRepository workspaceRepository;
     private final BasketRepository basketRepository;
+    private final NotificationRepository notificationRepository;
 
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -56,15 +58,17 @@ public class ColumnService {
         column.setCreator(user);
         Column column1 = columnRepository.save(column);
         log.info("Column successfully created");
-        return columnRepository.getColumnResponse(column1.getId());
+        ColumnResponse response = new ColumnResponse(column1);
+        response.setCreator(userRepository.getCreatorResponse(user.getId()));
+        return response;
     }
 
-    public ColumnResponse updateColumn(Long id, String newTitle) {
+    public ColumnResponse updateColumn(UpdateColumnTitle columnTitle) {
         User user = getAuthenticateUser();
-        Column column = columnRepository.findById(id).orElseThrow(
+        Column column = columnRepository.findById(columnTitle.getId()).orElseThrow(
                 () -> {
-                    log.error("Column with id: {} not found", id);
-                    throw new NotFoundException("Column with id: " + id + " not found");
+                    log.error("Column with id: {} not found", columnTitle.getId());
+                    throw new NotFoundException("Column with id: " + columnTitle.getId() + " not found");
                 }
         );
 
@@ -72,10 +76,12 @@ public class ColumnService {
             throw new BadCredentialException("You can not update title this of this column!");
         }
 
-        column.setTitle(newTitle);
+        column.setTitle(columnTitle.getNewTitle());
         Column column1 = columnRepository.save(column);
-        log.info("Column title with id: {} successfully updated", id);
-        return columnRepository.getColumnResponse(column1.getId());
+        log.info("Column title with id: {} successfully updated", columnTitle.getId());
+        ColumnResponse response = new ColumnResponse(column1);
+        response.setCreator(userRepository.getCreatorResponse(user.getId()));
+        return response;
     }
 
     public SimpleResponse deleteColumn(Long id) {
@@ -91,7 +97,18 @@ public class ColumnService {
             throw new BadCredentialException("You can not delete this column!");
         }
 
-        columnRepository.delete(column);
+        List<Card> cards = column.getCards();
+
+        for (Card card : cards) {
+            List<Notification> cardNotification = notificationRepository.findAllByCardId(card.getId());
+            if (cardNotification != null) {
+                for (Notification n : cardNotification) {
+                    notificationRepository.deleteNotification(n.getId());
+                }
+            }
+        }
+
+        columnRepository.deleteColumn(column.getId());
         log.error("Column with id: {} successfully deleted", id);
         return new SimpleResponse("Column with id: " + id + " successfully deleted", "DELETE");
     }
@@ -100,7 +117,9 @@ public class ColumnService {
         List<Column> columns = columnRepository.findAllColumns(id);
         List<ColumnResponse> columnResponses = new ArrayList<>();
         for (Column column : columns) {
-            columnResponses.add(columnRepository.getColumnResponse(column.getId()));
+            ColumnResponse response = new ColumnResponse(column);
+            response.setCreator(userRepository.getCreatorResponse(column.getCreator().getId()));
+            columnResponses.add(response);
         }
 
         log.info("Get all columns");
@@ -108,7 +127,7 @@ public class ColumnService {
     }
 
 
-    public ColumnResponse addToArchive(Long id) {
+    public ColumnResponse sentToArchive(Long id) {
         User user = getAuthenticateUser();
         Column column = columnRepository.findById(id).orElseThrow(
                 () -> {
@@ -130,6 +149,9 @@ public class ColumnService {
             basket.setArchivedUser(user);
             basket.setColumn(column);
             basket.setArchivedUser(user);
+            for (Card card : column.getCards()) {
+                card.setIsArchive(false);
+            }
             basketRepository.save(basket);
         }
 
@@ -146,31 +168,8 @@ public class ColumnService {
 
         Column column1 = columnRepository.save(column);
         log.info("Column with id: {} successfully archived", id);
-        return columnRepository.getColumnResponse(column1.getId());
-    }
-
-
-    public List<ColumnResponse> findAllArchivedColumns() {
-        List<Column> columns = columnRepository.findAllArchivedColumns();
-        List<ColumnResponse> columnResponses = new ArrayList<>();
-        for (Column column : columns) {
-            columnResponses.add(columnRepository.getColumnResponse(column.getId()));
-        }
-
-        log.info("Get all archived columns");
-        return columnResponses;
-    }
-
-    public ColumnResponse sendToBoard(Long id) {
-        Column column = columnRepository.findById(id).orElseThrow(
-                () -> {
-                    log.error("Column with id: {} not found!", id);
-                    throw new NotFoundException("Column with id: " + id + " not found!");
-                }
-        );
-
-        column.setIsArchive(false);
-        log.info("Column with id: {} successfully unarchive", id);
-        return columnRepository.getColumnResponse(column.getId());
+        ColumnResponse response = new ColumnResponse(column1);
+        response.setCreator(userRepository.getCreatorResponse(column1.getCreator().getId()));
+        return response;
     }
 }

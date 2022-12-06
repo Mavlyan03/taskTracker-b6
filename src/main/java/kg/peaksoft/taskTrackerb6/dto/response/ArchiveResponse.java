@@ -13,6 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 public class ArchiveResponse {
 
-    private List<CardResponse> cardResponses;
+    private List<CardResponse> archivedCards;
     private List<ColumnResponse> archivedColumns;
 }

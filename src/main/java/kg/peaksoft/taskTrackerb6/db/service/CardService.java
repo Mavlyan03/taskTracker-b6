@@ -220,25 +220,4 @@ public class CardService {
         log.info("Card with id: {} successfully archived", id);
         return converter.convertToCardInnerPageResponse(card);
     }
-
-
-    public ArchiveResponse getAllArchivedCardsByBoardId(Long id) {
-        Board board = boardRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Board with id: " + id + " not found!")
-        );
-
-        ArchiveResponse archiveResponse = new ArchiveResponse();
-        List<Column> columns = board.getColumns();
-        List<CardResponse> archivedCardResponse = new ArrayList<>();
-        for (Column column : columns) {
-            for (Card card : column.getCards()) {
-                if (card.getIsArchive().equals(true)) {
-                    archivedCardResponse.add(converter.convertToResponseForGetAll(card));
-                }
-            }
-        }
-
-        archiveResponse.setCardResponses(archivedCardResponse);
-        return archiveResponse;
-    }
 }

@@ -59,12 +59,6 @@ public class CardApi {
         return cardService.getAllCardsByColumnId(columnId);
     }
 
-    @Operation(summary = "Get all archived cards", description = "Get all archived cards by board id")
-    @GetMapping("archive-cards/{boardId}")
-    public ArchiveResponse getAllArchivedCardsByBoardId(@PathVariable Long boardId) {
-        return cardService.getAllArchivedCardsByBoardId(boardId);
-    }
-
     @Operation(summary = "Move card", description = "Move card by id")
     @GetMapping("move-card/{cardId}/{columnId}")
     public List<CardResponse> moveCard(@PathVariable Long cardId,
