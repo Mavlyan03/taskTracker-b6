@@ -53,7 +53,7 @@ public class CardConverter {
             response.setCommentResponses(getCommentResponses(card.getComments()));
         }
 
-
+        response.setCreator(userRepository.getCreatorResponse(card.getCreator().getId()));
         return response;
     }
 
