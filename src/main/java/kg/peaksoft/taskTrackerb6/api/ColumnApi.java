@@ -40,7 +40,7 @@ public class ColumnApi {
     }
 
     @Operation(summary = "Send to archive", description = "Send column to archive")
-    @PutMapping("archive/{id}")
+    @PutMapping("/archive/{id}")
     public ColumnResponse sendToArchive(@PathVariable Long id) {
         return columnService.sentToArchive(id);
     }
@@ -49,5 +49,11 @@ public class ColumnApi {
     @GetMapping("{id}")
     public List<ColumnResponse> findAllColumnsByBoardId(@PathVariable Long id) {
         return columnService.findAllColumns(id);
+    }
+
+    @Operation(summary = "Archive all cards of column", description = "Archive all cards by column id")
+    @PutMapping("/archive-column-cards/{id}")
+    public SimpleResponse archiveAllColumnCardsOfColumn(@PathVariable Long id) {
+        return columnService.archiveAllCardsInColumn(id);
     }
 }

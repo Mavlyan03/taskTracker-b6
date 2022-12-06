@@ -7,6 +7,7 @@ import kg.peaksoft.taskTrackerb6.dto.request.UpdateColumnTitle;
 import kg.peaksoft.taskTrackerb6.dto.response.ColumnResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
+import kg.peaksoft.taskTrackerb6.exceptions.BadRequestException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -136,8 +137,13 @@ public class ColumnService {
                 }
         );
 
-        Board board = boardRepository.findById(column.getBoard().getId()).get();
-        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).get();
+        Board board = boardRepository.findById(column.getBoard().getId()).orElseThrow(
+                () -> new NotFoundException("Board with id: " + column.getBoard().getId() + " not found!")
+        );
+
+        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(
+                () -> new NotFoundException("Workspace with id: " + board.getWorkspace().getId() + " not found!")
+        );
 
         if (!column.getCreator().equals(user) || !workspace.getLead().equals(user)) {
             throw new BadCredentialException("You can not archive this column!");
@@ -150,7 +156,11 @@ public class ColumnService {
             basket.setColumn(column);
             basket.setArchivedUser(user);
             for (Card card : column.getCards()) {
-                card.setIsArchive(false);
+                Basket cardBasket = new Basket();
+                card.setIsArchive(true);
+                cardBasket.setCard(card);
+                cardBasket.setArchivedUser(user);
+                basketRepository.save(cardBasket);
             }
             basketRepository.save(basket);
         }
@@ -159,6 +169,13 @@ public class ColumnService {
             List<Basket> baskets = user.getBaskets();
             if (baskets != null) {
                 for (Basket b : baskets) {
+                    for (Card c : column.getCards()) {
+                        if (b.getCard() != null && b.getCard().equals(c)) {
+                            c.setIsArchive(false);
+                            basketRepository.deleteBasket(b.getId());
+                        }
+                    }
+
                     if (b.getColumn() != null && b.getColumn().equals(column)) {
                         basketRepository.deleteBasket(b.getId());
                     }
@@ -171,5 +188,35 @@ public class ColumnService {
         ColumnResponse response = new ColumnResponse(column1);
         response.setCreator(userRepository.getCreatorResponse(column1.getCreator().getId()));
         return response;
+    }
+
+
+    public SimpleResponse archiveAllCardsInColumn(Long columnId) {
+        User user = getAuthenticateUser();
+        Column column = columnRepository.findById(columnId).orElseThrow(
+                () -> new NotFoundException("Column with id: " + columnId + " not found!")
+        );
+
+        Workspace workspace = workspaceRepository.findById(column.getBoard().getWorkspace().getId()).orElseThrow(
+                () -> new NotFoundException("Workspace with id: " + column.getBoard().getWorkspace().getId() + " not found!")
+        );
+
+        if (!column.getCreator().equals(user) || !workspace.getLead().equals(user)) {
+            throw new BadCredentialException("You can not archive!");
+        }
+
+        List<Card> cards = column.getCards();
+        if (cards == null) {
+            throw new BadRequestException("This column is empty!");
+        }
+            for (Card card : column.getCards()) {
+                Basket cardBasket = new Basket();
+                card.setIsArchive(true);
+                cardBasket.setCard(card);
+                cardBasket.setArchivedUser(user);
+                basketRepository.save(cardBasket);
+            }
+
+        return new SimpleResponse("All cards in column with id: " + column.getId() + " is archived!", "ARCHIVE");
     }
 }

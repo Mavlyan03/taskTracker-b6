@@ -33,6 +33,7 @@ public class CardService {
     private final CardConverter converter;
     private final NotificationRepository notificationRepository;
     private final BasketRepository basketRepository;
+    private final WorkspaceRepository workspaceRepository;
 
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -194,7 +195,15 @@ public class CardService {
                 }
         );
 
-        if (!card.getCreator().equals(user)) {
+        Column column = columnRepository.findById(card.getColumn().getId()).orElseThrow(
+                () -> new NotFoundException("Column with id: " + id + " not found!")
+        );
+
+        Workspace workspace = workspaceRepository.findById(column.getBoard().getWorkspace().getId()).orElseThrow(
+                () -> new NotFoundException("Workspace with id: " + column.getBoard().getWorkspace().getId() + " not found!")
+        );
+
+        if (!card.getCreator().equals(user) || !column.getCreator().equals(user) || workspace.getLead().equals(user)) {
             throw new BadCredentialException("You can not archive this card!");
         }
 
