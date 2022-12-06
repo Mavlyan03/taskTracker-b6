@@ -32,6 +32,7 @@ public class CardService {
     private final BoardRepository boardRepository;
     private final CardConverter converter;
     private final NotificationRepository notificationRepository;
+    private final BasketRepository basketRepository;
 
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -102,7 +103,18 @@ public class CardService {
             throw new BadCredentialException("You can not delete this card!");
         }
 
-        cardRepository.delete(card);
+        List<Basket> baskets = user.getBaskets();
+        if (card.getIsArchive().equals(true)) {
+            if (baskets != null) {
+                for (Basket b : baskets) {
+                    if (b.getCard().equals(card)) {
+                        basketRepository.deleteBasket(b.getId());
+                    }
+                }
+            }
+        }
+
+        cardRepository.deleteCard(card.getId());
         log.info("Card with id: {} successfully deleted", id);
         return new SimpleResponse("Card with id: " + id + " successfully deleted", "DELETE");
     }
@@ -174,6 +186,7 @@ public class CardService {
 
 
     public CardInnerPageResponse sentToArchive(Long id) {
+        User user = getAuthenticateUser();
         Card card = cardRepository.findById(id).orElseThrow(
                 () -> {
                     log.error("Card with id: {} not found!", id);
@@ -181,10 +194,27 @@ public class CardService {
                 }
         );
 
+        if (!card.getCreator().equals(user)) {
+            throw new BadCredentialException("You can not archive this card!");
+        }
+
         Basket basket = new Basket();
         card.setIsArchive(!card.getIsArchive());
         if (card.getIsArchive().equals(true)) {
             basket.setCard(card);
+            basket.setArchivedUser(user);
+            basketRepository.save(basket);
+        }
+
+        if (card.getIsArchive().equals(false)) {
+            List<Basket> baskets = user.getBaskets();
+            if (baskets != null) {
+                for (Basket b : baskets) {
+                    if (b.getCard() != null && b.getCard().equals(card)) {
+                        basketRepository.deleteBasket(b.getId());
+                    }
+                }
+            }
         }
 
         log.info("Card with id: {} successfully archived", id);

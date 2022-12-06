@@ -22,6 +22,7 @@ public class CardInnerPageResponse {
     private List<MemberResponse> memberResponses;
     private List<ChecklistResponse> checklistResponses;
     private List<CommentResponse> commentResponses;
+    private Boolean isArchive;
     private Long columnId;
     private Long boardId;
     private Long workspaceId;
@@ -34,5 +35,6 @@ public class CardInnerPageResponse {
         this.columnId = card.getColumn().getId();
         this.boardId = card.getColumn().getBoard().getId();
         this.workspaceId = card.getColumn().getBoard().getWorkspace().getId();
+        this.isArchive = card.getIsArchive();
     }
 }

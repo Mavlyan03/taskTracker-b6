@@ -19,9 +19,17 @@ public class CardResponse {
     private int numberOfMembers;
     private int numberOfSubTasks;
     private int numberOfCompletedSubTask;
+    private Boolean isArchive;
+    private Long columnId;
+    private Long boardId;
+    private Long workspaceId;
 
     public CardResponse(Card card) {
         this.id = card.getId();
         this.title = card.getTitle();
+        this.columnId = card.getColumn().getId();
+        this.boardId = card.getColumn().getBoard().getId();
+        this.workspaceId = card.getColumn().getBoard().getWorkspace().getId();
+        this.isArchive = card.getIsArchive();
     }
 }

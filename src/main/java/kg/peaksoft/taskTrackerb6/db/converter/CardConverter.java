@@ -58,9 +58,7 @@ public class CardConverter {
     }
 
     public CardResponse convertToResponseForGetAll(Card card) {
-        CardResponse response = new CardResponse();
-        response.setId(card.getId());
-        response.setTitle(card.getTitle());
+        CardResponse response = new CardResponse(card);
         response.setLabelResponses(labelRepository.getAllLabelResponses(card.getId()));
         if (card.getEstimation() != null) {
             int between = Period.between(card.getEstimation().getStartDate(), card.getEstimation().getDueDate()).getDays();

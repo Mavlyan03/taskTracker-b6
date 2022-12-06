@@ -67,7 +67,7 @@ public class CardApi {
     @Operation(summary = "Move card", description = "Move card by id")
     @GetMapping("move-card/{cardId}/{columnId}")
     public List<CardResponse> moveCard(@PathVariable Long cardId,
-                                         @PathVariable Long columnId) {
+                                       @PathVariable Long columnId) {
         return cardService.moveCard(cardId, columnId);
     }
 }

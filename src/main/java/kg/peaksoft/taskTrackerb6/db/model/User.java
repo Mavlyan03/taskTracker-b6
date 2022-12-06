@@ -44,6 +44,9 @@ public class User implements UserDetails {
     @OneToMany(cascade = {ALL}, mappedBy = "statusChangedUser")
     private List<Favorite> favorites;
 
+    @OneToMany(cascade = {ALL}, mappedBy = "archivedUser")
+    private List<Basket>baskets;
+
     @OneToMany(cascade = {ALL}, mappedBy = "user")
     private List<Notification> notifications;
 

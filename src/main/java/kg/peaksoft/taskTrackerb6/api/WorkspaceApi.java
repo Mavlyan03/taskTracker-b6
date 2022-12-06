@@ -67,10 +67,4 @@ public class WorkspaceApi {
     public List<FavoriteResponse> getAllFavorite() {
         return favoriteService.getAllUserFavoriteWorkspacesAndBoards();
     }
-
-    @Operation(summary = "Update workspace name", description = "Update workspace name by id")
-    @PutMapping
-    public WorkspaceResponse update(@RequestBody UpdateCardTitleRequest request) {
-        return service.updateWorkspaceName(request);
-    }
 }
