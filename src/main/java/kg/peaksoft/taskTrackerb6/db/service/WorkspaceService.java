@@ -74,7 +74,8 @@ public class WorkspaceService {
                 savedWorkspace.getId(),
                 savedWorkspace.getName(),
                 userRepository.getCreatorResponse(savedWorkspace.getLead().getId()),
-                savedWorkspace.getIsFavorite());
+                savedWorkspace.getIsFavorite()
+        );
     }
 
 
@@ -319,25 +320,8 @@ public class WorkspaceService {
 
     public List<WorkspaceResponse> getAllUserWorkspace() {
         User user = getAuthenticateUser();
-        List<UserWorkSpace> userWorkSpaces = user.getUserWorkSpaces();
-        List<Workspace> workspaces = new ArrayList<>();
-        List<WorkspaceResponse> responses = new ArrayList<>();
-        for (UserWorkSpace work : userWorkSpaces) {
-            if (work.getUser().equals(user)) {
-                workspaces.add(work.getWorkspace());
-            }
-        }
-
-        for (Workspace work : workspaces) {
-            responses.add(new WorkspaceResponse(
-                    work.getId(),
-                    work.getName(),
-                    userRepository.getCreatorResponse(work.getLead().getId()),
-                    work.getIsFavorite())
-            );
-        }
-
-        return responses;
+        List<WorkspaceResponse> getWorkspaces = workspaceRepository.getWorkspaceResponse(user.getId());
+        return getWorkspaces;
     }
 
 
