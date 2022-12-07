@@ -31,6 +31,13 @@ public class ColumnService {
     private final WorkspaceRepository workspaceRepository;
     private final BasketRepository basketRepository;
     private final NotificationRepository notificationRepository;
+    private final CardRepository cardRepository;
+    private final SubTaskRepository subTaskRepository;
+    private final AttachmentRepository attachmentRepository;
+    private final LabelRepository labelRepository;
+    private final CommentRepository commentRepository;
+    private final ChecklistRepository checklistRepository;
+    private final EstimationRepository estimationRepository;
 
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -57,6 +64,7 @@ public class ColumnService {
         board.addColumn(column);
         column.setBoard(board);
         column.setCreator(user);
+        user.addColumn(column);
         Column column1 = columnRepository.save(column);
         log.info("Column successfully created");
         ColumnResponse response = new ColumnResponse(column1);
@@ -98,8 +106,23 @@ public class ColumnService {
             throw new BadCredentialException("You can not delete this column!");
         }
 
-        List<Card> cards = column.getCards();
+        List<Basket> baskets = user.getBaskets();
+        if (baskets != null) {
+            for (Basket b : baskets) {
+                for (Card c : column.getCards()) {
+                    if (b.getCard() != null && b.getCard().equals(c)) {
+                        c.setIsArchive(false);
+                        basketRepository.deleteBasket(b.getId());
+                    }
+                }
 
+                if (b.getColumn() != null && b.getColumn().equals(column)) {
+                    basketRepository.deleteBasket(b.getId());
+                }
+            }
+        }
+
+        List<Card> cards = column.getCards();
         for (Card card : cards) {
             List<Notification> cardNotification = notificationRepository.findAllByCardId(card.getId());
             if (cardNotification != null) {
@@ -107,6 +130,7 @@ public class ColumnService {
                     notificationRepository.deleteNotification(n.getId());
                 }
             }
+            cardRepository.deleteCard(card.getId());
         }
 
         columnRepository.deleteColumn(column.getId());
@@ -145,48 +169,50 @@ public class ColumnService {
                 () -> new NotFoundException("Workspace with id: " + board.getWorkspace().getId() + " not found!")
         );
 
-        if (!column.getCreator().equals(user) || !workspace.getLead().equals(user)) {
-            throw new BadCredentialException("You can not archive this column!");
-        }
+        if (column.getCreator().equals(user) || workspace.getLead().equals(user)) {
+            column.setIsArchive(!column.getIsArchive());
+            if (column.getIsArchive().equals(true)) {
+                Basket basket = new Basket();
+                basket.setArchivedUser(user);
+                basket.setColumn(column);
+                basket.setArchivedUser(user);
+                column.setBasket(basket);
+                for (Card card : column.getCards()) {
+                    Basket cardBasket = new Basket();
+                    card.setIsArchive(true);
+                    cardBasket.setCard(card);
+                    cardBasket.setArchivedUser(user);
+                    basketRepository.save(cardBasket);
+                }
 
-        column.setIsArchive(!column.getIsArchive());
-        if (column.getIsArchive().equals(true)) {
-            Basket basket = new Basket();
-            basket.setArchivedUser(user);
-            basket.setColumn(column);
-            basket.setArchivedUser(user);
-            for (Card card : column.getCards()) {
-                Basket cardBasket = new Basket();
-                card.setIsArchive(true);
-                cardBasket.setCard(card);
-                cardBasket.setArchivedUser(user);
-                basketRepository.save(cardBasket);
+                basketRepository.save(basket);
             }
-            basketRepository.save(basket);
-        }
 
-        if (column.getIsArchive().equals(false)) {
-            List<Basket> baskets = user.getBaskets();
-            if (baskets != null) {
+            if (column.getIsArchive().equals(false)) {
+                List<Basket> baskets = basketRepository.findAll();
                 for (Basket b : baskets) {
                     for (Card c : column.getCards()) {
                         if (b.getCard() != null && b.getCard().equals(c)) {
                             c.setIsArchive(false);
                             basketRepository.deleteBasket(b.getId());
-                        }
-                    }
 
-                    if (b.getColumn() != null && b.getColumn().equals(column)) {
-                        basketRepository.deleteBasket(b.getId());
+                        }
+
+                        if (b.getColumn() != null && b.getColumn().equals(column)) {
+                            System.out.println("Before delete column");
+                            basketRepository.deleteBasket(b.getId());
+                            System.out.println("After delete column");
+                        }
                     }
                 }
             }
+        } else {
+            throw new BadCredentialException("You can not archive this column!");
         }
 
-        Column column1 = columnRepository.save(column);
         log.info("Column with id: {} successfully archived", id);
-        ColumnResponse response = new ColumnResponse(column1);
-        response.setCreator(userRepository.getCreatorResponse(column1.getCreator().getId()));
+        ColumnResponse response = new ColumnResponse(column);
+        response.setCreator(userRepository.getCreatorResponse(column.getCreator().getId()));
         return response;
     }
 
@@ -201,22 +227,89 @@ public class ColumnService {
                 () -> new NotFoundException("Workspace with id: " + column.getBoard().getWorkspace().getId() + " not found!")
         );
 
-        if (!column.getCreator().equals(user) || !workspace.getLead().equals(user)) {
+        if (column.getCreator().equals(user) || workspace.getLead().equals(user)) {
+            List<Card> cards = column.getCards();
+            if (cards == null) {
+                throw new BadRequestException("This column is empty!");
+            }
+            for (Card card : column.getCards()) {
+                Basket cardBasket = new Basket();
+                if (card.getIsArchive().equals(false)) {
+                    card.setIsArchive(true);
+                    cardBasket.setCard(card);
+                    cardBasket.setArchivedUser(user);
+                    card.setBasket(cardBasket);
+                    basketRepository.save(cardBasket);
+                }
+            }
+        } else {
             throw new BadCredentialException("You can not archive!");
         }
 
-        List<Card> cards = column.getCards();
-        if (cards == null) {
-            throw new BadRequestException("This column is empty!");
+        return new SimpleResponse("All cards in column with id: " + column.getId() + " is archived!", "ARCHIVE");
+    }
+
+    public SimpleResponse deleteAllCardsOfColumn(Long id) {
+        User user = getAuthenticateUser();
+        Column column = columnRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Column with id: " + id + " not found!")
+        );
+
+        Workspace workspace = workspaceRepository.findById(column.getBoard().getWorkspace().getId()).orElseThrow(
+                () -> new NotFoundException("Workspace with id: " + column.getBoard().getWorkspace().getId() + " not found!")
+        );
+
+        if (!column.getCreator().equals(user) || !workspace.getLead().equals(user)) {
+            throw new BadCredentialException("You can not delete!");
         }
-            for (Card card : column.getCards()) {
-                Basket cardBasket = new Basket();
-                card.setIsArchive(true);
-                cardBasket.setCard(card);
-                cardBasket.setArchivedUser(user);
-                basketRepository.save(cardBasket);
+
+        List<Card> cards = column.getCards();
+        List<Basket> baskets = user.getBaskets();
+        for (Card card : cards) {
+            if (card.getIsArchive().equals(true)) {
+                if (baskets != null) {
+                    for (Basket b : baskets) {
+                        if (b.getCard().equals(card)) {
+                            basketRepository.deleteBasket(b.getId());
+                        }
+                    }
+                }
             }
 
-        return new SimpleResponse("All cards in column with id: " + column.getId() + " is archived!", "ARCHIVE");
+            for (Attachment attachment : card.getAttachments()) {
+                attachmentRepository.deleteAttachment(attachment.getId());
+            }
+
+            for (Checklist c : checklistRepository.findAllChecklists(card.getId())) {
+                for (SubTask s : c.getSubTasks()) {
+                    Estimation estimation = s.getEstimation();
+                    if (estimation != null) {
+                        estimationRepository.deleteEstimation(estimation.getId());
+                    }
+
+                    subTaskRepository.deleteSubTask(s.getId());
+                }
+
+                checklistRepository.deleteChecklist(c.getId());
+            }
+
+            for (Comment comment : card.getComments()) {
+                commentRepository.deleteComment(comment.getId());
+            }
+
+            for (Label label : card.getLabels()) {
+                labelRepository.deleteLabel(label.getId());
+            }
+
+            List<Notification> cardNotification = notificationRepository.findAllByCardId(card.getId());
+            if (cardNotification != null) {
+                for (Notification n : cardNotification) {
+                    notificationRepository.deleteNotification(n.getId());
+                }
+            }
+            cardRepository.deleteCard(card.getId());
+        }
+
+        return new SimpleResponse("All card from column with id: " + column.getId() + " is deleted!", "DELETE");
     }
 }

@@ -46,6 +46,7 @@ public class WorkspaceService {
     private final SubTaskRepository subTaskRepository;
     private final AttachmentRepository attachmentRepository;
     private final CommentRepository commentRepository;
+    private final BasketRepository basketRepository;
 
 
     private User getAuthenticateUser() {
@@ -128,7 +129,6 @@ public class WorkspaceService {
     @Transactional
     public SimpleResponse deleteWorkspaceById(Long id) {
         User user = getAuthenticateUser();
-
         Workspace workspace = workspaceRepository.findById(id).orElseThrow(
                 () -> {
                     log.error("Workspace with id: {} not found!", id);
@@ -141,10 +141,21 @@ public class WorkspaceService {
             throw new BadCredentialException("You can not delete this workspace!");
         }
 
+        List<Basket> baskets = user.getBaskets();
         for (Board b : workspace.getBoards()) {
             if (b.getColumns() != null) {
                 for (Column column : b.getColumns()) {
                     for (Card card : column.getCards()) {
+                        if (card.getIsArchive().equals(true)) {
+                            if (baskets != null) {
+                                for (Basket basket : baskets) {
+                                    if (basket.getCard().equals(card)) {
+                                        basketRepository.deleteBasket(basket.getId());
+                                    }
+                                }
+                            }
+                        }
+
                         for (Attachment attachment : card.getAttachments()) {
                             attachmentRepository.deleteAttachment(attachment.getId());
                         }
@@ -184,6 +195,21 @@ public class WorkspaceService {
                     if (columnNotifications != null) {
                         for (Notification notification : columnNotifications) {
                             notificationRepository.deleteNotification(notification.getId());
+                        }
+                    }
+
+                    if (baskets != null) {
+                        for (Basket basket : baskets) {
+                            for (Card c : column.getCards()) {
+                                if (basket.getCard() != null && basket.getCard().equals(c)) {
+                                    c.setIsArchive(false);
+                                    basketRepository.deleteBasket(basket.getId());
+                                }
+                            }
+
+                            if (basket.getColumn() != null && basket.getColumn().equals(column)) {
+                                basketRepository.deleteBasket(basket.getId());
+                            }
                         }
                     }
 

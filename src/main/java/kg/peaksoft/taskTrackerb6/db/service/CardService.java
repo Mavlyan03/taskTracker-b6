@@ -108,7 +108,7 @@ public class CardService {
         if (card.getIsArchive().equals(true)) {
             if (baskets != null) {
                 for (Basket b : baskets) {
-                    if (b.getCard().equals(card)) {
+                    if (b.getCard() != null && b.getCard().equals(card)) {
                         basketRepository.deleteBasket(b.getId());
                     }
                 }
@@ -181,6 +181,7 @@ public class CardService {
         card.setColumn(column);
         column.addCard(card);
         card.setCreatedAt(LocalDate.now());
+        user.addCard(card);
         Card save = cardRepository.save(card);
         return converter.convertToCardInnerPageResponse(save);
     }
@@ -203,27 +204,28 @@ public class CardService {
                 () -> new NotFoundException("Workspace with id: " + column.getBoard().getWorkspace().getId() + " not found!")
         );
 
-        if (!card.getCreator().equals(user) || !column.getCreator().equals(user) || workspace.getLead().equals(user)) {
-            throw new BadCredentialException("You can not archive this card!");
-        }
+        if (card.getCreator().equals(user) || column.getCreator().equals(user) || workspace.getLead().equals(user)) {
 
-        card.setIsArchive(!card.getIsArchive());
-        if (card.getIsArchive().equals(true)) {
-            Basket basket = new Basket();
-            basket.setCard(card);
-            basket.setArchivedUser(user);
-            basketRepository.save(basket);
-        }
+            card.setIsArchive(!card.getIsArchive());
+            if (card.getIsArchive().equals(true)) {
+                Basket basket = new Basket();
+                basket.setCard(card);
+                basket.setArchivedUser(user);
+                card.setBasket(basket);
+                basketRepository.save(basket);
+            }
 
-        if (card.getIsArchive().equals(false)) {
-            List<Basket> baskets = user.getBaskets();
-            if (baskets != null) {
-                for (Basket b : baskets) {
-                    if (b.getCard() != null && b.getCard().equals(card)) {
-                        basketRepository.deleteBasket(b.getId());
-                    }
+            if (card.getIsArchive().equals(false)) {
+                List<Basket> baskets = basketRepository.findAll();
+                    for (Basket b : baskets) {
+                        if (b.getCard() != null && b.getCard().equals(card)) {
+                            basketRepository.deleteBasket(b.getId());
+                        }
                 }
             }
+        } else {
+            System.out.println("In card service!");
+            throw new BadCredentialException("You can not archive this card!");
         }
 
         log.info("Card with id: {} successfully archived", id);

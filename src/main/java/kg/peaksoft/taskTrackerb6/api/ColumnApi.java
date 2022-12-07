@@ -8,6 +8,7 @@ import kg.peaksoft.taskTrackerb6.dto.request.UpdateColumnTitle;
 import kg.peaksoft.taskTrackerb6.dto.response.ColumnResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,13 +29,13 @@ public class ColumnApi {
     }
 
     @Operation(summary = "Update column", description = "Update column title by column id")
-    @PutMapping("update/{id}")
+    @PutMapping("/update/{id}")
     public ColumnResponse updateColumn(@RequestBody UpdateColumnTitle columnTitle) {
         return columnService.updateColumn(columnTitle);
     }
 
     @Operation(summary = "Delete column", description = "Delete column by column id")
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public SimpleResponse deleteColumn(@PathVariable Long id) {
         return columnService.deleteColumn(id);
     }
@@ -46,7 +47,7 @@ public class ColumnApi {
     }
 
     @Operation(summary = "Get all columns", description = "Get all columns by board id")
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public List<ColumnResponse> findAllColumnsByBoardId(@PathVariable Long id) {
         return columnService.findAllColumns(id);
     }
@@ -55,5 +56,11 @@ public class ColumnApi {
     @PutMapping("/archive-column-cards/{id}")
     public SimpleResponse archiveAllColumnCardsOfColumn(@PathVariable Long id) {
         return columnService.archiveAllCardsInColumn(id);
+    }
+
+    @Operation(summary = "Delete all cards from column", description = "Delete all cards by column id")
+    @DeleteMapping("/delete-cards/{id}")
+    public SimpleResponse deleteAllCardsFromColumn(@PathVariable Long id) {
+        return columnService.deleteAllCardsOfColumn(id);
     }
 }

@@ -29,11 +29,14 @@ public class Column {
     @OneToMany(cascade = ALL, mappedBy = "column")
     private List<Card> cards;
 
-    @ManyToOne
+    @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
     private User creator;
 
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
     private Board board;
+
+    @OneToOne(cascade = {ALL}, mappedBy = "column")
+    private Basket basket;
 
     public Column(Long id, String title, Boolean isArchive, User user, Board board) {
         this.id = id;
