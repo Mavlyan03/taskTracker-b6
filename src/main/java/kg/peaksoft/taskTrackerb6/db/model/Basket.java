@@ -22,9 +22,6 @@ public class Basket {
     private Long id;
 
     @OneToOne(cascade = {DETACH, REFRESH, MERGE})
-    private Board board;
-
-    @OneToOne(cascade = {DETACH, REFRESH, MERGE})
     private Card card;
 
     @OneToOne(cascade = {DETACH, REFRESH, MERGE})

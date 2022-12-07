@@ -1,17 +1,13 @@
 package kg.peaksoft.taskTrackerb6.db.service;
 
-import kg.peaksoft.taskTrackerb6.db.model.Board;
-import kg.peaksoft.taskTrackerb6.db.model.Favorite;
-import kg.peaksoft.taskTrackerb6.db.model.User;
-import kg.peaksoft.taskTrackerb6.db.model.Workspace;
+import kg.peaksoft.taskTrackerb6.db.converter.CardConverter;
+import kg.peaksoft.taskTrackerb6.db.model.*;
 import kg.peaksoft.taskTrackerb6.db.repository.BoardRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.FavoriteRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
 import kg.peaksoft.taskTrackerb6.dto.request.BoardRequest;
-import kg.peaksoft.taskTrackerb6.dto.response.ArchiveBoardResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.BoardResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.*;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +30,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final FavoriteRepository favoriteRepository;
     private final WorkspaceRepository workspaceRepository;
+    private final CardConverter converter;
 
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -275,5 +272,32 @@ public class BoardService {
         }
 
         return boardResponses;
+    }
+
+
+    public ArchiveResponse getAllArchivedCardsByBoardId(Long id) {
+        Board board = boardRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Board with id: " + id + " not found!")
+        );
+
+        List<Column> columns = board.getColumns();
+        List<ColumnResponse> archivedColumns = new ArrayList<>();
+        List<CardResponse> archivedCardResponse = new ArrayList<>();
+        for (Column column : columns) {
+            for (Card card : column.getCards()) {
+                if (card.getIsArchive().equals(true)) {
+                    archivedCardResponse.add(converter.convertToResponseForGetAll(card));
+
+                }
+            }
+
+            if (column.getIsArchive().equals(true)) {
+                ColumnResponse response = new ColumnResponse(column);
+                response.setCreator(userRepository.getCreatorResponse(column.getCreator().getId()));
+                archivedColumns.add(response);
+            }
+        }
+
+        return new ArchiveResponse(archivedCardResponse, archivedColumns);
     }
 }

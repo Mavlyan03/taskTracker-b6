@@ -63,6 +63,9 @@ public class Card {
     @OneToMany(cascade = {ALL}, mappedBy = "card")
     private List<Attachment> attachments;
 
+    @OneToOne(cascade = {ALL}, mappedBy = "card")
+    private Basket basket;
+
 
     public Card(String title, String description, Boolean isArchive, LocalDate createdAt, User creator) {
         this.title = title;

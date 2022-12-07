@@ -16,15 +16,8 @@ public interface ColumnRepository extends JpaRepository<Column, Long> {
     @Query("select c from Column c where c.isArchive = false and c.board.id = ?1")
     List<Column> findAllColumns(Long id);
 
-    @Query("select c from Column c where c.isArchive = true")
-    List<Column> findAllArchivedColumns();
-
     @Transactional
     @Modifying
     @Query("delete from Column c where c.id = :id")
     void deleteColumn(Long id);
-
-    @Query("select new kg.peaksoft.taskTrackerb6.dto.response.ColumnResponse(c.id, c.title, c.board.id, c.board.workspace.id)" +
-            " from Column c where c.id = :id")
-    ColumnResponse getColumnResponse(Long id);
 }
