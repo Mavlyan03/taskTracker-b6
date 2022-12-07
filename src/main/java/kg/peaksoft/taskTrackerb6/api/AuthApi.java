@@ -58,7 +58,7 @@ public class AuthApi {
     }
 
     @Operation(summary = "Search members", description = "Search members by workspace id")
-    @GetMapping("/globalSearch/{id}")
+    @GetMapping("/global-search/{id}")
     public List<MemberResponse> globalSearch(@PathVariable Long id,
                                              @RequestParam String email) {
         return memberService.searchByEmailOrName(id, email);
