@@ -61,22 +61,16 @@ public class BoardService {
     }
 
     public SimpleResponse deleteBoardById(Long id, Board board) {
-        Board board1 = boardRepository.findById(id).orElseThrow(
+        boardRepository.findById(id).orElseThrow(
                 () -> {
                     log.error("Board with id: {} not found!", id);
                     throw new NotFoundException("Board with id: " + id + " not found!");
                 }
         );
-
-        if (board1.getIsArchive().equals(board.getIsArchive())) {
-            log.error("You can not delete this board!");
-            throw new BadCredentialException("You can not delete this board!");
-        } else {
             boardRepository.delete(board);
             log.info("Board with id: {} successfully deleted!", id);
             return new SimpleResponse(
                     "Board with id " + id + " is deleted successfully!", "DELETE");
-        }
     }
 
     public BoardResponse makeFavorite(Long id) {

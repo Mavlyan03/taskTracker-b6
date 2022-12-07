@@ -3,14 +3,12 @@ package kg.peaksoft.taskTrackerb6.api;
 import com.google.firebase.auth.FirebaseAuthException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import kg.peaksoft.taskTrackerb6.db.service.MemberService;
 import kg.peaksoft.taskTrackerb6.db.service.UserService;
 import kg.peaksoft.taskTrackerb6.dto.request.ResetPasswordRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SignInRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SignUpRequest;
-import kg.peaksoft.taskTrackerb6.dto.response.AuthResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.ResetPasswordResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.SearchResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +24,7 @@ import java.util.List;
 public class AuthApi {
 
     private final UserService userService;
+    private final MemberService memberService;
 
     @Operation(summary = "Sign up", description = "Any user can register")
     @PostMapping("registration")
@@ -58,9 +57,10 @@ public class AuthApi {
         return userService.authWithGoogle(token);
     }
 
-    @Operation(summary = "Global search", description = "Search by user e-mail, first and last name")
-    @GetMapping("search")
-    public List<SearchResponse> globalSearch(@RequestParam String text) {
-        return userService.globalSearch(text);
+    @Operation(summary = "Search members", description = "Search members by workspace id")
+    @GetMapping("/global-search/{id}")
+    public List<MemberResponse> globalSearch(@PathVariable Long id,
+                                             @RequestParam String email) {
+        return memberService.searchByEmailOrName(id, email);
     }
 }
