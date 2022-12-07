@@ -58,7 +58,9 @@ public class BoardService {
         return new BoardResponse(board.getId(),
                 board.getTitle(),
                 board.getIsFavorite(),
-                board.getBackground());
+                board.getBackground(),
+                workspace.getId()
+        );
     }
 
     public SimpleResponse deleteBoardById(Long id, Board board) {
@@ -89,17 +91,23 @@ public class BoardService {
                 }
         );
 
+        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(
+                () -> new NotFoundException("Workspace with id: " + board.getWorkspace().getId() + " not found!")
+        );
+
         List<Favorite> favorites = user.getFavorites();
         for (Favorite fav : favorites) {
             if (fav.getBoard() != null) {
                 if (fav.getBoard().equals(board)) {
-                    favoriteRepository.delete(fav);
-                    favorites.remove(fav);
+                    favoriteRepository.deleteFavorite(fav.getId());
+                    log.info("Favorite is deleted!");
+                    log.info("Board's favorite with id: {} successfully change to false", board.getId());
                     return new BoardResponse(
                             board.getId(),
                             board.getTitle(),
                             false,
-                            board.getBackground()
+                            board.getBackground(),
+                            workspace.getId()
                     );
                 }
             }
@@ -107,12 +115,15 @@ public class BoardService {
 
         Favorite favorite = new Favorite(user, board);
         favoriteRepository.save(favorite);
+        log.info("Favorite is saved!");
         user.addFavorite(favorite);
+        log.info("Board's favorite with id: {} successfully change to true", board.getId());
         return new BoardResponse(
                 board.getId(),
                 board.getTitle(),
                 true,
-                board.getBackground()
+                board.getBackground(),
+                workspace.getId()
         );
     }
 
@@ -124,6 +135,10 @@ public class BoardService {
                 }
         );
 
+        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(
+                () -> new NotFoundException("Workspace with id: " + board.getWorkspace().getId() + " not foudn")
+        );
+
         board.setBackground(boardRequest.getBackground());
         boardRepository.save(board);
         log.info("Board background with id: {} successfully changed!", id);
@@ -131,7 +146,8 @@ public class BoardService {
                 board.getId(),
                 board.getTitle(),
                 board.getIsFavorite(),
-                board.getBackground()
+                board.getBackground(),
+                workspace.getId()
         );
     }
 
@@ -143,6 +159,10 @@ public class BoardService {
                 }
         );
 
+        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(
+                () -> new NotFoundException("Workspace with id: " + board.getWorkspace().getId() + " not found!")
+        );
+
         board.setTitle(boardRequest.getTitle());
         boardRepository.save(board);
         log.info("Board title with id: {} successfully updated!", id);
@@ -150,7 +170,8 @@ public class BoardService {
                 board.getId(),
                 board.getTitle(),
                 board.getIsFavorite(),
-                board.getBackground());
+                board.getBackground(),
+                workspace.getId());
     }
 
     public BoardResponse getBoardById(Long id) {
@@ -161,11 +182,17 @@ public class BoardService {
                 }
         );
 
+        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(
+                () -> new NotFoundException("Workspace with id: " + board.getWorkspace().getId() + " not found!")
+        );
+
+
         return new BoardResponse(
                 board.getId(),
                 board.getTitle(),
                 board.getIsFavorite(),
-                board.getBackground()
+                board.getBackground(),
+                workspace.getId()
         );
     }
 
@@ -197,12 +224,17 @@ public class BoardService {
                 }
         );
 
+        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(
+                () -> new NotFoundException("Workspace with id: " + board.getWorkspace().getId() + " not found!")
+        );
+
         board.setIsArchive(!board.getIsArchive());
         Board board1 = boardRepository.save(board);
         return new BoardResponse(board1.getId(),
                 board1.getTitle(),
                 board1.getIsFavorite(),
-                board1.getBackground()
+                board1.getBackground(),
+                workspace.getId()
         );
     }
 
@@ -230,7 +262,8 @@ public class BoardService {
                                         board.getId(),
                                         board.getTitle(),
                                         true,
-                                        board.getBackground()
+                                        board.getBackground(),
+                                        workspace.getId()
                                 )
                         );
                     }
@@ -240,7 +273,8 @@ public class BoardService {
                                 board.getId(),
                                 board.getTitle(),
                                 false,
-                                board.getBackground()
+                                board.getBackground(),
+                                workspace.getId()
                         )
                 );
             }

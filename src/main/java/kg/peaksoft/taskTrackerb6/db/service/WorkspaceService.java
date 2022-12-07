@@ -5,8 +5,8 @@ import kg.peaksoft.taskTrackerb6.db.model.*;
 import kg.peaksoft.taskTrackerb6.db.repository.*;
 import kg.peaksoft.taskTrackerb6.dto.request.WorkspaceRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.BoardResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.WorkspaceInnerPageResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.WorkspaceInnerPageResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.WorkspaceResponse;
 import kg.peaksoft.taskTrackerb6.enums.Role;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
@@ -98,21 +98,21 @@ public class WorkspaceService {
                 for (Board favBoard : userFavoriteBoards) {
                     if (favBoard.equals(board)) {
                         boardResponses.add(new BoardResponse(
-                                        board.getId(),
-                                        board.getTitle(),
-                                        true,
-                                        board.getBackground()
-                                )
+                                board.getId(),
+                                board.getTitle(),
+                                true,
+                                board.getBackground(),
+                                workspace.getId())
                         );
                     }
                 }
             } else {
                 boardResponses.add(new BoardResponse(
-                                board.getId(),
-                                board.getTitle(),
-                                false,
-                                board.getBackground()
-                        )
+                        board.getId(),
+                        board.getTitle(),
+                        false,
+                        board.getBackground(),
+                        workspace.getId())
                 );
             }
         }
@@ -243,8 +243,9 @@ public class WorkspaceService {
         for (Favorite fav : favorites) {
             if (fav.getWorkspace() != null) {
                 if (fav.getWorkspace().equals(workspace)) {
-                    favoriteRepository.delete(fav);
-                    favorites.remove(fav);
+                    favoriteRepository.deleteFavorite(fav.getId());
+                    log.info("Favorite is deleted!");
+                    log.info("Workspace favorite with id: {} successfully changed to false", workspace.getId());
                     return new WorkspaceResponse(
                             workspace.getId(),
                             workspace.getName(),
@@ -258,7 +259,8 @@ public class WorkspaceService {
         Favorite favorite = new Favorite(user, workspace);
         favoriteRepository.save(favorite);
         user.addFavorite(favorite);
-        log.info("Workspace action with id: {} successfully change", id);
+        log.info("Workspace action with id: {} successfully changed to true", id);
+        log.info("Favorite is saved!");
         return new WorkspaceResponse(
                 workspace.getId(),
                 workspace.getName(),

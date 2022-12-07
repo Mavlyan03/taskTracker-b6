@@ -32,6 +32,7 @@ public class CardService {
     private final BoardRepository boardRepository;
     private final CardConverter converter;
     private final NotificationRepository notificationRepository;
+    private final BasketRepository basketRepository;
 
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -102,7 +103,18 @@ public class CardService {
             throw new BadCredentialException("You can not delete this card!");
         }
 
-        cardRepository.delete(card);
+        List<Basket> baskets = user.getBaskets();
+        if (card.getIsArchive().equals(true)) {
+            if (baskets != null) {
+                for (Basket b : baskets) {
+                    if (b.getCard().equals(card)) {
+                        basketRepository.deleteBasket(b.getId());
+                    }
+                }
+            }
+        }
+
+        cardRepository.deleteCard(card.getId());
         log.info("Card with id: {} successfully deleted", id);
         return new SimpleResponse("Card with id: " + id + " successfully deleted", "DELETE");
     }
@@ -140,12 +152,17 @@ public class CardService {
 
 
     public CardInnerPageResponse updateTitle(UpdateCardTitleRequest request) {
+        User user = getAuthenticateUser();
         Card card = cardRepository.findById(request.getId()).orElseThrow(
                 () -> {
                     log.error("Card with id: {} not found!", request.getId());
                     throw new NotFoundException("Card with id: " + request.getId() + " not found!");
                 }
         );
+
+        if (!card.getCreator().equals(user)) {
+            throw new BadCredentialException("You can not update this card title!");
+        }
 
         card.setTitle(request.getNewTitle());
         log.info("Card with id:{} successfully updated!", card.getId());
@@ -154,17 +171,22 @@ public class CardService {
 
 
     public CardInnerPageResponse createCard(CardRequest request) {
+        Column column = columnRepository.findById(request.getColumnId()).orElseThrow(
+                () -> new NotFoundException("Column with id: " + request.getColumnId() + " not found!")
+        );
+
         User user = getAuthenticateUser();
-        Card card = converter.convertToEntity(request);
-        card.setCreator(user);
-        card.setColumn(card.getColumn());
+        Card card = new Card(request.getTitle(), request.getDescription(), user);
+        card.setColumn(column);
+        column.addCard(card);
         card.setCreatedAt(LocalDate.now());
-        log.info("Card successfully created");
-        return converter.convertToCardInnerPageResponse(cardRepository.save(card));
+        Card save = cardRepository.save(card);
+        return converter.convertToCardInnerPageResponse(save);
     }
 
 
     public CardInnerPageResponse sentToArchive(Long id) {
+        User user = getAuthenticateUser();
         Card card = cardRepository.findById(id).orElseThrow(
                 () -> {
                     log.error("Card with id: {} not found!", id);
@@ -172,10 +194,27 @@ public class CardService {
                 }
         );
 
-        Basket basket = new Basket();
+        if (!card.getCreator().equals(user)) {
+            throw new BadCredentialException("You can not archive this card!");
+        }
+
         card.setIsArchive(!card.getIsArchive());
         if (card.getIsArchive().equals(true)) {
+            Basket basket = new Basket();
             basket.setCard(card);
+            basket.setArchivedUser(user);
+            basketRepository.save(basket);
+        }
+
+        if (card.getIsArchive().equals(false)) {
+            List<Basket> baskets = user.getBaskets();
+            if (baskets != null) {
+                for (Basket b : baskets) {
+                    if (b.getCard() != null && b.getCard().equals(card)) {
+                        basketRepository.deleteBasket(b.getId());
+                    }
+                }
+            }
         }
 
         log.info("Card with id: {} successfully archived", id);
@@ -183,22 +222,23 @@ public class CardService {
     }
 
 
-    public List<CardResponse> getAllArchivedCardsByBoardId(Long id) {
+    public ArchiveResponse getAllArchivedCardsByBoardId(Long id) {
         Board board = boardRepository.findById(id).orElseThrow(
-                () -> {
-                    log.error("Board with id: {} not found!", id);
-                    throw new NotFoundException("Board with id: " + id + " not found!");
-                }
+                () -> new NotFoundException("Board with id: " + id + " not found!")
         );
 
-        List<CardResponse> responses = new ArrayList<>();
-        for (Column column : board.getColumns()) {
-            for (Card c : column.getCards()) {
-                if (c.getIsArchive().equals(true)) {
-                    responses.add(converter.convertToResponseForGetAll(c));
+        ArchiveResponse archiveResponse = new ArchiveResponse();
+        List<Column> columns = board.getColumns();
+        List<CardResponse> archivedCardResponse = new ArrayList<>();
+        for (Column column : columns) {
+            for (Card card : column.getCards()) {
+                if (card.getIsArchive().equals(true)) {
+                    archivedCardResponse.add(converter.convertToResponseForGetAll(card));
                 }
             }
         }
-        return responses;
+
+        archiveResponse.setCardResponses(archivedCardResponse);
+        return archiveResponse;
     }
 }
