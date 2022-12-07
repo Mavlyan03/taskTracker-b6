@@ -12,10 +12,7 @@ import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import kg.peaksoft.taskTrackerb6.dto.request.ResetPasswordRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SignInRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SignUpRequest;
-import kg.peaksoft.taskTrackerb6.dto.response.AuthResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.ResetPasswordResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.SearchResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.*;
 import kg.peaksoft.taskTrackerb6.enums.Role;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.BadRequestException;
@@ -33,6 +30,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -194,22 +192,4 @@ public class UserService {
                 user.getRole(),
                 token);
     }
-
-    private SearchResponse mapToSearchResponse(User user) {
-        return new SearchResponse(
-                user.getFirstName(),
-                user.getLastName(),
-                user.getEmail()
-        );
-    }
-
-    public List<SearchResponse> globalSearch(String text) {
-        List<SearchResponse> searchResponses = new ArrayList<>();
-        List<User> users = repository.globalSearch(text);
-        for (User user : users) {
-            searchResponses.add(mapToSearchResponse(user)
-            );
-        }
-        return searchResponses;
-    }
-}
+   }
