@@ -25,7 +25,7 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_gen")
-    @SequenceGenerator(name = "user_gen", sequenceName = "user_seq", allocationSize = 1, initialValue = 4)
+    @SequenceGenerator(name = "user_gen", sequenceName = "user_seq", allocationSize = 1, initialValue = 5)
     private Long id;
 
     @Column(name = "first_name")
@@ -44,20 +44,26 @@ public class User implements UserDetails {
     @OneToMany(cascade = {ALL}, mappedBy = "statusChangedUser")
     private List<Favorite> favorites;
 
+    @OneToMany(cascade = {ALL}, mappedBy = "archivedUser")
+    private List<Basket>baskets;
+
     @OneToMany(cascade = {ALL}, mappedBy = "user")
     private List<Notification> notifications;
 
     @OneToMany(cascade = {DETACH, REFRESH, MERGE}, fetch = FetchType.EAGER, mappedBy = "lead")
     private List<Workspace> workspaces;
 
+    @OneToMany(cascade = {ALL}, mappedBy = "creator")
+    private List<kg.peaksoft.taskTrackerb6.db.model.Column> columns;
+
+    @OneToMany(cascade = {ALL}, mappedBy = "creator")
+    private List<Card> cards;
+
     @OneToMany(cascade = {ALL}, mappedBy = "user")
     public List<UserWorkSpace> userWorkSpaces;
 
     @ManyToMany(cascade = {DETACH, REFRESH, MERGE})
     private List<Board> boards;
-
-    @OneToMany(cascade = {ALL}, mappedBy = "creator")
-    private List<Card> cards;
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -126,5 +132,19 @@ public class User implements UserDetails {
             favorites = new ArrayList<>();
         }
         favorites.add(favorite);
+    }
+
+    public void addCard(Card card) {
+        if (cards == null) {
+            cards = new ArrayList<>();
+        }
+        cards = new ArrayList<>();
+    }
+
+    public void addColumn(kg.peaksoft.taskTrackerb6.db.model.Column column) {
+        if (columns == null) {
+            columns = new ArrayList<>();
+        }
+        columns.add(column);
     }
 }

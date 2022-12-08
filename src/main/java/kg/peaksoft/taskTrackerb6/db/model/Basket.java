@@ -21,14 +21,12 @@ public class Basket {
     @SequenceGenerator(name = "basket_gen", sequenceName = "basket_seq", allocationSize = 1, initialValue = 2)
     private Long id;
 
-    private LocalDate archiveDate;
-
-    @OneToOne(cascade = ALL)
-    private Board board;
-
-    @OneToOne(cascade = ALL)
+    @OneToOne(cascade = {DETACH, REFRESH, MERGE})
     private Card card;
 
-    @OneToOne(cascade = ALL)
+    @OneToOne(cascade = {DETACH, REFRESH, MERGE})
     private Column column;
+
+    @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
+    private User archivedUser;
 }

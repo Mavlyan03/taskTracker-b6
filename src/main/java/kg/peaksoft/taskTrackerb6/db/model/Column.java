@@ -30,7 +30,21 @@ public class Column {
     private List<Card> cards;
 
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
+    private User creator;
+
+    @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
     private Board board;
+
+    @OneToOne(cascade = {ALL}, mappedBy = "column")
+    private Basket basket;
+
+    public Column(Long id, String title, Boolean isArchive, User user, Board board) {
+        this.id = id;
+        this.title = title;
+        this.isArchive = isArchive;
+        this.creator = user;
+        this.board = board;
+    }
 
     public void addCard(Card card) {
         if (cards == null) {

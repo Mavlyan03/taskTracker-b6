@@ -4,9 +4,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.peaksoft.taskTrackerb6.db.service.ColumnService;
 import kg.peaksoft.taskTrackerb6.dto.request.ColumnRequest;
+import kg.peaksoft.taskTrackerb6.dto.request.UpdateColumnTitle;
 import kg.peaksoft.taskTrackerb6.dto.response.ColumnResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,39 +29,38 @@ public class ColumnApi {
     }
 
     @Operation(summary = "Update column", description = "Update column title by column id")
-    @PutMapping("update/{id}")
-    public ColumnResponse updateColumn(@PathVariable Long id,
-                                       @RequestBody String newTitle) {
-        return columnService.updateColumn(id, newTitle);
+    @PutMapping("/update/{id}")
+    public ColumnResponse updateColumn(@RequestBody UpdateColumnTitle columnTitle) {
+        return columnService.updateColumn(columnTitle);
     }
 
     @Operation(summary = "Delete column", description = "Delete column by column id")
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public SimpleResponse deleteColumn(@PathVariable Long id) {
         return columnService.deleteColumn(id);
     }
 
     @Operation(summary = "Send to archive", description = "Send column to archive")
-    @PutMapping("archive/{id}")
+    @PutMapping("/archive/{id}")
     public ColumnResponse sendToArchive(@PathVariable Long id) {
-        return columnService.addToArchive(id);
-    }
-
-    @Operation(summary = "Unarchive", description = "Unarchive column by id")
-    @PutMapping("unarchive/{id}")
-    public ColumnResponse sendToBoard(@PathVariable Long id) {
-        return columnService.sendToBoard(id);
+        return columnService.sentToArchive(id);
     }
 
     @Operation(summary = "Get all columns", description = "Get all columns by board id")
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public List<ColumnResponse> findAllColumnsByBoardId(@PathVariable Long id) {
         return columnService.findAllColumns(id);
     }
 
-    @Operation(summary = "Get archived columns", description = "Get all archived columns")
-    @GetMapping("archive-columns")
-    public List<ColumnResponse> findAllLinesByArchive() {
-        return columnService.findAllArchivedColumns();
+    @Operation(summary = "Archive all cards of column", description = "Archive all cards by column id")
+    @PutMapping("/archive-column-cards/{id}")
+    public SimpleResponse archiveAllColumnCardsOfColumn(@PathVariable Long id) {
+        return columnService.archiveAllCardsInColumn(id);
+    }
+
+    @Operation(summary = "Delete all cards from column", description = "Delete all cards by column id")
+    @DeleteMapping("/delete-cards/{id}")
+    public SimpleResponse deleteAllCardsFromColumn(@PathVariable Long id) {
+        return columnService.deleteAllCardsOfColumn(id);
     }
 }

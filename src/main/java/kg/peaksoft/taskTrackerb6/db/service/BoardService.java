@@ -1,17 +1,13 @@
 package kg.peaksoft.taskTrackerb6.db.service;
 
-import kg.peaksoft.taskTrackerb6.db.model.Board;
-import kg.peaksoft.taskTrackerb6.db.model.Favorite;
-import kg.peaksoft.taskTrackerb6.db.model.User;
-import kg.peaksoft.taskTrackerb6.db.model.Workspace;
+import kg.peaksoft.taskTrackerb6.db.converter.CardConverter;
+import kg.peaksoft.taskTrackerb6.db.model.*;
 import kg.peaksoft.taskTrackerb6.db.repository.BoardRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.FavoriteRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
 import kg.peaksoft.taskTrackerb6.dto.request.BoardRequest;
-import kg.peaksoft.taskTrackerb6.dto.response.ArchiveBoardResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.BoardResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.*;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +30,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final FavoriteRepository favoriteRepository;
     private final WorkspaceRepository workspaceRepository;
+    private final CardConverter converter;
 
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -58,26 +55,22 @@ public class BoardService {
         return new BoardResponse(board.getId(),
                 board.getTitle(),
                 board.getIsFavorite(),
-                board.getBackground());
+                board.getBackground(),
+                workspace.getId()
+        );
     }
 
     public SimpleResponse deleteBoardById(Long id, Board board) {
-        Board board1 = boardRepository.findById(id).orElseThrow(
+        boardRepository.findById(id).orElseThrow(
                 () -> {
                     log.error("Board with id: {} not found!", id);
                     throw new NotFoundException("Board with id: " + id + " not found!");
                 }
         );
-
-        if (board1.getIsArchive().equals(board.getIsArchive())) {
-            log.error("You can not delete this board!");
-            throw new BadCredentialException("You can not delete this board!");
-        } else {
             boardRepository.delete(board);
             log.info("Board with id: {} successfully deleted!", id);
             return new SimpleResponse(
                     "Board with id " + id + " is deleted successfully!", "DELETE");
-        }
     }
 
     public BoardResponse makeFavorite(Long id) {
@@ -87,6 +80,10 @@ public class BoardService {
                     log.error("Board with id : {} not found", id);
                     throw new NotFoundException(String.format("Board with id %s not found", id));
                 }
+        );
+
+        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(
+                () -> new NotFoundException("Workspace with id: " + board.getWorkspace().getId() + " not found!")
         );
 
         List<Favorite> favorites = user.getFavorites();
@@ -100,7 +97,8 @@ public class BoardService {
                             board.getId(),
                             board.getTitle(),
                             false,
-                            board.getBackground()
+                            board.getBackground(),
+                            workspace.getId()
                     );
                 }
             }
@@ -115,7 +113,8 @@ public class BoardService {
                 board.getId(),
                 board.getTitle(),
                 true,
-                board.getBackground()
+                board.getBackground(),
+                workspace.getId()
         );
     }
 
@@ -127,6 +126,10 @@ public class BoardService {
                 }
         );
 
+        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(
+                () -> new NotFoundException("Workspace with id: " + board.getWorkspace().getId() + " not foudn")
+        );
+
         board.setBackground(boardRequest.getBackground());
         boardRepository.save(board);
         log.info("Board background with id: {} successfully changed!", id);
@@ -134,7 +137,8 @@ public class BoardService {
                 board.getId(),
                 board.getTitle(),
                 board.getIsFavorite(),
-                board.getBackground()
+                board.getBackground(),
+                workspace.getId()
         );
     }
 
@@ -146,6 +150,10 @@ public class BoardService {
                 }
         );
 
+        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(
+                () -> new NotFoundException("Workspace with id: " + board.getWorkspace().getId() + " not found!")
+        );
+
         board.setTitle(boardRequest.getTitle());
         boardRepository.save(board);
         log.info("Board title with id: {} successfully updated!", id);
@@ -153,7 +161,8 @@ public class BoardService {
                 board.getId(),
                 board.getTitle(),
                 board.getIsFavorite(),
-                board.getBackground());
+                board.getBackground(),
+                workspace.getId());
     }
 
     public BoardResponse getBoardById(Long id) {
@@ -164,11 +173,17 @@ public class BoardService {
                 }
         );
 
+        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(
+                () -> new NotFoundException("Workspace with id: " + board.getWorkspace().getId() + " not found!")
+        );
+
+
         return new BoardResponse(
                 board.getId(),
                 board.getTitle(),
                 board.getIsFavorite(),
-                board.getBackground()
+                board.getBackground(),
+                workspace.getId()
         );
     }
 
@@ -200,12 +215,17 @@ public class BoardService {
                 }
         );
 
+        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(
+                () -> new NotFoundException("Workspace with id: " + board.getWorkspace().getId() + " not found!")
+        );
+
         board.setIsArchive(!board.getIsArchive());
         Board board1 = boardRepository.save(board);
         return new BoardResponse(board1.getId(),
                 board1.getTitle(),
                 board1.getIsFavorite(),
-                board1.getBackground()
+                board1.getBackground(),
+                workspace.getId()
         );
     }
 
@@ -233,7 +253,8 @@ public class BoardService {
                                         board.getId(),
                                         board.getTitle(),
                                         true,
-                                        board.getBackground()
+                                        board.getBackground(),
+                                        workspace.getId()
                                 )
                         );
                     }
@@ -243,12 +264,40 @@ public class BoardService {
                                 board.getId(),
                                 board.getTitle(),
                                 false,
-                                board.getBackground()
+                                board.getBackground(),
+                                workspace.getId()
                         )
                 );
             }
         }
 
         return boardResponses;
+    }
+
+
+    public ArchiveResponse getAllArchivedCardsByBoardId(Long id) {
+        Board board = boardRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Board with id: " + id + " not found!")
+        );
+
+        List<Column> columns = board.getColumns();
+        List<ColumnResponse> archivedColumns = new ArrayList<>();
+        List<CardResponse> archivedCardResponse = new ArrayList<>();
+        for (Column column : columns) {
+            for (Card card : column.getCards()) {
+                if (card.getIsArchive().equals(true)) {
+                    archivedCardResponse.add(converter.convertToResponseForGetAll(card));
+
+                }
+            }
+
+            if (column.getIsArchive().equals(true)) {
+                ColumnResponse response = new ColumnResponse(column);
+                response.setCreator(userRepository.getCreatorResponse(column.getCreator().getId()));
+                archivedColumns.add(response);
+            }
+        }
+
+        return new ArchiveResponse(archivedCardResponse, archivedColumns);
     }
 }
