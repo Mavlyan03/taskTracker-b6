@@ -70,7 +70,7 @@ public class WorkspaceApi {
     }
 
     @Operation(summary = "Update workspace name", description = "Update workspace name by id")
-    @PutMapping("/update")
+    @PutMapping
     public WorkspaceResponse update(@RequestBody UpdateWorkspaceName request) {
         return service.updateWorkspaceName(request);
     }

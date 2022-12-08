@@ -39,11 +39,6 @@ public class Workspace {
     private Favorite favorite;
 
 
-//    public Workspace(String name, Boolean isFavorite) {
-//        this.name = name;
-//        this.isFavorite = isFavorite;
-//    }
-
     public Workspace(Long id, String name, Boolean isFavorite) {
         this.id = id;
         this.name = name;
