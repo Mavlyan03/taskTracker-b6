@@ -1,11 +1,11 @@
 package kg.peaksoft.taskTrackerb6.db.service;
 
+import kg.peaksoft.taskTrackerb6.db.converter.CardConverter;
 import kg.peaksoft.taskTrackerb6.db.model.*;
 import kg.peaksoft.taskTrackerb6.db.repository.*;
 import kg.peaksoft.taskTrackerb6.dto.request.ColumnRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.UpdateColumnTitle;
-import kg.peaksoft.taskTrackerb6.dto.response.ColumnResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.*;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.BadRequestException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
@@ -38,6 +38,7 @@ public class ColumnService {
     private final CommentRepository commentRepository;
     private final ChecklistRepository checklistRepository;
     private final EstimationRepository estimationRepository;
+    private final CardConverter converter;
 
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -90,6 +91,15 @@ public class ColumnService {
         log.info("Column title with id: {} successfully updated", columnTitle.getId());
         ColumnResponse response = new ColumnResponse(column1);
         response.setCreator(userRepository.getCreatorResponse(user.getId()));
+        List<CardResponse> cardResponses = new ArrayList<>();
+        for (Card card : column1.getCards()) {
+            if (card.getIsArchive().equals(false)) {
+                cardResponses.add(converter.convertToResponseForGetAll(card));
+            }
+        }
+
+        response.setCreator(userRepository.getCreatorResponse(column1.getCreator().getId()));
+        response.setColumnCards(cardResponses);
         return response;
     }
 
@@ -138,17 +148,31 @@ public class ColumnService {
         return new SimpleResponse("Column with id: " + id + " successfully deleted", "DELETE");
     }
 
-    public List<ColumnResponse> findAllColumns(Long id) {
-        List<Column> columns = columnRepository.findAllColumns(id);
+    public AllBoardColumnsResponse findAllColumns(Long id) {
+        Board board = boardRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Board with id: " + id + " not found!")
+        );
+
+        List<Column> columns = board.getColumns();
+        AllBoardColumnsResponse boardColumnsResponse = new AllBoardColumnsResponse();
         List<ColumnResponse> columnResponses = new ArrayList<>();
         for (Column column : columns) {
             ColumnResponse response = new ColumnResponse(column);
             response.setCreator(userRepository.getCreatorResponse(column.getCreator().getId()));
+            List<CardResponse> cardResponsesList = new ArrayList<>();
+            for (Card card : column.getCards()) {
+                if (card != null && card.getIsArchive().equals(false)) {
+                    cardResponsesList.add(converter.convertToResponseForGetAll(card));
+                    response.setColumnCards(cardResponsesList);
+                }
+            }
+
             columnResponses.add(response);
+            boardColumnsResponse.setColumnResponses(columnResponses);
         }
 
         log.info("Get all columns");
-        return columnResponses;
+        return boardColumnsResponse;
     }
 
 

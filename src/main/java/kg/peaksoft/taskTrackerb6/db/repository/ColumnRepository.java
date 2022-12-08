@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface ColumnRepository extends JpaRepository<Column, Long> {
 
-    @Query("select c from Column c where c.isArchive = false and c.board.id = ?1")
+    @Query("select c from Column c where c.board.id = ?1")
     List<Column> findAllColumns(Long id);
 
     @Transactional
