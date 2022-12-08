@@ -14,16 +14,16 @@ public class CardResponse {
 
     private Long id;
     private String title;
-    private List<LabelResponse> labelResponses;
     private String duration;
     private int numberOfMembers;
     private int numberOfSubTasks;
     private int numberOfCompletedSubTask;
-    private CreatorResponse creator;
     private Boolean isArchive;
     private Long columnId;
     private Long boardId;
     private Long workspaceId;
+    private List<LabelResponse> labelResponses;
+    private CreatorResponse creator;
 
     public CardResponse(Card card) {
         this.id = card.getId();

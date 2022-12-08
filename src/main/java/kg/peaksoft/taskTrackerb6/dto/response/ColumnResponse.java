@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -13,9 +15,10 @@ public class ColumnResponse {
     private Long id;
     private String columnName;
     private Boolean isArchived;
-    private CreatorResponse creator;
     private Long boardId;
     private Long workspaceId;
+    private CreatorResponse creator;
+    private List<CardResponse> columnCards;
 
     public ColumnResponse(Column column) {
         this.id = column.getId();
