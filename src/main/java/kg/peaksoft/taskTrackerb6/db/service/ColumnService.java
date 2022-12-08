@@ -156,10 +156,10 @@ public class ColumnService {
         List<Column> columns = board.getColumns();
         AllBoardColumnsResponse boardColumnsResponse = new AllBoardColumnsResponse();
         List<ColumnResponse> columnResponses = new ArrayList<>();
-        List<CardResponse> cardResponsesList = new ArrayList<>();
         for (Column column : columns) {
             ColumnResponse response = new ColumnResponse(column);
             response.setCreator(userRepository.getCreatorResponse(column.getCreator().getId()));
+            List<CardResponse> cardResponsesList = new ArrayList<>();
             for (Card card : column.getCards()) {
                 if (card != null && card.getIsArchive().equals(false)) {
                     cardResponsesList.add(converter.convertToResponseForGetAll(card));

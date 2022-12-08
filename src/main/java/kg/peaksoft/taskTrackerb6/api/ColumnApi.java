@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.peaksoft.taskTrackerb6.db.service.ColumnService;
 import kg.peaksoft.taskTrackerb6.dto.request.ColumnRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.UpdateColumnTitle;
+import kg.peaksoft.taskTrackerb6.dto.response.AllBoardColumnsResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.ColumnResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +49,7 @@ public class ColumnApi {
 
     @Operation(summary = "Get all columns", description = "Get all columns by board id")
     @GetMapping("/{id}")
-    public List<ColumnResponse> findAllColumnsByBoardId(@PathVariable Long id) {
+    public AllBoardColumnsResponse findAllColumnsByBoardId(@PathVariable Long id) {
         return columnService.findAllColumns(id);
     }
 
