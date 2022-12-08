@@ -148,9 +148,13 @@ public class ColumnService {
         return new SimpleResponse("Column with id: " + id + " successfully deleted", "DELETE");
     }
 
-    public List<ColumnResponse> findAllColumns(Long id) {
-        List<Column> columns = columnRepository.findAllColumns(id);
+    public AllBoardColumnsResponse findAllColumns(Long id) {
+        Board board = boardRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Board with id: " + id + " not found!")
+        );
 
+        List<Column> columns = board.getColumns();
+        AllBoardColumnsResponse boardColumnsResponse = new AllBoardColumnsResponse();
         List<ColumnResponse> columnResponses = new ArrayList<>();
         List<CardResponse> cardResponsesList = new ArrayList<>();
         for (Column column : columns) {
@@ -164,10 +168,11 @@ public class ColumnService {
             }
 
             columnResponses.add(response);
+            boardColumnsResponse.setColumnResponses(columnResponses);
         }
 
         log.info("Get all columns");
-        return columnResponses;
+        return boardColumnsResponse;
     }
 
 
