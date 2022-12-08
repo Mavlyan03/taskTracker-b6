@@ -4,8 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.peaksoft.taskTrackerb6.db.service.CardService;
 import kg.peaksoft.taskTrackerb6.dto.request.CardRequest;
-import kg.peaksoft.taskTrackerb6.dto.request.UpdateCardTitleRequest;
-import kg.peaksoft.taskTrackerb6.dto.response.ArchiveResponse;
+import kg.peaksoft.taskTrackerb6.dto.request.UpdateRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.CardInnerPageResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.CardResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
@@ -37,7 +36,7 @@ public class CardApi {
 
     @Operation(summary = "Update card title", description = "Update card title by id")
     @PutMapping
-    public CardInnerPageResponse updateCardTitle(@RequestBody UpdateCardTitleRequest request) {
+    public CardInnerPageResponse updateCardTitle(@RequestBody UpdateRequest request) {
         return cardService.updateTitle(request);
     }
 

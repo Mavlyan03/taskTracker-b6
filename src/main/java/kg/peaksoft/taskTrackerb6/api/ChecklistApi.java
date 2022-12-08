@@ -4,8 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.peaksoft.taskTrackerb6.db.service.ChecklistService;
 import kg.peaksoft.taskTrackerb6.dto.request.ChecklistRequest;
-import kg.peaksoft.taskTrackerb6.dto.request.UpdateChecklistTitleRequest;
-import kg.peaksoft.taskTrackerb6.dto.response.CardInnerPageResponse;
+import kg.peaksoft.taskTrackerb6.dto.request.UpdateRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.ChecklistResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +30,7 @@ public class ChecklistApi {
 
     @Operation(summary = "Update checklist title", description = "Update checklist title by id")
     @PutMapping()
-    public ChecklistResponse updateTitle(@RequestBody UpdateChecklistTitleRequest request){
+    public ChecklistResponse updateTitle(@RequestBody UpdateRequest request){
         return checklistService.updateTitle(request);
     }
 

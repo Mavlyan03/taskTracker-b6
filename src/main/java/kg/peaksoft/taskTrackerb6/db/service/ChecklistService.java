@@ -14,11 +14,7 @@ import kg.peaksoft.taskTrackerb6.db.repository.CardRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.ChecklistRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
-import kg.peaksoft.taskTrackerb6.dto.request.ChecklistRequest;
-import kg.peaksoft.taskTrackerb6.dto.request.MemberRequest;
-import kg.peaksoft.taskTrackerb6.dto.request.MyTimeClassRequest;
-import kg.peaksoft.taskTrackerb6.dto.request.SubTaskRequest;
-import kg.peaksoft.taskTrackerb6.dto.request.UpdateChecklistTitleRequest;
+import kg.peaksoft.taskTrackerb6.dto.request.*;
 import kg.peaksoft.taskTrackerb6.dto.response.ChecklistResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.EstimationResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.MemberResponse;
@@ -113,16 +109,16 @@ public class ChecklistService {
         return convertToResponse(checklistRepository.save(checklist));
     }
 
-    public ChecklistResponse updateTitle(UpdateChecklistTitleRequest request) {
-        Checklist checklist = checklistRepository.findById(request.getChecklistId()).orElseThrow(
+    public ChecklistResponse updateTitle(UpdateRequest request) {
+        Checklist checklist = checklistRepository.findById(request.getId()).orElseThrow(
                 () -> {
-                    log.error("Checklist with id: {} not found!", request.getChecklistId());
-                    throw new NotFoundException("Checklist with id: " + request.getChecklistId() + " not found!");
+                    log.error("Checklist with id: {} not found!", request.getId());
+                    throw new NotFoundException("Checklist with id: " + request.getId() + " not found!");
                 }
         );
 
         checklist.setTitle(request.getNewTitle());
-        log.info("Checklist title with id: {} successfully updated", request.getChecklistId());
+        log.info("Checklist title with id: {} successfully updated", request.getId());
         return convertToResponse(checklistRepository.save(checklist));
     }
 

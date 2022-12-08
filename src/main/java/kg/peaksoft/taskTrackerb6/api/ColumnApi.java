@@ -4,15 +4,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.peaksoft.taskTrackerb6.db.service.ColumnService;
 import kg.peaksoft.taskTrackerb6.dto.request.ColumnRequest;
-import kg.peaksoft.taskTrackerb6.dto.request.UpdateColumnTitle;
+import kg.peaksoft.taskTrackerb6.dto.request.UpdateRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.AllBoardColumnsResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.ColumnResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,8 +28,8 @@ public class ColumnApi {
 
     @Operation(summary = "Update column", description = "Update column title by column id")
     @PutMapping("/update/{id}")
-    public ColumnResponse updateColumn(@RequestBody UpdateColumnTitle columnTitle) {
-        return columnService.updateColumn(columnTitle);
+    public ColumnResponse updateColumn(@RequestBody UpdateRequest request) {
+        return columnService.updateColumn(request);
     }
 
     @Operation(summary = "Delete column", description = "Delete column by column id")

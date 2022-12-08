@@ -38,5 +38,4 @@ public class Label {
         this.description = description;
         this.color = color;
     }
-
 }

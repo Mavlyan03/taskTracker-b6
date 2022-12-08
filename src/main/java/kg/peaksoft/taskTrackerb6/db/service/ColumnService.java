@@ -4,7 +4,7 @@ import kg.peaksoft.taskTrackerb6.db.converter.CardConverter;
 import kg.peaksoft.taskTrackerb6.db.model.*;
 import kg.peaksoft.taskTrackerb6.db.repository.*;
 import kg.peaksoft.taskTrackerb6.dto.request.ColumnRequest;
-import kg.peaksoft.taskTrackerb6.dto.request.UpdateColumnTitle;
+import kg.peaksoft.taskTrackerb6.dto.request.UpdateRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.*;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.BadRequestException;
@@ -73,7 +73,7 @@ public class ColumnService {
         return response;
     }
 
-    public ColumnResponse updateColumn(UpdateColumnTitle columnTitle) {
+    public ColumnResponse updateColumn(UpdateRequest columnTitle) {
         User user = getAuthenticateUser();
         Column column = columnRepository.findById(columnTitle.getId()).orElseThrow(
                 () -> {
