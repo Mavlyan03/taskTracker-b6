@@ -13,6 +13,6 @@ public interface UserWorkSpaceRepository extends JpaRepository<UserWorkSpace, Lo
 
     @Transactional
     @Modifying
-    @Query("delete from UserWorkSpace ")
+    @Query("delete from UserWorkSpace u where u.id = :id")
     void deleteUserWorkSpace(Long id);
 }

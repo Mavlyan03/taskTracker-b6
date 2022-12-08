@@ -3,7 +3,7 @@ package kg.peaksoft.taskTrackerb6.db.service;
 
 import kg.peaksoft.taskTrackerb6.db.model.*;
 import kg.peaksoft.taskTrackerb6.db.repository.*;
-import kg.peaksoft.taskTrackerb6.dto.request.UpdateCardTitleRequest;
+import kg.peaksoft.taskTrackerb6.dto.request.UpdateWorkspaceName;
 import kg.peaksoft.taskTrackerb6.dto.request.WorkspaceRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.BoardResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
@@ -251,7 +251,12 @@ public class WorkspaceService {
             }
         }
 
-        userWorkSpaceRepository.deleteUserWorkSpace(workspace.getId());
+        List<UserWorkSpace> userWorkSpaces = user.getUserWorkSpaces();
+        for (UserWorkSpace userWorkSpace : userWorkSpaces) {
+            if (userWorkSpace.getUser().equals(user) && userWorkSpace.getWorkspace().equals(workspace)) {
+                userWorkSpaceRepository.deleteUserWorkSpace(userWorkSpace.getId());
+            }
+        }
         workspaceRepository.deleteWorkspaceById(workspace.getId());
         log.info("Workspace with id: {} successfully deleted!", id);
         return new SimpleResponse("Workspace with id: " + id + " successfully!", "DELETE");
@@ -298,60 +303,51 @@ public class WorkspaceService {
     }
 
 
-//    public List<WorkspaceResponse> getAllUserWorkspaces() {
-//        User user = getAuthenticateUser();
-//        List<Workspace> workspaces = new ArrayList<>();
-//        List<UserWorkSpace> userWorkSpaces = user.getUserWorkSpaces();
-//        for (UserWorkSpace userWorkSpace : userWorkSpaces) {
-//            if (userWorkSpace.getUser().equals(user)) {
-//                workspaces.add(userWorkSpace.getWorkspace());
-//            }
-//        }
-//
-//        List<Workspace> favoriteWorkspaces = new ArrayList<>();
-//        List<Favorite> userFavorites = user.getFavorites();
-//        for (Favorite fav : userFavorites) {
-//            if (fav.getWorkspace() != null) {
-//                favoriteWorkspaces.add(fav.getWorkspace());
-//            }
-//        }
-//
-//        List<WorkspaceResponse> workspaceResponses = new ArrayList<>();
-//        for (Workspace workspace : workspaces) {
-//            if (favoriteWorkspaces.contains(workspace)) {
-//                for (Workspace w : favoriteWorkspaces) {
-//                    if (w.equals(workspace)) {
-//                        workspaceResponses.add(new WorkspaceResponse(
-//                                workspace.getId(),
-//                                workspace.getName(),
-//                                userRepository.getCreatorResponse(workspace.getLead().getId()),
-//                                true)
-//                        );
-//                    }
-//                }
-//            } else {
-//                workspaceResponses.add(new WorkspaceResponse(
-//                        workspace.getId(),
-//                        workspace.getName(),
-//                        userRepository.getCreatorResponse(workspace.getLead().getId()),
-//                        false)
-//                );
-//            }
-//        }
-//
-//        log.info("Get all user workspaces");
-//        return workspaceResponses;
-//    }
-
-
-    public List<WorkspaceResponse> getAllUserWorkspace() {
+    public List<WorkspaceResponse> getAllUserWorkspaces() {
         User user = getAuthenticateUser();
-        List<WorkspaceResponse> getWorkspaces = workspaceRepository.getWorkspaceResponse(user.getId());
-        return getWorkspaces;
+        List<Workspace> workspaces = new ArrayList<>();
+        List<UserWorkSpace> userWorkSpaces = user.getUserWorkSpaces();
+        for (UserWorkSpace userWorkSpace : userWorkSpaces) {
+            workspaces.add(userWorkSpace.getWorkspace());
+        }
+
+        List<Workspace> favoriteWorkspaces = new ArrayList<>();
+        List<Favorite> userFavorites = user.getFavorites();
+        for (Favorite fav : userFavorites) {
+            if (fav.getWorkspace() != null) {
+                favoriteWorkspaces.add(fav.getWorkspace());
+            }
+        }
+
+        List<WorkspaceResponse> workspaceResponses = new ArrayList<>();
+        for (Workspace workspace : workspaces) {
+            if (favoriteWorkspaces.contains(workspace)) {
+                for (Workspace w : favoriteWorkspaces) {
+                    if (w.equals(workspace)) {
+                        workspaceResponses.add(new WorkspaceResponse(
+                                workspace.getId(),
+                                workspace.getName(),
+                                userRepository.getCreatorResponse(workspace.getLead().getId()),
+                                true)
+                        );
+                    }
+                }
+            } else {
+                workspaceResponses.add(new WorkspaceResponse(
+                        workspace.getId(),
+                        workspace.getName(),
+                        userRepository.getCreatorResponse(workspace.getLead().getId()),
+                        false)
+                );
+            }
+        }
+
+        log.info("Get all user workspaces");
+        return workspaceResponses;
     }
 
 
-    public WorkspaceResponse updateWorkspaceName(UpdateCardTitleRequest request) {
+    public WorkspaceResponse updateWorkspaceName(UpdateWorkspaceName request) {
         User user = getAuthenticateUser();
         Workspace workspace = workspaceRepository.findById(request.getId()).orElseThrow(
                 () -> new NotFoundException("Workspace with id: " + request.getId() + " not found!")
@@ -361,7 +357,7 @@ public class WorkspaceService {
             throw new BadCredentialException("You can not update this workspace name!");
         }
 
-        workspace.setName(request.getNewTitle());
+        workspace.setName(request.getNewName());
         Workspace saved = workspaceRepository.save(workspace);
         return new WorkspaceResponse(
                 saved.getId(),
