@@ -70,6 +70,7 @@ public class ColumnService {
         log.info("Column successfully created");
         ColumnResponse response = new ColumnResponse(column1);
         response.setCreator(userRepository.getCreatorResponse(user.getId()));
+        response.setColumnCards(new ArrayList<>());
         return response;
     }
 
@@ -92,9 +93,11 @@ public class ColumnService {
         ColumnResponse response = new ColumnResponse(column1);
         response.setCreator(userRepository.getCreatorResponse(user.getId()));
         List<CardResponse> cardResponses = new ArrayList<>();
-        for (Card card : column1.getCards()) {
-            if (card.getIsArchive().equals(false)) {
-                cardResponses.add(converter.convertToResponseForGetAll(card));
+        if (column.getCards() != null) {
+            for (Card card : column1.getCards()) {
+                if (card.getIsArchive().equals(false)) {
+                    cardResponses.add(converter.convertToResponseForGetAll(card));
+                }
             }
         }
 
@@ -160,10 +163,15 @@ public class ColumnService {
             ColumnResponse response = new ColumnResponse(column);
             response.setCreator(userRepository.getCreatorResponse(column.getCreator().getId()));
             List<CardResponse> cardResponsesList = new ArrayList<>();
-            for (Card card : column.getCards()) {
-                if (card != null && card.getIsArchive().equals(false)) {
-                    cardResponsesList.add(converter.convertToResponseForGetAll(card));
-                    response.setColumnCards(cardResponsesList);
+            if (column.getCards().isEmpty()) {
+                List<CardResponse> list = new ArrayList<>();
+                response.setColumnCards(list);
+            } else {
+                for (Card card : column.getCards()) {
+                    if (card.getIsArchive().equals(false)) {
+                        cardResponsesList.add(converter.convertToResponseForGetAll(card));
+                        response.setColumnCards(cardResponsesList);
+                    }
                 }
             }
 
