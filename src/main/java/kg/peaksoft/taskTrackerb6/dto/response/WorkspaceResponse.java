@@ -8,11 +8,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 public class WorkspaceResponse {
 
     private Long id;
     private String name;
     private CreatorResponse lead;
-    private boolean action;
+    private Boolean isFavorite;
 }

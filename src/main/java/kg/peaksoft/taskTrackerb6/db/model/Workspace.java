@@ -26,7 +26,7 @@ public class Workspace {
 
     private Boolean isFavorite = false;
 
-    @ManyToOne(cascade = {DETACH, MERGE, REFRESH})
+    @ManyToOne(cascade = {DETACH, MERGE, REFRESH, PERSIST})
     private User lead;
 
     @OneToMany(cascade = {ALL}, mappedBy = "workspace")
@@ -38,11 +38,6 @@ public class Workspace {
     @OneToOne(cascade = ALL, mappedBy = "workspace")
     private Favorite favorite;
 
-
-    public Workspace(String name, Boolean isFavorite) {
-        this.name = name;
-        this.isFavorite = isFavorite;
-    }
 
     public Workspace(Long id, String name, Boolean isFavorite) {
         this.id = id;

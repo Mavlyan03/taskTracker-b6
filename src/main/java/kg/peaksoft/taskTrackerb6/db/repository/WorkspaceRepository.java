@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
-import java.util.List;
 
 @Repository
 public interface WorkspaceRepository extends JpaRepository<Workspace, Long> {
@@ -16,5 +15,4 @@ public interface WorkspaceRepository extends JpaRepository<Workspace, Long> {
     @Modifying
     @Query("delete from Workspace w where w.id = :id")
     void deleteWorkspaceById(Long id);
-
 }
