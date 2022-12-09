@@ -4,15 +4,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.peaksoft.taskTrackerb6.db.service.AdminService;
 import kg.peaksoft.taskTrackerb6.dto.request.AdminProfileRequest;
+import kg.peaksoft.taskTrackerb6.dto.request.UpdateProfileRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.ProfileResponse;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,7 +27,13 @@ public class ProfileApi {
 
     @Operation(summary = "Update profile", description = "Update profile by profile id")
     @PutMapping
-    public ProfileResponse updateAdminProfile(@RequestBody AdminProfileRequest request) {
+    public ProfileResponse updateAdminProfile(@RequestBody UpdateProfileRequest request) {
         return adminService.updateUserEntity(request);
+    }
+
+    @Operation(summary = "Get other profile", description = "Get other profile by id")
+    @GetMapping("/{id}")
+    public ProfileResponse getOtherMemberProfile(@PathVariable Long id) {
+        return adminService.getProfileById(id);
     }
 }
