@@ -21,6 +21,12 @@ public class LabelApi {
 
     private final LabelService labelService;
 
+    @Operation(summary = "Create label", description = "Create new label")
+    @PostMapping
+    public LabelResponse create(@RequestBody LabelRequest request) {
+        return labelService.create(request);
+    }
+
     @Operation(summary = "Update label", description = "Update label by id")
     @PutMapping
     public LabelResponse update(@RequestBody UpdateRequest request) {

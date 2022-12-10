@@ -8,6 +8,7 @@ import kg.peaksoft.taskTrackerb6.dto.request.LabelRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.UpdateRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.LabelResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
+import kg.peaksoft.taskTrackerb6.enums.LabelsColor;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -45,7 +47,6 @@ public class LabelService {
         return new SimpleResponse("Labels is deleted!", "DELETE");
     }
 
-
     public LabelResponse updateLabel(UpdateRequest update) {
         Label label = labelRepository.findById(update.getId()).orElseThrow(
                 () -> {
@@ -74,5 +75,54 @@ public class LabelService {
     public List<LabelResponse> getAllLabelsByCardId(Long cardId) {
         log.info("Get all label by card's id");
         return labelRepository.getAllLabelResponses(cardId);
+    }
+
+    public LabelResponse create(LabelRequest request) {
+        Card card = cardRepository.findById(request.getCardId()).orElseThrow(
+                () -> new NotFoundException("Card with id: " + request.getCardId() + " not found!")
+        );
+
+        Label label = new Label();
+        if (request.getColor().equals(LabelsColor.BLUE)) {
+            if (!request.getDescription().isBlank() || !request.getDescription().isEmpty()) {
+                label.setDescription(request.getDescription());
+            } else {
+                label.setDescription("CODE REVIEW");
+            }
+            label.setColor(LabelsColor.BLUE);
+
+        }
+
+        if (request.getColor().equals(LabelsColor.GREEN)) {
+            if (!request.getDescription().isBlank() || !request.getDescription().isEmpty()) {
+                label.setDescription(request.getDescription());
+            } else {
+                label.setDescription("DONE");
+            }
+            label.setColor(LabelsColor.GREEN);
+
+        }
+        if (request.getColor().equals(LabelsColor.RED)) {
+            if (!request.getDescription().isBlank() || !request.getDescription().isEmpty()) {
+            label.setDescription(request.getDescription());
+            } else {
+                label.setDescription("KICK BACK");
+            }
+            label.setColor(LabelsColor.RED);
+
+        }
+        if (request.getColor().equals(LabelsColor.YELLOW)) {
+            if (!request.getDescription().isBlank() || !request.getDescription().isEmpty()) {
+                label.setDescription("IN PROGRESS");
+            } else {
+                label.setColor(LabelsColor.YELLOW);
+            }
+            label.setDescription(request.getDescription());
+        }
+
+        label.setCard(card);
+        Label save = labelRepository.save(label);
+        card.addLabel(label);
+        return labelRepository.getLabelResponse(save.getId());
     }
 }

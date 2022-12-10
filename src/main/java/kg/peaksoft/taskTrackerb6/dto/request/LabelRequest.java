@@ -6,12 +6,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class LabelRequest {
 
+    private Long cardId;
     private String description;
     private LabelsColor color;
 }
