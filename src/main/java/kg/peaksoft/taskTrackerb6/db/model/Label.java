@@ -10,8 +10,6 @@ import lombok.Setter;
 import javax.persistence.*;
 import javax.persistence.Column;
 
-import java.util.Map;
-
 import static javax.persistence.CascadeType.*;
 
 @Entity

@@ -27,14 +27,14 @@ public class LabelApi {
         return labelService.create(request);
     }
 
-    @Operation(summary = "Update label", description = "Update label by id")
+    @Operation(summary = "Update label", description = "Update label")
     @PutMapping
     public LabelResponse update(@RequestBody UpdateRequest request) {
         return labelService.updateLabel(request);
     }
 
     @Operation(summary = "Get label", description = "Get label by id")
-    @GetMapping("/{id}")
+    @GetMapping("/label/{id}")
     public LabelResponse getById(@PathVariable Long id) {
         return labelService.getLabelById(id);
     }
@@ -49,6 +49,6 @@ public class LabelApi {
     @DeleteMapping("/{cardId}")
     public SimpleResponse deleteById(@PathVariable Long cardId,
                                      @RequestBody List<Long> labelIds) {
-        return labelService.willDeletedLabels(cardId, labelIds);
+        return labelService.deleteLabels(cardId, labelIds);
     }
 }

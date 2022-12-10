@@ -26,8 +26,8 @@ public class ColumnApi {
         return columnService.createColumn(request);
     }
 
-    @Operation(summary = "Update column", description = "Update column title by column id")
-    @PutMapping("/update/{id}")
+    @Operation(summary = "Update column", description = "Update column title")
+    @PutMapping("/update")
     public ColumnResponse updateColumn(@RequestBody UpdateRequest request) {
         return columnService.updateColumn(request);
     }

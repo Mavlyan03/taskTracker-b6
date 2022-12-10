@@ -28,7 +28,7 @@ public class LabelService {
     private final CardRepository cardRepository;
 
 
-    public SimpleResponse willDeletedLabels(Long cardId, List<Long> labelsIds) {
+    public SimpleResponse deleteLabels(Long cardId, List<Long> labelsIds) {
         Card card = cardRepository.findById(cardId).orElseThrow(
                 () -> new NotFoundException("Card with id: " + cardId + " not found!")
         );
@@ -90,7 +90,6 @@ public class LabelService {
                 label.setDescription("CODE REVIEW");
             }
             label.setColor(LabelsColor.BLUE);
-
         }
 
         if (request.getColor().equals(LabelsColor.GREEN)) {

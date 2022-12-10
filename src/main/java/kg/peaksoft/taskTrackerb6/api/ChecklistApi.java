@@ -28,7 +28,7 @@ public class ChecklistApi {
         return checklistService.createChecklist(id, request);
     }
 
-    @Operation(summary = "Update checklist title", description = "Update checklist title by id")
+    @Operation(summary = "Update checklist title", description = "Update checklist title")
     @PutMapping()
     public ChecklistResponse updateTitle(@RequestBody UpdateRequest request){
         return checklistService.updateTitle(request);

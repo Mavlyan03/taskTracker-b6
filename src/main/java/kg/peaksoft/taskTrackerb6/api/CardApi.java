@@ -34,7 +34,7 @@ public class CardApi {
         return cardService.getCard(id);
     }
 
-    @Operation(summary = "Update card title", description = "Update card title by id")
+    @Operation(summary = "Update card title", description = "Update card title")
     @PutMapping
     public CardInnerPageResponse updateCardTitle(@RequestBody UpdateRequest request) {
         return cardService.updateTitle(request);
