@@ -77,16 +77,12 @@ public class AdminService {
 
     public ProfileResponse updateUserEntity(UpdateProfileRequest request) {
         User authenticatedUser = getAuthenticatedUser();
-        User user = userRepository.findById(authenticatedUser.getId()).orElseThrow(
-                () -> new NotFoundException("User with id: " + authenticatedUser.getId() + " not found!")
-        );
-
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setEmail(request.getEmail());
-        user.setImage(authenticatedUser.getImage());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        User save = userRepository.save(user);
+        authenticatedUser.setFirstName(request.getFirstName());
+        authenticatedUser.setLastName(request.getLastName());
+        authenticatedUser.setEmail(authenticatedUser.getEmail());
+        authenticatedUser.setImage(request.getImage());
+        authenticatedUser.setPassword(passwordEncoder.encode(request.getPassword()));
+        User save = userRepository.save(authenticatedUser);
         log.info("User profile successfully updated!");
         return new ProfileResponse(
                 save.getId(),
