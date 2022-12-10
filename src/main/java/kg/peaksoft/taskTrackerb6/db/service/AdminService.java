@@ -4,7 +4,6 @@ import kg.peaksoft.taskTrackerb6.db.model.User;
 import kg.peaksoft.taskTrackerb6.db.model.UserWorkSpace;
 import kg.peaksoft.taskTrackerb6.db.model.Workspace;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
-import kg.peaksoft.taskTrackerb6.dto.request.AdminProfileRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.UpdateProfileRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.ProfileResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.ProjectResponse;
@@ -22,13 +21,13 @@ import java.util.List;
 
 @Slf4j
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class AdminService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
+    @Transactional
     public ProfileResponse getProfileById(Long id) {
         User user = userRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Profile with id: " + id + " not found!")
@@ -44,6 +43,7 @@ public class AdminService {
         );
     }
 
+    @Transactional
     public ProfileResponse getProfile() {
         User user = getAuthenticatedUser();
         return new ProfileResponse(
@@ -54,7 +54,6 @@ public class AdminService {
                 user.getImage(),
                 getAllProjectResponse());
     }
-
 
     private List<ProjectResponse> getAllProjectResponse() {
         User user = getAuthenticatedUser();
@@ -78,12 +77,16 @@ public class AdminService {
 
     public ProfileResponse updateUserEntity(UpdateProfileRequest request) {
         User authenticatedUser = getAuthenticatedUser();
-        authenticatedUser.setFirstName(request.getFirstName());
-        authenticatedUser.setLastName(request.getLastName());
-        authenticatedUser.setEmail(request.getEmail());
-        authenticatedUser.setImage(authenticatedUser.getImage());
-        authenticatedUser.setPassword(passwordEncoder.encode(request.getPassword()));
-        User save = userRepository.save(authenticatedUser);
+        User user = userRepository.findById(authenticatedUser.getId()).orElseThrow(
+                () -> new NotFoundException("User with id: " + authenticatedUser.getId() + " not found!")
+        );
+
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setEmail(request.getEmail());
+        user.setImage(authenticatedUser.getImage());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        User save = userRepository.save(user);
         log.info("User profile successfully updated!");
         return new ProfileResponse(
                 save.getId(),
