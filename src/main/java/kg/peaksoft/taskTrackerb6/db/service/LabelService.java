@@ -77,7 +77,7 @@ public class LabelService {
         return labelRepository.getAllLabelResponses(cardId);
     }
 
-    public LabelResponse create(LabelRequest request) {
+    public LabelResponse createLabel(LabelRequest request) {
         Card card = cardRepository.findById(request.getCardId()).orElseThrow(
                 () -> new NotFoundException("Card with id: " + request.getCardId() + " not found!")
         );
