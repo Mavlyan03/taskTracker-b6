@@ -4,8 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.peaksoft.taskTrackerb6.db.service.FavoriteService;
 import kg.peaksoft.taskTrackerb6.db.service.WorkspaceService;
-import kg.peaksoft.taskTrackerb6.dto.request.UpdateCardTitleRequest;
-import kg.peaksoft.taskTrackerb6.dto.request.UpdateWorkspaceName;
+import kg.peaksoft.taskTrackerb6.dto.request.UpdateRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.WorkspaceRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.*;
 import lombok.RequiredArgsConstructor;
@@ -71,7 +70,7 @@ public class WorkspaceApi {
 
     @Operation(summary = "Update workspace name", description = "Update workspace name by id")
     @PutMapping
-    public WorkspaceResponse update(@RequestBody UpdateWorkspaceName request) {
+    public WorkspaceResponse update(@RequestBody UpdateRequest request) {
         return service.updateWorkspaceName(request);
     }
 

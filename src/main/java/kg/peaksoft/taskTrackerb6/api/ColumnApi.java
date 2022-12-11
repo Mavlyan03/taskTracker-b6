@@ -4,15 +4,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.peaksoft.taskTrackerb6.db.service.ColumnService;
 import kg.peaksoft.taskTrackerb6.dto.request.ColumnRequest;
-import kg.peaksoft.taskTrackerb6.dto.request.UpdateColumnTitle;
+import kg.peaksoft.taskTrackerb6.dto.request.UpdateRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.AllBoardColumnsResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.ColumnResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,10 +26,10 @@ public class ColumnApi {
         return columnService.createColumn(request);
     }
 
-    @Operation(summary = "Update column", description = "Update column title by column id")
-    @PutMapping("/update/{id}")
-    public ColumnResponse updateColumn(@RequestBody UpdateColumnTitle columnTitle) {
-        return columnService.updateColumn(columnTitle);
+    @Operation(summary = "Update column", description = "Update column title")
+    @PutMapping
+    public ColumnResponse updateColumn(@RequestBody UpdateRequest request) {
+        return columnService.updateColumn(request);
     }
 
     @Operation(summary = "Delete column", description = "Delete column by column id")
@@ -60,8 +57,8 @@ public class ColumnApi {
     }
 
     @Operation(summary = "Delete all cards from column", description = "Delete all cards by column id")
-    @DeleteMapping("/delete-cards/{id}")
-    public SimpleResponse deleteAllCardsFromColumn(@PathVariable Long id) {
-        return columnService.deleteAllCardsOfColumn(id);
+    @DeleteMapping("/cards/{columnId}")
+    public SimpleResponse deleteAllCardsFromColumn(@PathVariable Long columnId) {
+        return columnService.deleteAllCardsOfColumn(columnId);
     }
 }

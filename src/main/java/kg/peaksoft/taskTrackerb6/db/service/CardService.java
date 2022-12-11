@@ -152,7 +152,7 @@ public class CardService {
     }
 
 
-    public CardInnerPageResponse updateTitle(UpdateCardTitleRequest request) {
+    public CardInnerPageResponse updateTitle(UpdateRequest request) {
         User user = getAuthenticateUser();
         Card card = cardRepository.findById(request.getId()).orElseThrow(
                 () -> {
