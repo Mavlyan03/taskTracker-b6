@@ -27,7 +27,7 @@ public class ColumnApi {
     }
 
     @Operation(summary = "Update column", description = "Update column title")
-    @PutMapping("/update")
+    @PutMapping
     public ColumnResponse updateColumn(@RequestBody UpdateRequest request) {
         return columnService.updateColumn(request);
     }
@@ -57,8 +57,8 @@ public class ColumnApi {
     }
 
     @Operation(summary = "Delete all cards from column", description = "Delete all cards by column id")
-    @DeleteMapping("/delete-cards/{id}")
-    public SimpleResponse deleteAllCardsFromColumn(@PathVariable Long id) {
-        return columnService.deleteAllCardsOfColumn(id);
+    @DeleteMapping("/cards/{columnId}")
+    public SimpleResponse deleteAllCardsFromColumn(@PathVariable Long columnId) {
+        return columnService.deleteAllCardsOfColumn(columnId);
     }
 }
