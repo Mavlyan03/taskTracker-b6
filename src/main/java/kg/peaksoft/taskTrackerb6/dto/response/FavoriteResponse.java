@@ -14,7 +14,7 @@ import lombok.Setter;
 public class FavoriteResponse {
 
     private Long id;
-    private Long boardOrWorkspaceID;
+    private Long workspaceOrBoardID;
     private String name;
     private String background;
     private String workspaceOrBoard;
@@ -23,7 +23,7 @@ public class FavoriteResponse {
 
     public FavoriteResponse(Workspace workspace) {
         this.id = workspace.getId();
-        this.boardOrWorkspaceID = workspace.getId();
+        this.workspaceOrBoardID = workspace.getId();
         this.name = workspace.getName();
         this.background = "The workspace can not have photo";
         this.workspaceOrBoard = "WORKSPACE";
@@ -32,7 +32,7 @@ public class FavoriteResponse {
 
     public FavoriteResponse(Board board) {
         this.id = board.getId();
-        this.boardOrWorkspaceID = board.getId();
+        this.workspaceOrBoardID = board.getId();
         this.name = board.getTitle();
         this.background = board.getBackground();
         this.workspaceOrBoard = "BOARD";
