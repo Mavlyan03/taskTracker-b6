@@ -162,7 +162,7 @@ public class UserService {
                 .build();
     }
 
-    public AuthResponse authWithGoogle(String tokenId) throws FirebaseAuthException {
+    public AuthResponse authWithGoogle(String tokenId, Boolean isAdmin) throws FirebaseAuthException {
         FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdToken(tokenId);
         User user;
         if (!repository.existsUserByEmail(firebaseToken.getEmail())) {
@@ -172,7 +172,12 @@ public class UserService {
             newUser.setLastName(name[1]);
             newUser.setEmail(firebaseToken.getEmail());
             newUser.setPassword(firebaseToken.getEmail());
-            newUser.setRole(Role.ADMIN);
+            if (isAdmin.equals(true)) {
+                newUser.setRole(Role.ADMIN);
+            } else if (isAdmin.equals(false)) {
+                newUser.setRole(Role.USER);
+            }
+
             user = repository.save(newUser);
         }
         user = repository.findUserByEmail(firebaseToken.getEmail()).orElseThrow(

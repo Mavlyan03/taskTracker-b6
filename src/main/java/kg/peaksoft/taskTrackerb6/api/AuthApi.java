@@ -53,8 +53,9 @@ public class AuthApi {
 
     @Operation(summary = "Google authentication", description = "Any user can authenticate with Google")
     @PostMapping("authenticate/google")
-    public AuthResponse authWithGoogleAccount(@RequestParam String token) throws FirebaseAuthException {
-        return userService.authWithGoogle(token);
+    public AuthResponse authWithGoogleAccount(@RequestParam String token,
+                                              @RequestParam Boolean isAdmin) throws FirebaseAuthException {
+        return userService.authWithGoogle(token, isAdmin);
     }
 
     @Operation(summary = "Search members", description = "Search members by workspace id")
