@@ -13,11 +13,27 @@ values (1, 'Esen', 'Niyazov',
         '$2a$12$LcHYIlKllzvoMqfQpLOdqeNedFtk.SMb.CeRUyX/n7lBIPx00rtgW', 'USER'),
 
        (4, 'Kamchybek', 'Kuzobaev', 'image', 'manasbekovich@gmail.com',
-        '$2a$12$sfgAFhShn3b2usZuwvvPV.9G.5dVhwWPC4XfwRz6FaGkpYoB6jAf.', 'ADMIN');
+        '$2a$12$sfgAFhShn3b2usZuwvvPV.9G.5dVhwWPC4XfwRz6FaGkpYoB6jAf.', 'ADMIN'),
+
+    (5, 'Tynychbek', 'Kursanali Uulu', 'image', 'tkursanaliuulu01@gmail.com', '$2a$12$BB1Vljti/nWN4SfGtnBW6.IYPf4x3ChoXKUI/tuLkdwwTOfM4AdTa', 'USER'),
+
+    (6, 'Daniel', 'Kamilzhanov', 'image', 'zadrot105217@gmail.com', '$2a$12$aAfKQF9kDMarOhLlbGN9ke5oBBIHUyklIUIedqp9eq1h.ffcDkCzu', 'ADMIN'),
+
+    (7, 'Nurmuhammad', 'Nurbekov', 'image', 'nur.nurbekov.01@gmail.com', 'USER'),
+
+    (8, 'Ulan', 'Mamatisaev', 'image', 'umamatisaev@gmail.com', '$2a$12$CYpA7sQefuc6j0BUUOU9AO6FlI7EzMBr8LPonf9YAKBfiDZDafqSG', 'USER'),
+
+    (9, 'Nurbek', 'Isakov', 'image', 'nurbisak@gmail.com', '$2a$12$uTJIUPEgw80zM4wS7KMF2.8g3NexM00C/l8Vg8qvK8O6h6t/v.MRK', 'USER'),
+
+    (10, 'Maksat', 'Omuraliev', 'image', 'bilalimus@gmail.com', 'bilalimus@gmail.com', 'USER'),
+
+    (11, 'Tynchtyk', 'Akmatov', 'image', 'tynchtyk7@mail.ru', '$2a$12$30Zbq/rKLDFuqhB8JJauVu0RGaWqK4.RDF.l2Q5R.13fLRm3rmWo2', 'USER');
+
 
 insert into workspaces (id, name, is_favorite, lead_id)
-values (1, 'Workspace Name', false, 1),
-       (2, 'Task Tracker', false, 2);
+values (1, 'Workspace', false, 1),
+       (2, 'Task Tracker', false, 2),
+       (3, 'Bilingual', false, 4);
 
 insert into boards(id, title, background, is_archive, is_favorite, workspace_id)
 values (1, 'First Board',
