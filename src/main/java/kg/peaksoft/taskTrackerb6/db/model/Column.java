@@ -19,7 +19,7 @@ public class Column {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "column_gen")
-    @SequenceGenerator(name = "column_gen", sequenceName = "column_seq", allocationSize = 1, initialValue = 2)
+    @SequenceGenerator(name = "column_gen", sequenceName = "column_seq", allocationSize = 1, initialValue = 3)
     private Long id;
 
     private String title;
