@@ -46,6 +46,7 @@ public class CardService {
         );
     }
 
+
     public List<CardResponse> moveCard(Long cardId, Long columnId) {
         User user = getAuthenticateUser();
         Card card = cardRepository.findById(cardId).orElseThrow(
