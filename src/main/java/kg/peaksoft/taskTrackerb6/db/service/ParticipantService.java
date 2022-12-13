@@ -50,6 +50,7 @@ public class ParticipantService {
 
     public ParticipantResponse mapToResponse(User user) {
         ParticipantResponse participantResponse = new ParticipantResponse();
+        participantResponse.setId(user.getId());
         participantResponse.setFirstName(user.getFirstName());
         participantResponse.setLastName(user.getLastName());
         participantResponse.setEmail(user.getEmail());
