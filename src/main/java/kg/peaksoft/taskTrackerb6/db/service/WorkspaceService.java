@@ -14,6 +14,7 @@ import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.Authentication;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,6 +70,7 @@ public class WorkspaceService {
         user.addUserWorkSpace(userWorkSpace);
         workspace.addUserWorkSpace(userWorkSpace);
         workspace.setLead(user);
+        workspace.setCreatedAt(LocalDateTime.now());
         Workspace savedWorkspace = workspaceRepository.save(workspace);
         userWorkSpaceRepository.save(userWorkSpace);
         log.info("Workspace successfully created");
@@ -358,6 +361,7 @@ public class WorkspaceService {
         }
 
         workspace.setName(request.getNewTitle());
+        workspace.setCreatedAt(workspace.getCreatedAt());
         Workspace saved = workspaceRepository.save(workspace);
         return new WorkspaceResponse(
                 saved.getId(),

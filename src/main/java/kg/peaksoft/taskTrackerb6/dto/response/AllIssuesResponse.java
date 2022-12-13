@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -16,7 +17,7 @@ import java.util.List;
 public class AllIssuesResponse {
 
     private Long id;
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
     private String period;
     private Long creatorId;
     private String creatorFirstName;

@@ -1,6 +1,5 @@
 package kg.peaksoft.taskTrackerb6.db.model;
 
-import kg.peaksoft.taskTrackerb6.dto.response.CreatorResponse;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,7 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.persistence.Column;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +33,7 @@ public class Card {
 
     private Boolean isArchive = false;
 
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
     private User creator;
@@ -67,7 +66,7 @@ public class Card {
     private Basket basket;
 
 
-    public Card(String title, String description, Boolean isArchive, LocalDate createdAt, User creator) {
+    public Card(String title, String description, Boolean isArchive, LocalDateTime createdAt, User creator) {
         this.title = title;
         this.description = description;
         this.isArchive = isArchive;

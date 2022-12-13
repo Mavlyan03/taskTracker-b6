@@ -26,4 +26,7 @@ public interface CardRepository extends JpaRepository<Card, Long> {
 
     @Query("select c from Card c where c.column.board.workspace.id = :id")
     List<Card> findAllByWorkspaceId(Long id);
+
+    @Query("select c from Card c where c.column.id = :columnId order by c.createdAt desc")
+    List<Card> cards(Long columnId);
 }
