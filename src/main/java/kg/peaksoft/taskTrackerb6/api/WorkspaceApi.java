@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.mail.MessagingException;
 import java.util.List;
-import java.util.Queue;
 
 @RestController
 @RequestMapping("api/workspace")
