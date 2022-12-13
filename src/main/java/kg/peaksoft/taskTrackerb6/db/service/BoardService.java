@@ -16,7 +16,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -189,48 +188,6 @@ public class BoardService {
                 workspace.getId()
         );
     }
-
-//    private ArchiveBoardResponse convertToArchiveBoardResponse(Board board) {
-//        return new ArchiveBoardResponse(
-//                board.getId(),
-//                board.getTitle(),
-//                board.getBackground(),
-//                board.getIsArchive()
-//        );
-//    }
-//
-//    public List<ArchiveBoardResponse> getAllArchiveBoardsList() {
-//        List<ArchiveBoardResponse> archiveBoards = new ArrayList<>();
-//        List<Board> boards = boardRepository.findAllByIsArchive();
-//        for (Board board : boards) {
-//            archiveBoards.add(convertToArchiveBoardResponse(board));
-//        }
-//
-//        log.info("Get all archived boards");
-//        return archiveBoards;
-//    }
-//
-//    public BoardResponse sendToArchive(Long id) {
-//        Board board = boardRepository.findById(id).orElseThrow(
-//                () -> {
-//                    log.error("Board with id: {} not found", id);
-//                    throw new NotFoundException(String.format("Board with id %s not found", id));
-//                }
-//        );
-//
-//        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(
-//                () -> new NotFoundException("Workspace with id: " + board.getWorkspace().getId() + " not found!")
-//        );
-//
-//        board.setIsArchive(!board.getIsArchive());
-//        Board board1 = boardRepository.save(board);
-//        return new BoardResponse(board1.getId(),
-//                board1.getTitle(),
-//                board1.getIsFavorite(),
-//                board1.getBackground(),
-//                workspace.getId()
-//        );
-//    }
 
     public List<BoardResponse> getAllBoardsByWorkspaceId(Long id) {
         User user = getAuthenticateUser();

@@ -1,6 +1,5 @@
 package kg.peaksoft.taskTrackerb6.db.model;
 
-import kg.peaksoft.taskTrackerb6.dto.response.CreatorResponse;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,7 +7,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.persistence.Column;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
