@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseToken;
 import kg.peaksoft.taskTrackerb6.config.security.JWTUtil;
 import kg.peaksoft.taskTrackerb6.db.model.User;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
+import kg.peaksoft.taskTrackerb6.dto.request.AuthWithGoogleRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.ResetPasswordRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SignInRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SignUpRequest;
@@ -162,8 +163,8 @@ public class UserService {
                 .build();
     }
 
-    public AuthResponse authWithGoogle(String tokenId, Boolean isAdmin) throws FirebaseAuthException {
-        FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdToken(tokenId);
+    public AuthResponse authWithGoogle(AuthWithGoogleRequest request) throws FirebaseAuthException {
+        FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdToken(request.getToken());
         User user;
         if (!repository.existsUserByEmail(firebaseToken.getEmail())) {
             User newUser = new User();
@@ -172,13 +173,16 @@ public class UserService {
             newUser.setLastName(name[1]);
             newUser.setEmail(firebaseToken.getEmail());
             newUser.setPassword(firebaseToken.getEmail());
-            if (isAdmin.equals(true)) {
-                newUser.setRole(Role.ADMIN);
-            } else if (isAdmin.equals(false)) {
-                newUser.setRole(Role.USER);
+            if (request.getIsAdmin() != null) {
+                if (request.getIsAdmin().equals(true)) {
+                    newUser.setRole(Role.ADMIN);
+                } else if (request.getIsAdmin().equals(false)) {
+                    newUser.setRole(Role.USER);
+                }
             }
-
             user = repository.save(newUser);
+
+            if (request.getWorkspaceId() != null || request.getWorkspaceId().i)
         }
 
         user = repository.findUserByEmail(firebaseToken.getEmail()).orElseThrow(
