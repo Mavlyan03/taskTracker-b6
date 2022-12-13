@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +27,8 @@ public class Workspace {
     private String name;
 
     private Boolean isFavorite = false;
+
+    private LocalDateTime createdAt;
 
     @ManyToOne(cascade = {DETACH, MERGE, REFRESH, PERSIST})
     private User lead;

@@ -13,8 +13,8 @@ import java.util.List;
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
-    @Query("select b from Board b where b.isArchive = true")
-    List<Board> findAllByIsArchive();
+    @Query("select b from Board b where b.workspace.id = :id order by b.createdAt")
+    List<Board> getAll(Long id);
 
     @Transactional
     @Modifying

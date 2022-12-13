@@ -36,24 +36,24 @@ values (1, 'Esen', 'Niyazov',
         '$2a$12$30Zbq/rKLDFuqhB8JJauVu0RGaWqK4.RDF.l2Q5R.13fLRm3rmWo2', 'USER');
 
 
-insert into workspaces (id, name, is_favorite, lead_id)
-values (1, 'Workspace', false, 1),
-       (2, 'Task Tracker', false, 2),
-       (3, 'Bilingual', false, 4);
+insert into workspaces (id, name, is_favorite, created_at, lead_id)
+values (1, 'Workspace', false, '2022-10-10 11:27:29.563870', 1),
+       (2, 'Task Tracker', false, '2022-11-11 11:27:29.563870', 2),
+       (3, 'Bilingual', false, '2022-11-12 11:27:29.563870', 4);
 
-insert into boards(id, title, background, is_archive, is_favorite, workspace_id)
+insert into boards(id, title, background, is_favorite, created_at, workspace_id)
 values (1, 'First Board',
         'https://burst.shopifycdn.com/photos/city-lights-through-rain-window.jpg?width=1200&format=pjpg&exif=1&iptc=1',
-        false, false, 1),
-       (2, 'Backend', 'background', false, false, 2);
+        false, '2022-10-10 11:29:29.563870', 1),
+       (2, 'Backend', 'background', false, '2022-11-11 11:29:29.563870', 2);
 
-insert into columns (id, title, is_archive, board_id, creator_id)
-values (1, 'First Column', false, 1, 1),
-       (2, 'Second Column', false, 2, 2);
+insert into columns (id, title, is_archive, created_at, board_id, creator_id)
+values (1, 'First Column', false, '2022-10-10 11:30:29.563870', 1, 1),
+       (2, 'Second Column', false, '2022-11-11 11:30:29.563870', 2, 2);
 
 insert into cards (id, title, description, is_archive, created_at, creator_id, moved_user_id, column_id)
-values (1, 'First Card', 'First Description', false, '2022-10-31', 1, 1, 1),
-       (2, 'Second Card', 'Description', false, '2022-11-10', 2, 2, 2);
+values (1, 'First Card', 'First Description', false, '2022-10-31 11:35:29.563870', 1, 1, 1),
+       (2, 'Second Card', 'Description', false, '2022-11-10 11:35:29.563870', 2, 2, 2);
 
 insert into checklists (id, title, count, card_id)
 values (1, 'First Checklist', 1, 1);
@@ -65,12 +65,12 @@ insert into times (id, hour, minute)
 values (1, 10, 20),
        (2, 12, 20);
 
-insert into estimations (id, start_date, start_time_id, due_date, deadline_time_id, reminder, text, card_id, user_id,
-                         sub_task_id)
+insert into estimations (id, start_date, start_time_id, due_date, deadline_time_id, reminder,
+                         text, card_id, user_id, sub_task_id)
 values (1, '2022-02-01', 1, '2022-12-12', 2, 5, 'First Text', 1, 1, 1);
 
-insert into notifications (id, message, created_at, notification_type, from_user_id, user_id, card_id, column_id,
-                           board_id)
+insert into notifications (id, message, created_at, notification_type, from_user_id,
+                           user_id, card_id, column_id, board_id)
 values (1, 'First Text', '2022-11-21T16:28', 'ASSIGN', 1, 2, 1, 1, 1);
 
 insert into labels (id, color, description, card_id)

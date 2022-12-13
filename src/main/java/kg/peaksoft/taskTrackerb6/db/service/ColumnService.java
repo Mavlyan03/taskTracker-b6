@@ -16,6 +16,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,6 +67,7 @@ public class ColumnService {
         board.addColumn(column);
         column.setBoard(board);
         column.setCreator(user);
+        column.setCreatedAt(LocalDateTime.now());
         user.addColumn(column);
         Column column1 = columnRepository.save(column);
         log.info("Column successfully created");
@@ -88,6 +91,7 @@ public class ColumnService {
         }
 
         column.setTitle(columnTitle.getNewTitle());
+        column.setCreatedAt(column.getCreatedAt());
         Column column1 = columnRepository.save(column);
         log.info("Column title with id: {} successfully updated", columnTitle.getId());
         ColumnResponse response = new ColumnResponse(column1);
@@ -156,7 +160,7 @@ public class ColumnService {
                 () -> new NotFoundException("Board with id: " + id + " not found!")
         );
 
-        List<Column> columns = board.getColumns();
+        List<Column> columns = columnRepository.findAllColumnsByBoardId(board.getId());
         AllBoardColumnsResponse boardColumnsResponse = new AllBoardColumnsResponse();
         List<ColumnResponse> columnResponses = new ArrayList<>();
         for (Column column : columns) {

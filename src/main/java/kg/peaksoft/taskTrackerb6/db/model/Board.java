@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,11 +29,11 @@ public class Board {
 
     private String title;
 
-    private Boolean isArchive = false;
-
     private Boolean isFavorite = false;
 
     private String background;
+
+    private LocalDateTime createdAt;
 
     public Board(BoardRequest boardRequest) {
         this.title = boardRequest.getTitle();
