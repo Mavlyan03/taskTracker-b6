@@ -8,7 +8,11 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import kg.peaksoft.taskTrackerb6.config.security.JWTUtil;
 import kg.peaksoft.taskTrackerb6.db.model.User;
+import kg.peaksoft.taskTrackerb6.db.model.UserWorkSpace;
+import kg.peaksoft.taskTrackerb6.db.model.Workspace;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
+import kg.peaksoft.taskTrackerb6.db.repository.UserWorkSpaceRepository;
+import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
 import kg.peaksoft.taskTrackerb6.dto.request.AuthWithGoogleRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.ResetPasswordRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SignInRequest;
@@ -44,6 +48,8 @@ public class UserService {
     private final JWTUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
+    private final WorkspaceRepository workspaceRepository;
+    private final UserWorkSpaceRepository userWorkSpaceRepository;
 
     public AuthResponse registration(SignUpRequest signUpRequest) {
 
@@ -180,9 +186,17 @@ public class UserService {
                     newUser.setRole(Role.USER);
                 }
             }
+
             user = repository.save(newUser);
 
-            if (request.getWorkspaceId() != null || request.getWorkspaceId().i)
+            if (request.getWorkspaceId() != null) {
+                Workspace workspace = workspaceRepository.findById(request.getWorkspaceId()).orElseThrow(
+                        () -> new NotFoundException("Workspace with id: " + request.getWorkspaceId() + " not found!")
+                );
+
+                UserWorkSpace userWorkSpace = new UserWorkSpace(user, workspace, Role.USER);
+                userWorkSpaceRepository.save(userWorkSpace);
+            }
         }
 
         user = repository.findUserByEmail(firebaseToken.getEmail()).orElseThrow(
@@ -201,4 +215,4 @@ public class UserService {
                 user.getRole(),
                 token);
     }
-   }
+}
