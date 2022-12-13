@@ -180,6 +180,7 @@ public class UserService {
 
             user = repository.save(newUser);
         }
+
         user = repository.findUserByEmail(firebaseToken.getEmail()).orElseThrow(
                 () -> {
                     log.error("User with this email not found!");
