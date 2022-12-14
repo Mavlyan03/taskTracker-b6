@@ -72,5 +72,4 @@ public class MemberService {
         cardRepository.save(card);
         return new MemberResponse(user);
     }
-
 }
