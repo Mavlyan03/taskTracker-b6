@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +50,7 @@ public class BoardService {
 
         workspace.addBoard(board);
         board.setWorkspace(workspace);
+        board.setCreatedAt(LocalDateTime.now());
         boardRepository.save(board);
         log.info("Board successfully created");
         return new BoardResponse(board.getId(),
@@ -154,6 +156,7 @@ public class BoardService {
         );
 
         board.setTitle(boardRequest.getTitle());
+        board.setCreatedAt(board.getCreatedAt());
         boardRepository.save(board);
         log.info("Board title with id: {} successfully updated!", id);
         return new BoardResponse(
@@ -186,48 +189,6 @@ public class BoardService {
         );
     }
 
-    private ArchiveBoardResponse convertToArchiveBoardResponse(Board board) {
-        return new ArchiveBoardResponse(
-                board.getId(),
-                board.getTitle(),
-                board.getBackground(),
-                board.getIsArchive()
-        );
-    }
-
-    public List<ArchiveBoardResponse> getAllArchiveBoardsList() {
-        List<ArchiveBoardResponse> archiveBoards = new ArrayList<>();
-        List<Board> boards = boardRepository.findAllByIsArchive();
-        for (Board board : boards) {
-            archiveBoards.add(convertToArchiveBoardResponse(board));
-        }
-
-        log.info("Get all archived boards");
-        return archiveBoards;
-    }
-
-    public BoardResponse sendToArchive(Long id) {
-        Board board = boardRepository.findById(id).orElseThrow(
-                () -> {
-                    log.error("Board with id: {} not found", id);
-                    throw new NotFoundException(String.format("Board with id %s not found", id));
-                }
-        );
-
-        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(
-                () -> new NotFoundException("Workspace with id: " + board.getWorkspace().getId() + " not found!")
-        );
-
-        board.setIsArchive(!board.getIsArchive());
-        Board board1 = boardRepository.save(board);
-        return new BoardResponse(board1.getId(),
-                board1.getTitle(),
-                board1.getIsFavorite(),
-                board1.getBackground(),
-                workspace.getId()
-        );
-    }
-
     public List<BoardResponse> getAllBoardsByWorkspaceId(Long id) {
         User user = getAuthenticateUser();
         Workspace workspace = workspaceRepository.findById(id).orElseThrow(
@@ -235,7 +196,7 @@ public class BoardService {
         );
 
         List<Favorite> favorites = user.getFavorites();
-        List<Board> workspaceBoards = workspace.getBoards();
+        List<Board> workspaceBoards = boardRepository.getAll(workspace.getId());
         List<Board> userFavoriteBoards = new ArrayList<>();
         List<BoardResponse> boardResponses = new ArrayList<>();
         for (Favorite fav : favorites) {

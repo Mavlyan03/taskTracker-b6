@@ -15,7 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -143,7 +142,8 @@ public class CardService {
         );
 
         List<CardResponse> getAllCards = new ArrayList<>();
-        for (Card card : column.getCards()) {
+        List<Card> cards = cardRepository.cards(column.getId());
+        for (Card card : cards) {
             if (card.getIsArchive().equals(false)) {
                 getAllCards.add(converter.convertToResponseForGetAll(card));
             }
@@ -167,6 +167,7 @@ public class CardService {
         }
 
         card.setTitle(request.getNewTitle());
+        card.setCreatedAt(card.getCreatedAt());
         log.info("Card with id:{} successfully updated!", card.getId());
         return converter.convertToCardInnerPageResponse(card);
     }
@@ -181,7 +182,7 @@ public class CardService {
         Card card = new Card(request.getTitle(), request.getDescription(), user);
         card.setColumn(column);
         column.addCard(card);
-        card.setCreatedAt(LocalDate.now());
+        card.setCreatedAt(LocalDateTime.now());
         user.addCard(card);
         Card save = cardRepository.save(card);
         return converter.convertToCardInnerPageResponse(save);
