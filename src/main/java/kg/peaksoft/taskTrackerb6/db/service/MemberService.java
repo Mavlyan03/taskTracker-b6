@@ -27,7 +27,7 @@ public class MemberService {
 
     public List<MemberResponse> searchByEmailOrName(Long id, String emailOrName) {
         Workspace workspace = workspaceRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Workspace with this ID is not found")
+                () -> new NotFoundException("Workspace with id: " + id + " not found!")
         );
 
         return userRepository.searchByEmailOrName(emailOrName,workspace.getId());
@@ -35,15 +35,15 @@ public class MemberService {
 
     public AllMemberResponse getAllMembers(Long id) {
         Card card = cardRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Card with this ID is not found")
+                () -> new NotFoundException("Card with id: " + id + " not found!")
         );
 
         Board board = boardRepository.findById(card.getColumn().getBoard().getId()).orElseThrow(
-                () -> new NotFoundException("Board with this ID is not found")
+                () -> new NotFoundException("Board with id: " + card.getColumn().getBoard().getId() + " not found!")
         );
 
         Workspace workspace = workspaceRepository.findById(card.getColumn().getBoard().getWorkspace().getId()).orElseThrow(
-                () -> new NotFoundException("Workspace With this ID is not found")
+                () -> new NotFoundException("Workspace with id: " + card.getColumn().getBoard().getWorkspace().getId() + " not found!")
         );
 
         AllMemberResponse members = new AllMemberResponse();
@@ -54,7 +54,9 @@ public class MemberService {
         }
         for(UserWorkSpace workSpace : workspace.getUserWorkSpaces()) {
             User user = userRepository.findUserByWorkSpaceId(workSpace.getId()).orElseThrow(
-                    () -> new NotFoundException("User with this ID is not found"));
+                    () -> new NotFoundException("User with id: " + workSpace.getId() + " not found!")
+            );
+
             workspaceMembers.add(new MemberResponse(user));
         }
         members.setBoardMembers(boardMembers);
@@ -65,9 +67,13 @@ public class MemberService {
 
     public MemberResponse assignMemberToCard(Long memberId, Long cardId) {
         User user = userRepository.findById(memberId).orElseThrow(
-                () -> new NotFoundException("User with this ID is not found"));
+                () -> new NotFoundException("User with id: " + memberId + " not found!")
+        );
+
         Card card = cardRepository.findById(cardId).orElseThrow(
-                () -> new NotFoundException("Card with this ID is not found"));
+                () -> new NotFoundException("Card with id: " + cardId + " not found!")
+        );
+
         card.addMember(user);
         cardRepository.save(card);
         return new MemberResponse(user);
