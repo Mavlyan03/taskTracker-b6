@@ -177,7 +177,8 @@ public class SubTaskService {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
-                user.getImage()
+                user.getImage(),
+                user.getRole()
         );
     }
 
@@ -191,5 +192,4 @@ public class SubTaskService {
                 }
         );
     }
-
 }
