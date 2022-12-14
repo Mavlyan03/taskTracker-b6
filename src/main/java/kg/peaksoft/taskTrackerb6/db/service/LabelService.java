@@ -9,6 +9,7 @@ import kg.peaksoft.taskTrackerb6.dto.request.UpdateRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.LabelResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.enums.LabelsColor;
+import kg.peaksoft.taskTrackerb6.exceptions.BadRequestException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,23 +28,24 @@ public class LabelService {
     private final LabelRepository labelRepository;
     private final CardRepository cardRepository;
 
+    public SimpleResponse saveLabel(LabelRequest labelRequest) {
+        Label label = new Label(labelRequest.getDescription(), labelRequest.getColor());
+        labelRepository.save(label);
+        return new SimpleResponse("New label saved!", "OK");
+    }
 
-    public SimpleResponse deleteLabels(Long cardId, List<Long> labelsIds) {
+    public SimpleResponse deleteLabel(Long cardId, Long labelId) {
         Card card = cardRepository.findById(cardId).orElseThrow(
                 () -> new NotFoundException("Card with id: " + cardId + " not found!")
         );
 
-        List<Label> labels = card.getLabels();
-        if (labels != null) {
-            for (Long id : labelsIds) {
-                for (Label label : labels) {
-                    if (label.getId().equals(id)) {
-                        labelRepository.deleteLabel(label.getId());
-                    }
-                }
-            }
-        }
+        Label label = labelRepository.findById(labelId).orElseThrow(
+                () -> new NotFoundException("Label with id: " + labelId + " not found!")
+        );
 
+        if (!card.getLabels().contains(label)) {
+            card.getLabels().remove(label);
+        }
         return new SimpleResponse("Labels is deleted!", "DELETE");
     }
 
@@ -54,7 +56,7 @@ public class LabelService {
                     throw new NotFoundException(String.format("Label with id %s not found", update.getId()));
                 }
         );
-
+        label.setColor(update.getColor());
         label.setDescription(update.getNewTitle());
         labelRepository.save(label);
         log.info("Label successfully created");
@@ -68,7 +70,6 @@ public class LabelService {
                     throw new NotFoundException("Label with id: " + id + " not found!");
                 }
         );
-
         return labelRepository.getLabelResponse(label.getId());
     }
 
@@ -77,51 +78,19 @@ public class LabelService {
         return labelRepository.getAllLabelResponses(cardId);
     }
 
-    public LabelResponse createLabel(LabelRequest request) {
-        Card card = cardRepository.findById(request.getCardId()).orElseThrow(
+    public SimpleResponse addLabelToCard(AddLabelRequest request) {
+        Card card = cardRepository.findById(request.getLabelId()).orElseThrow(
                 () -> new NotFoundException("Card with id: " + request.getCardId() + " not found!")
         );
 
-        Label label = new Label();
-        if (request.getColor().equals(LabelsColor.BLUE)) {
-            if (!request.getDescription().isBlank() || !request.getDescription().isEmpty()) {
-                label.setDescription(request.getDescription());
-            } else {
-                label.setDescription("CODE REVIEW");
-            }
-            label.setColor(LabelsColor.BLUE);
+        Label label = labelRepository.findById(request.getLabelId()).orElseThrow(
+                () -> new NotFoundException("Label with id: " + request.getLabelId() + " not found!")
+        );
+        if (!card.getLabels().contains(label)) {
+            card.addLabel(label);
+            return new SimpleResponse("Label added to this card", "OK");
+        } else {
+            throw new BadRequestException("Label already added to card");
         }
-
-        if (request.getColor().equals(LabelsColor.GREEN)) {
-            if (!request.getDescription().isBlank() || !request.getDescription().isEmpty()) {
-                label.setDescription(request.getDescription());
-            } else {
-                label.setDescription("DONE");
-            }
-            label.setColor(LabelsColor.GREEN);
-
-        }
-        if (request.getColor().equals(LabelsColor.RED)) {
-            if (!request.getDescription().isBlank() || !request.getDescription().isEmpty()) {
-            label.setDescription(request.getDescription());
-            } else {
-                label.setDescription("KICK BACK");
-            }
-            label.setColor(LabelsColor.RED);
-
-        }
-        if (request.getColor().equals(LabelsColor.YELLOW)) {
-            if (!request.getDescription().isBlank() || !request.getDescription().isEmpty()) {
-                label.setDescription("IN PROGRESS");
-            } else {
-                label.setColor(LabelsColor.YELLOW);
-            }
-            label.setDescription(request.getDescription());
-        }
-
-        label.setCard(card);
-        Label save = labelRepository.save(label);
-        card.addLabel(label);
-        return labelRepository.getLabelResponse(save.getId());
     }
 }

@@ -9,4 +9,5 @@ public class UpdateRequest {
 
     private Long id;
     private String newTitle;
+    private String color;
 }
