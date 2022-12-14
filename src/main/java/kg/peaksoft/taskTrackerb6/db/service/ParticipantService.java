@@ -47,16 +47,16 @@ public class ParticipantService {
                 }
         );
     }
-
-    public ParticipantResponse mapToResponse(User user) {
-        ParticipantResponse participantResponse = new ParticipantResponse();
-        participantResponse.setId(user.getId());
-        participantResponse.setFirstName(user.getFirstName());
-        participantResponse.setLastName(user.getLastName());
-        participantResponse.setEmail(user.getEmail());
-        participantResponse.setRole(user.getRole());
-        return participantResponse;
-    }
+//
+//    public ParticipantResponse mapToResponse(User user) {
+//        ParticipantResponse participantResponse = new ParticipantResponse();
+//        participantResponse.setId(user.getId());
+//        participantResponse.setFirstName(user.getFirstName());
+//        participantResponse.setLastName(user.getLastName());
+//        participantResponse.setEmail(user.getEmail());
+//        participantResponse.setRole(user.getRole());
+//        return participantResponse;
+//    }
 
     public SimpleResponse deleteParticipantFromWorkspace(Long userId, Long workspaceId) {
         User killer = getAuthenticateUser();
@@ -117,9 +117,13 @@ public class ParticipantService {
     }
 
     public List<ParticipantResponse> getAllParticipantFromBoard(Long boardId) {
+        Board board = boardRepository.findById(boardId).orElseThrow(
+                () -> new NotFoundException("Board with id: " + boardId + " not found!")
+        );
+
         List<ParticipantResponse> participantResponse = new ArrayList<>();
-        for (User user1 : userRepository.getAllUserFromBoardId(boardId)) {
-            participantResponse.add(mapToResponse(user1));
+        for (User user1 : board.getMembers()) {
+            participantResponse.add(userRepository.getParticipant(user1.getId()));
         }
 
         log.info("Get all participant from board");
