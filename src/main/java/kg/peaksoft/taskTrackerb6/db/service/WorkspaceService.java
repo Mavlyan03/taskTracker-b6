@@ -422,8 +422,7 @@ public class WorkspaceService {
                 );
             }
         }
-
-
+        
         return new WorkspaceInnerPageResponse(
                 saved.getId(),
                 saved.getName(),
