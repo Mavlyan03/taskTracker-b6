@@ -135,7 +135,8 @@ public class CardConverter {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
-                user.getImage()
+                user.getImage(),
+                user.getRole()
         );
     }
 
@@ -154,5 +155,4 @@ public class CardConverter {
     private MyTimeClassResponse convertStartTimeToResponse(MyTimeClass timeClass) {
         return new MyTimeClassResponse(timeClass.getId(), String.format("%02d:%02d", timeClass.getHour(), timeClass.getMinute()));
     }
-
 }
