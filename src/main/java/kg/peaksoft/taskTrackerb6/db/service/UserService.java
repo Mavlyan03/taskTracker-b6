@@ -173,30 +173,21 @@ public class UserService {
         FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdToken(request.getToken());
         User user;
         if (!repository.existsUserByEmail(firebaseToken.getEmail())) {
-            User newUser = new User();
             String[] name = firebaseToken.getName().split(" ");
-            newUser.setFirstName(name[0]);
-            newUser.setLastName(name[1]);
-            newUser.setEmail(firebaseToken.getEmail());
-            newUser.setPassword(firebaseToken.getEmail());
+            user = new User();
+            user.setFirstName(name[0]);
+            user.setLastName(name[1]);
+            user.setEmail(firebaseToken.getEmail());
+            user.setPassword(firebaseToken.getEmail());
             if (request.getIsAdmin() != null) {
                 if (request.getIsAdmin().equals(true)) {
-                    newUser.setRole(Role.ADMIN);
+                    user.setRole(Role.ADMIN);
                 } else if (request.getIsAdmin().equals(false)) {
-                    newUser.setRole(Role.USER);
+                    user.setRole(Role.USER);
                 }
             }
 
-            user = repository.save(newUser);
-
-            if (request.getWorkspaceId() != null) {
-                Workspace workspace = workspaceRepository.findById(request.getWorkspaceId()).orElseThrow(
-                        () -> new NotFoundException("Workspace with id: " + request.getWorkspaceId() + " not found!")
-                );
-
-                UserWorkSpace userWorkSpace = new UserWorkSpace(user, workspace, Role.USER);
-                userWorkSpaceRepository.save(userWorkSpace);
-            }
+            user = repository.save(user);
         }
 
         user = repository.findUserByEmail(firebaseToken.getEmail()).orElseThrow(
@@ -205,6 +196,15 @@ public class UserService {
                     throw new NotFoundException("User with this email not found!");
                 }
         );
+
+        if (request.getWorkspaceId() != null) {
+            Workspace workspace = workspaceRepository.findById(request.getWorkspaceId()).orElseThrow(
+                    () -> new NotFoundException("Workspace with id: " + request.getWorkspaceId() + " not found!")
+            );
+
+            UserWorkSpace userWorkSpace = new UserWorkSpace(user, workspace, Role.USER);
+            userWorkSpaceRepository.save(userWorkSpace);
+        }
 
         String token = jwtUtil.generateToken(user.getEmail());
         return new AuthResponse(
