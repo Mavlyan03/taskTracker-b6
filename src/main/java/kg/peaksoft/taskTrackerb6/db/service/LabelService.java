@@ -44,20 +44,21 @@ public class LabelService {
         if (!card.getLabels().contains(label)) {
             card.getLabels().remove(label);
         }
-        return new SimpleResponse("Labels is deleted!", "DELETE");
+        return new SimpleResponse("Label successfully deleted!", "DELETE");
     }
 
     public LabelResponse updateLabel(UpdateRequest update) {
         Label label = labelRepository.findById(update.getId()).orElseThrow(
                 () -> {
                     log.error("Label with id: {} not found!", update.getId());
-                    throw new NotFoundException(String.format("Label with id %s not found", update.getId()));
+                    throw new NotFoundException(String.format("Label with id %s not found!", update.getId()));
                 }
         );
+
         label.setColor(update.getColor());
         label.setDescription(update.getNewTitle());
         labelRepository.save(label);
-        log.info("Label successfully created");
+        log.info("Label successfully created!");
         return labelRepository.getLabelResponse(label.getId());
     }
 
@@ -72,7 +73,7 @@ public class LabelService {
     }
 
     public List<LabelResponse> getAllLabelsByCardId(Long cardId) {
-        log.info("Get all label by card's id");
+        log.info("Get all labels by card's id");
         return labelRepository.getAllLabelResponses(cardId);
     }
 
@@ -86,14 +87,14 @@ public class LabelService {
         );
         if (!card.getLabels().contains(label)) {
             card.addLabel(label);
-            return new SimpleResponse("Label added to this card", "OK");
+            return new SimpleResponse("Label added to this card!", "OK");
         } else {
-            throw new BadRequestException("Label already added to card");
+            throw new BadRequestException("Label already added to card!");
         }
     }
 
     public SimpleResponse deleteLabelById(Long id) {
         labelRepository.deleteById(id);
-        return new SimpleResponse("Card deleted", "OK");
+        return new SimpleResponse("Label successfully deleted!", "OK");
     }
 }
