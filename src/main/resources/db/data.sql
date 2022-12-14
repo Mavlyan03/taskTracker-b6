@@ -2,7 +2,7 @@ insert into users (id, first_name, last_name, image, email, password, role)
 values (1, 'Esen', 'Niyazov',
         'https://st-1.akipress.org/st_runews/.storage/limon3/images/NOVEMBER2020/17964a41dffb4fdc4fe1ba6f41b0a464.jpg',
         'esen@gmail.com',
-        '$2a$12$m3cYSQU6bNoMc0B6PFFQku2eDX6fWEZOY/G/E9D77p7SCXlamH9Tq', 'SUPER_ADMIN'),
+        '$2a$12$m3cYSQU6bNoMc0B6PFFQku2eDX6fWEZOY/G/E9D77p7SCXlamH9Tq', 'ADMIN'),
 
        (2, 'Datka', 'Mamatzhanova', 'https://i.pinimg.com/564x/59/db/00/59db008b7e4727fdbab1060ead482fc5.jpg',
         'admin@gmail.com',
@@ -96,7 +96,7 @@ values (1, 1),
        (7, 2);
 
 insert into user_workspace_roles (id, user_id, workspace_id, role)
-values (1, 1, 1, 'SUPER_ADMIN'),
+values (1, 1, 1, 'ADMIN'),
        (2, 2, 2, 'ADMIN'),
        (3, 3, 1, 'USER'),
        (4, 5, 1, 'USER'),

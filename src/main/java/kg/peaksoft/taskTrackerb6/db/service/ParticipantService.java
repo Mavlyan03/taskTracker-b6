@@ -37,6 +37,7 @@ public class ParticipantService {
     private final WorkspaceRepository workspaceRepository;
     private final BoardRepository boardRepository;
     private final JavaMailSender mailSender;
+    private final UserWorkSpaceRepository userWorkSpaceRepository;
 
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -47,16 +48,7 @@ public class ParticipantService {
                 }
         );
     }
-//
-//    public ParticipantResponse mapToResponse(User user) {
-//        ParticipantResponse participantResponse = new ParticipantResponse();
-//        participantResponse.setId(user.getId());
-//        participantResponse.setFirstName(user.getFirstName());
-//        participantResponse.setLastName(user.getLastName());
-//        participantResponse.setEmail(user.getEmail());
-//        participantResponse.setRole(user.getRole());
-//        return participantResponse;
-//    }
+
 
     public SimpleResponse deleteParticipantFromWorkspace(Long userId, Long workspaceId) {
         User killer = getAuthenticateUser();
@@ -153,15 +145,42 @@ public class ParticipantService {
     }
 
     public SimpleResponse inviteParticipant(InviteRequest request) throws MessagingException {
-        MimeMessage mimeMessage = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-        helper.setSubject("[task_tracker] registry new member");
-        helper.setTo(request.getEmail());
-        if (request.getRole().toString().equals("ADMIN")) {
-            helper.setText(request.getLink() + request.getRole());
+        Board board = boardRepository.findById(request.getBoardId()).orElseThrow(
+                () -> new NotFoundException("Board with id: " + request.getBoardId() + " not found!")
+        );
+
+        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(
+                () -> new NotFoundException("Workspace with id: " + board.getWorkspace().getId() + " not found!")
+        );
+
+        boolean exists = userRepository.existsUserByEmail(request.getEmail());
+        if (!exists) {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+            helper.setSubject("[task_tracker] invited you to board!");
+            helper.setTo(request.getEmail());
+            if (request.getRole().toString().equals("ADMIN")) {
+                helper.setText(request.getLink() + request.getRole() + request.getBoardId());
+            } else {
+                helper.setText(request.getLink() + "/role/" + request.getRole() + "/boardId/" + request.getBoardId() );
+            }
+            mailSender.send(mimeMessage);
+        } else {
+            User user = userRepository.findUserByEmail(request.getEmail()).orElseThrow(
+                    () -> new NotFoundException("User with email: " + request.getEmail() + " not found!")
+            );
+
+            board.addMember(user);
+            UserWorkSpace userWorkSpace = new UserWorkSpace(user, workspace, request.getRole());
+            userWorkSpaceRepository.save(userWorkSpace);
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+            helper.setSubject("[task_tracker] You added to board!");
+            helper.setTo(request.getEmail());
+            helper.setText(request.getLink() + "/boardId/" + request.getBoardId());
+            mailSender.send(mimeMessage);
+
         }
-        helper.setText(request.getLink() + request.getRole());
-        mailSender.send(mimeMessage);
         return new SimpleResponse("Email send", "ok");
     }
 }

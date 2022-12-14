@@ -57,4 +57,11 @@ public class Board {
         }
         columns.add(column);
     }
+
+    public void addMember(User user) {
+        if (members == null) {
+            members = new ArrayList<>();
+        }
+        members.add(user);
+    }
 }
