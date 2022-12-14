@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.peaksoft.taskTrackerb6.db.service.MemberService;
 import kg.peaksoft.taskTrackerb6.db.service.UserService;
+import kg.peaksoft.taskTrackerb6.dto.request.AuthWithGoogleRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.ResetPasswordRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SignInRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SignUpRequest;
@@ -53,8 +54,8 @@ public class AuthApi {
 
     @Operation(summary = "Google authentication", description = "Any user can authenticate with Google")
     @PostMapping("authenticate/google")
-    public AuthResponse authWithGoogleAccount(@RequestParam String token) throws FirebaseAuthException {
-        return userService.authWithGoogle(token);
+    public AuthResponse authWithGoogleAccount(@RequestBody AuthWithGoogleRequest request) throws FirebaseAuthException {
+        return userService.authWithGoogle(request);
     }
 
     @Operation(summary = "Search members", description = "Search members by workspace id")
