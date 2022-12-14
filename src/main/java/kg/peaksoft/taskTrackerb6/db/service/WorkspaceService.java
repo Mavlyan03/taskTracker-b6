@@ -14,7 +14,6 @@ import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.Authentication;
@@ -63,9 +62,12 @@ public class WorkspaceService {
         );
     }
 
-    public WorkspaceResponse createWorkspace(WorkspaceRequest workspaceRequest) throws MessagingException {
+
+    public WorkspaceResponse createWorkspace(WorkspaceRequest request) throws MessagingException {
         User user = getAuthenticateUser();
-        Workspace workspace = convertToEntity(workspaceRequest);
+        Workspace workspace = new Workspace();
+        workspace.setName(request.getName());
+        workspace.setIsFavorite(workspace.getIsFavorite());
         UserWorkSpace userWorkSpace = new UserWorkSpace(user, workspace, Role.ADMIN);
         user.addUserWorkSpace(userWorkSpace);
         workspace.addUserWorkSpace(userWorkSpace);
@@ -73,6 +75,30 @@ public class WorkspaceService {
         workspace.setCreatedAt(LocalDateTime.now());
         Workspace savedWorkspace = workspaceRepository.save(workspace);
         userWorkSpaceRepository.save(userWorkSpace);
+        if (request.getEmails().isEmpty() || request.getEmails().get(0).equals("") || request.getEmails().get(0).isBlank()) {
+
+        } else {
+            for (String email : request.getEmails()) {
+                boolean exists = userRepository.existsUserByEmail(email);
+                if (!exists) {
+                    MimeMessage mimeMessage = mailSender.createMimeMessage();
+                    MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+                    helper.setSubject("[Task tracker] invitation to my workspace");
+                    helper.setFrom("tasktracker.b6@gmail.com");
+                    helper.setTo(email);
+                    helper.setText(request.getLink() + "/" + workspace.getId());
+                    mailSender.send(mimeMessage);
+                } else {
+                    User inviteMember = userRepository.findUserByEmail(email).orElseThrow(
+                            () -> new NotFoundException("User with email: " + email + " not found!")
+                    );
+
+                    UserWorkSpace member = new UserWorkSpace(inviteMember, workspace, Role.USER);
+                    userWorkSpaceRepository.save(member);
+                }
+            }
+        }
+
         log.info("Workspace successfully created");
         return new WorkspaceResponse(
                 savedWorkspace.getId(),
@@ -369,39 +395,5 @@ public class WorkspaceService {
                 userRepository.getCreatorResponse(workspace.getLead().getId()),
                 saved.getIsFavorite()
         );
-    }
-
-
-    private Workspace convertToEntity(WorkspaceRequest request) throws MessagingException {
-        Workspace workspace = new Workspace();
-        workspace.setName(request.getName());
-        workspace.setIsFavorite(workspace.getIsFavorite());
-
-        if (request.getEmails().isEmpty() || request.getEmails().get(0).equals("") || request.getEmails().get(0).isBlank()) {
-
-        } else {
-            for (String email : request.getEmails()) {
-                boolean exists = userRepository.existsUserByEmail(email);
-                if (!exists) {
-                    MimeMessage mimeMessage = mailSender.createMimeMessage();
-                    MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-                    helper.setSubject("[Task tracker] invitation to my workspace");
-                    helper.setFrom("tasktracker.b6@gmail.com");
-                    helper.setTo(email);
-                    helper.setText(request.getLink());
-                    mailSender.send(mimeMessage);
-                } else {
-                    MimeMessage mimeMessage = mailSender.createMimeMessage();
-                    MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-                    helper.setSubject("[Task tracker] invitation to my workspace");
-                    helper.setFrom("tasktracker.b6@gmail.com");
-                    helper.setTo(email);
-                    helper.setText(request.getLink());
-                    mailSender.send(mimeMessage);
-                }
-            }
-        }
-
-        return workspace;
     }
 }
