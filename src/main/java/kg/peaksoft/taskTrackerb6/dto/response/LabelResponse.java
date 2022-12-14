@@ -12,6 +12,6 @@ public class LabelResponse {
 
     private Long id;
     private String description;
-    private LabelsColor color;
+    private String color;
 
 }
