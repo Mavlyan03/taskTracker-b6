@@ -40,7 +40,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "u.firstName, " +
             "u.lastName, " +
             "u.email," +
-            " u.image ) from User u join UserWorkSpace w " +
+            "u.image, " +
+            "u.role) from User u join UserWorkSpace w " +
             "on w.workspace.id = :id and w.user.id = u.id where concat(u.firstName,' ',u.lastName,' ',u.email) like concat('%',:email,'%') ")
     List<MemberResponse> searchByEmailOrName(@Param("email") String email, @Param("id") Long id);
 
