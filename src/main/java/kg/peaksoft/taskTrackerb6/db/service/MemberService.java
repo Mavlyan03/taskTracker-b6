@@ -27,17 +27,25 @@ public class MemberService {
 
     public List<MemberResponse> searchByEmailOrName(Long id, String emailOrName) {
         Workspace workspace = workspaceRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Workspace with this ID is not found"));
+                () -> new NotFoundException("Workspace with this ID is not found")
+        );
+
         return userRepository.searchByEmailOrName(emailOrName,workspace.getId());
     }
 
     public AllMemberResponse getAllMembers(Long id) {
         Card card = cardRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Card with this ID is not found"));
+                () -> new NotFoundException("Card with this ID is not found")
+        );
+
         Board board = boardRepository.findById(card.getColumn().getBoard().getId()).orElseThrow(
-                () -> new NotFoundException("Board with this ID is not found"));
+                () -> new NotFoundException("Board with this ID is not found")
+        );
+
         Workspace workspace = workspaceRepository.findById(card.getColumn().getBoard().getWorkspace().getId()).orElseThrow(
-                () -> new NotFoundException("Workspace With this ID is not found"));
+                () -> new NotFoundException("Workspace With this ID is not found")
+        );
+
         AllMemberResponse members = new AllMemberResponse();
         List<MemberResponse> boardMembers = new ArrayList<>();
         List<MemberResponse> workspaceMembers = new ArrayList<>();
