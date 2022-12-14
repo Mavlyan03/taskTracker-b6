@@ -2,8 +2,7 @@ package kg.peaksoft.taskTrackerb6.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kg.peaksoft.taskTrackerb6.db.repository.LabelRepository;
-import kg.peaksoft.taskTrackerb6.db.service.AddLabelRequest;
+import kg.peaksoft.taskTrackerb6.dto.request.AddLabelRequest;
 import kg.peaksoft.taskTrackerb6.db.service.LabelService;
 import kg.peaksoft.taskTrackerb6.dto.request.LabelRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.UpdateRequest;
@@ -48,17 +47,19 @@ public class LabelApi {
     }
 
     @Operation(summary = "Delete label from card", description = "Delete label by id")
-    @PostMapping("/{cardId}/{labelId}")
+    @PutMapping("/{cardId}/{labelId}")
     public SimpleResponse deleteLabelFromCard(@PathVariable Long cardId,
                                               @PathVariable Long labelId) {
         return labelService.deleteLabelFromCard(cardId, labelId);
     }
 
-    @PostMapping("/add")
+    @Operation(summary = "Add label to card")
+    @PostMapping("/card")
     public SimpleResponse addLabelToCard(@RequestBody AddLabelRequest addLabelRequest) {
         return labelService.addLabelToCard(addLabelRequest);
     }
 
+    @Operation(summary = "Delete label", description = "Delete label by id")
     @DeleteMapping("/{id}")
     public SimpleResponse deleteLabel(@PathVariable Long id){
         return labelService.deleteLabelById(id);

@@ -4,10 +4,12 @@ import kg.peaksoft.taskTrackerb6.db.model.Card;
 import kg.peaksoft.taskTrackerb6.db.model.Label;
 import kg.peaksoft.taskTrackerb6.db.repository.CardRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.LabelRepository;
+import kg.peaksoft.taskTrackerb6.dto.request.AddLabelRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.LabelRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.UpdateRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.LabelResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
+import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.BadRequestException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +45,14 @@ public class LabelService {
 
         if (!card.getLabels().contains(label)) {
             card.getLabels().remove(label);
+            label.setCard(null);
         }
+
+        if (label.getCard() != null) {
+            label.setCard(null);
+            labelRepository.save(label);
+        }
+
         return new SimpleResponse("Label successfully deleted!", "DELETE");
     }
 
@@ -78,15 +87,17 @@ public class LabelService {
     }
 
     public SimpleResponse addLabelToCard(AddLabelRequest request) {
-        Card card = cardRepository.findById(request.getLabelId()).orElseThrow(
+        Card card = cardRepository.findById(request.getCardId()).orElseThrow(
                 () -> new NotFoundException("Card with id: " + request.getCardId() + " not found!")
         );
 
         Label label = labelRepository.findById(request.getLabelId()).orElseThrow(
                 () -> new NotFoundException("Label with id: " + request.getLabelId() + " not found!")
         );
+
         if (!card.getLabels().contains(label)) {
             card.addLabel(label);
+            label.setCard(card);
             return new SimpleResponse("Label added to this card!", "OK");
         } else {
             throw new BadRequestException("Label already added to card!");
