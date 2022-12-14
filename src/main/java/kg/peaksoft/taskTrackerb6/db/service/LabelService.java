@@ -8,7 +8,6 @@ import kg.peaksoft.taskTrackerb6.dto.request.LabelRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.UpdateRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.LabelResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
-import kg.peaksoft.taskTrackerb6.enums.LabelsColor;
 import kg.peaksoft.taskTrackerb6.exceptions.BadRequestException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Slf4j
@@ -34,7 +32,7 @@ public class LabelService {
         return new SimpleResponse("New label saved!", "OK");
     }
 
-    public SimpleResponse deleteLabel(Long cardId, Long labelId) {
+    public SimpleResponse deleteLabelFromCard(Long cardId, Long labelId) {
         Card card = cardRepository.findById(cardId).orElseThrow(
                 () -> new NotFoundException("Card with id: " + cardId + " not found!")
         );
@@ -92,5 +90,10 @@ public class LabelService {
         } else {
             throw new BadRequestException("Label already added to card");
         }
+    }
+
+    public SimpleResponse deleteLabelById(Long id) {
+        labelRepository.deleteById(id);
+        return new SimpleResponse("Card deleted", "OK");
     }
 }

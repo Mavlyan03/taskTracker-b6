@@ -22,7 +22,6 @@ import java.util.List;
 public class LabelApi {
 
     private final LabelService labelService;
-    private final LabelRepository labelRepository;
 
     @Operation(summary = "Create new label", description = "Create new label")
     @PostMapping
@@ -48,15 +47,20 @@ public class LabelApi {
         return labelService.getAllLabelsByCardId(id);
     }
 
-    @Operation(summary = "Delete label", description = "Delete label by id")
-    @DeleteMapping("/{cardId}")
-    public SimpleResponse deleteLabelById(@PathVariable Long cardId,
-                                          @RequestParam Long labelId) {
-        return labelService.deleteLabel(cardId, labelId);
+    @Operation(summary = "Delete label from card", description = "Delete label by id")
+    @PostMapping("/{cardId}/{labelId}")
+    public SimpleResponse deleteLabelFromCard(@PathVariable Long cardId,
+                                              @PathVariable Long labelId) {
+        return labelService.deleteLabelFromCard(cardId, labelId);
     }
 
     @PostMapping("/add")
-    public SimpleResponse addLabelToCard(@RequestBody AddLabelRequest addLabelRequest){
+    public SimpleResponse addLabelToCard(@RequestBody AddLabelRequest addLabelRequest) {
         return labelService.addLabelToCard(addLabelRequest);
+    }
+
+    @DeleteMapping("/{id}")
+    public SimpleResponse deleteLabel(@PathVariable Long id){
+        return labelService.deleteLabelById(id);
     }
 }
