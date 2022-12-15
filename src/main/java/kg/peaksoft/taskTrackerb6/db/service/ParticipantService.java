@@ -128,8 +128,6 @@ public class ParticipantService {
         );
 
         List<ParticipantResponse> participantResponse = new ArrayList<>();
-        for (User user1 : userRepository.getAllUserFromBoardId(boardId)) {
-            participantResponse.add(userRepository.getParticipant(user1.getId()));
         for (User user1 : board.getMembers()) {
             participantResponse.add(userRepository.getParticipant(user1.getId()));
         }

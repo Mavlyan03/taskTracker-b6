@@ -40,7 +40,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final UserRepository repository;
     private final JWTUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
@@ -48,11 +48,10 @@ public class UserService {
     private final UserWorkSpaceRepository userWorkSpaceRepository;
     private final BoardRepository boardRepository;
     private final CardRepository cardRepository;
-    private final BoardRepository boardRepository;
 
     public AuthResponse registration(SignUpRequest signUpRequest) {
 
-        if (userRepository.existsUserByEmail(signUpRequest.getEmail())) {
+        if (repository.existsUserByEmail(signUpRequest.getEmail())) {
             log.error("This email: {} is already in use!", signUpRequest.getEmail());
             throw new BadRequestException("This email: " + signUpRequest.getEmail() + " is already in use!");
         }
@@ -60,7 +59,7 @@ public class UserService {
         User user = convertToRegisterEntity(signUpRequest);
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
         user.setRole(Role.ADMIN);
-        userRepository.save(user);
+        repository.save(user);
 
         String jwt = jwtUtil.generateToken(user.getEmail());
         log.info("User successfully registered");
@@ -88,7 +87,7 @@ public class UserService {
 
     public AuthResponse login(SignInRequest signInRequest) {
 
-        User user = userRepository.findUserByEmail(signInRequest.getEmail()).orElseThrow(
+        User user = repository.findUserByEmail(signInRequest.getEmail()).orElseThrow(
                 () -> {
                     log.error("User with this email: {} not found!", signInRequest.getEmail());
                     throw new NotFoundException("User with this email: " + signInRequest.getEmail() + " not found!");
@@ -117,7 +116,7 @@ public class UserService {
     }
 
     public SimpleResponse forgotPassword(String email, String link) throws MessagingException {
-        User user = userRepository.findUserByEmail(email).orElseThrow(
+        User user = repository.findUserByEmail(email).orElseThrow(
                 () -> {
                     log.error("User with email: {} not found!", email);
                     throw new NotFoundException("User with email: " + email + " not found!");
@@ -135,7 +134,7 @@ public class UserService {
     }
 
     public ResetPasswordResponse resetPassword(ResetPasswordRequest request) {
-        User user = userRepository.findById(request.getUserId()).orElseThrow(
+        User user = repository.findById(request.getUserId()).orElseThrow(
                 () -> {
                     log.error("User with id: {} not found!", request.getUserId());
                     throw new NotFoundException("User with id: " + request.getUserId() + " not found");
@@ -204,7 +203,7 @@ public class UserService {
     public AuthResponse authWithGoogleForInvitedMember(AuthWithGoogleRequest request) throws FirebaseAuthException {
         FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdToken(request.getToken());
         User user;
-        if (!userRepository.existsUserByEmail(firebaseToken.getEmail())) {
+        if (!repository.existsUserByEmail(firebaseToken.getEmail())) {
             String[] name = firebaseToken.getName().split(" ");
             user = new User();
             user.setFirstName(name[0]);
@@ -223,43 +222,15 @@ public class UserService {
 
             user = repository.save(user);
             log.info("Save user!");
-            user = userRepository.save(user);
         }
 
-        user = userRepository.findUserByEmail(firebaseToken.getEmail()).orElseThrow(
+        user = repository.findUserByEmail(firebaseToken.getEmail()).orElseThrow(
                 () -> {
                     log.error("User with this email not found!");
                     throw new NotFoundException("User with this email not found!");
                 }
         );
 
-//        if (request.getWorkspaceId() == null || request.getWorkspaceId() == 0) {
-//
-//        } else {
-//            Workspace workspace = workspaceRepository.findById(request.getWorkspaceId()).orElseThrow(
-//                    () -> new NotFoundException("Workspace with id: " + request.getWorkspaceId() + " not found!")
-//            );
-//
-//            UserWorkSpace userWorkSpace = new UserWorkSpace(user, workspace, user.getRole());
-//            userWorkSpaceRepository.save(userWorkSpace);
-//        }
-//
-//        if (request.getBoardId() == null || request.getBoardId() == 0) {
-//
-//        } else {
-//            Board board = boardRepository.findById(request.getBoardId()).orElseThrow(
-//                    () -> new NotFoundException("Board with id: " + request.getBoardId() + " not found!")
-//            );
-//
-//            Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(
-//                    () -> new NotFoundException("Workspace with id: " + board.getWorkspace().getId() + " not found!")
-//            );
-//
-//
-//            board.addMember(user);
-//            UserWorkSpace userWorkSpace = new UserWorkSpace(user, workspace, user.getRole());
-//            userWorkSpaceRepository.save(userWorkSpace);
-//        }
         log.info("Authenticate is finished!");
 
         if (request.getIsBoard().equals(true)) {
