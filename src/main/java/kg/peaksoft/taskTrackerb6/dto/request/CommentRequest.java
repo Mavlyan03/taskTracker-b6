@@ -10,4 +10,5 @@ import lombok.Setter;
 public class CommentRequest {
 
     private String text;
+    private String addCommentDate;
 }
