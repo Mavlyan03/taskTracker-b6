@@ -9,7 +9,6 @@ import kg.peaksoft.taskTrackerb6.dto.request.LabelRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.UpdateRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.LabelResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
-import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.BadRequestException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
