@@ -85,14 +85,14 @@ public class WorkspaceService {
                     helper.setSubject("[Task tracker] invitation to my workspace");
                     helper.setFrom("tasktracker.b6@gmail.com");
                     helper.setTo(email);
-                    helper.setText(request.getLink() + "/" + workspace.getId());
+                    helper.setText(request.getLink() + "/" + Role.ADMIN + "/workspaceId/" + workspace.getId());
                     mailSender.send(mimeMessage);
                 } else {
                     User inviteMember = userRepository.findUserByEmail(email).orElseThrow(
                             () -> new NotFoundException("User with email: " + email + " not found!")
                     );
 
-                    UserWorkSpace member = new UserWorkSpace(inviteMember, workspace, Role.USER);
+                    UserWorkSpace member = new UserWorkSpace(inviteMember, workspace, Role.ADMIN);
                     userWorkSpaceRepository.save(member);
                 }
             }

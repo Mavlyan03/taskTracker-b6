@@ -3,6 +3,7 @@ package kg.peaksoft.taskTrackerb6.db.repository;
 import kg.peaksoft.taskTrackerb6.db.model.User;
 import kg.peaksoft.taskTrackerb6.dto.response.CreatorResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.MemberResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.ParticipantResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -46,5 +47,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("select u from User u join UserWorkSpace w on w.user.id = u.id where w.id = ?1")
     Optional<User> findUserByWorkSpaceId(Long id);
+
+    @Query("select new kg.peaksoft.taskTrackerb6.dto.response.ParticipantResponse(" +
+            "u.id, " +
+            "u.firstName, " +
+            "u.lastName, " +
+            "u.email, " +
+            "u.image, " +
+            "u.role) from User u where u.id = :id")
+    ParticipantResponse getParticipant(Long id);
 }
 
