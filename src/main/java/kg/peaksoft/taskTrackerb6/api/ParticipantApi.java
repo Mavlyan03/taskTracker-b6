@@ -22,25 +22,27 @@ public class ParticipantApi {
     private final ParticipantService participantService;
 
     @Operation(summary = "Delete participant from workspace", description = "Delete participant by id from workspace")
-    @DeleteMapping("workspace/{id}/{workspaceId}")
-    public SimpleResponse deleteParticipantById(@PathVariable Long id, @PathVariable Long workspaceId) {
-        return participantService.deleteParticipantFromWorkspace(id, workspaceId);
+    @DeleteMapping("/workspace/{userId}/{workspaceId}")
+    public SimpleResponse deleteParticipantById(@PathVariable Long userId,
+                                                @PathVariable Long workspaceId) {
+        return participantService.deleteParticipantFromWorkspace(userId, workspaceId);
     }
 
     @Operation(summary = "Delete participant from board", description = "Delete participant by id from board")
-    @DeleteMapping("board/{id}/{boardId}")
-    public SimpleResponse deleteParticipantFromBoard(@PathVariable Long id, @PathVariable Long boardId) {
-        return participantService.deleteParticipantFromBoard(id, boardId);
+    @DeleteMapping("/board/{userId}/{boardId}")
+    public SimpleResponse deleteParticipantFromBoard(@PathVariable Long userId,
+                                                     @PathVariable Long boardId) {
+        return participantService.deleteParticipantFromBoard(userId, boardId);
     }
 
     @Operation(summary = "Get participants from board", description = "Get all participants from board")
-    @GetMapping("board-participants/{id}")
+    @GetMapping("/board-participants/{id}")
     public List<ParticipantResponse> getAllParticipantFromBoard(@PathVariable Long id) {
         return participantService.getAllParticipantFromBoard(id);
     }
 
     @Operation(summary = "Get participants from workspace", description = "Get all participants from workspace")
-    @GetMapping("workspace-participants/{id}")
+    @GetMapping("/workspace-participants/{id}")
     public List<ParticipantResponse> getAllParticipantFromWorkspace(@PathVariable Long id) {
         return participantService.getAllParticipantFromWorkspace(id);
     }

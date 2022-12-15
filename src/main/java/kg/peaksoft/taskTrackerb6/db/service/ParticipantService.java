@@ -25,6 +25,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @Service
@@ -48,7 +49,6 @@ public class ParticipantService {
                 }
         );
     }
-
 
     public SimpleResponse deleteParticipantFromWorkspace(Long userId, Long workspaceId) {
         User killer = getAuthenticateUser();
@@ -78,14 +78,29 @@ public class ParticipantService {
         }
 
         List<User> workspaceUsers = new ArrayList<>();
-        for (UserWorkSpace userWorkSpace : workspace.getUserWorkSpaces()) {
+        List<UserWorkSpace> userWorkSpaces = workspace.getUserWorkSpaces();
+        for (UserWorkSpace userWorkSpace : userWorkSpaces) {
             workspaceUsers.add(userWorkSpace.getUser());
         }
 
-        workspaceUsers.remove(corpse);
-        log.info("User with id: " + userId + " successfully deleted from workspace with id: {} ", workspaceId);
-        return new SimpleResponse("User successfully deleted from workspace!", "DELETE");
-    }
+        Long deleteId = null;
+        log.info("is: " + deleteId);
+        for (UserWorkSpace w : userWorkSpaces) {
+            if (w.getWorkspace().equals(workspace)) {
+                if (w.getUser().equals(corpse)) {
+                    deleteId = w.getId();
+                }
+            }
+        }
+
+        log.info("delete id is: " + deleteId);
+        userWorkSpaceRepository.deleteUserWorkSpace(deleteId);
+        log.info("User with id: " + userId + " successfully deleted from workspace with id: {} ",workspaceId);
+        return new
+
+    SimpleResponse("User successfully deleted from workspace!","DELETE");
+
+}
 
     public SimpleResponse deleteParticipantFromBoard(Long id, Long boardId) {
         User user = userRepository.findById(id).orElseThrow(
@@ -162,7 +177,7 @@ public class ParticipantService {
             if (request.getRole().toString().equals("ADMIN")) {
                 helper.setText(request.getLink() + request.getRole() + request.getBoardId());
             } else {
-                helper.setText(request.getLink() + "/role/" + request.getRole() + "/boardId/" + request.getBoardId() );
+                helper.setText(request.getLink() + "/role/" + request.getRole() + "/boardId/" + request.getBoardId());
             }
             mailSender.send(mimeMessage);
         } else {
