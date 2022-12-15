@@ -9,8 +9,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class ParticipantResponse {
 
     private Long id;
@@ -25,6 +25,7 @@ public class ParticipantResponse {
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.email = user.getEmail();
+        this.image = user.getImage();
         this.role = user.getRole();
         this.image = user.getImage();
     }
