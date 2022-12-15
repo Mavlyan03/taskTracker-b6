@@ -38,6 +38,7 @@ public class ParticipantService {
     private final WorkspaceRepository workspaceRepository;
     private final BoardRepository boardRepository;
     private final JavaMailSender mailSender;
+    private final UserWorkSpaceRepository userWorkSpaceRepository;
 
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -77,14 +78,27 @@ public class ParticipantService {
         }
 
         List<User> workspaceUsers = new ArrayList<>();
-        for (UserWorkSpace userWorkSpace : workspace.getUserWorkSpaces()) {
+        List<UserWorkSpace> userWorkSpaces = workspace.getUserWorkSpaces();
+        for (UserWorkSpace userWorkSpace : userWorkSpaces) {
             workspaceUsers.add(userWorkSpace.getUser());
         }
 
-        workspaceUsers.remove(corpse);
-        log.info("User with id: " + userId + " successfully deleted from workspace with id: {} ", workspaceId);
-        return new SimpleResponse("User successfully deleted from workspace!", "DELETE");
-    }
+        Long deleteId = null;
+        for (UserWorkSpace w : userWorkSpaces) {
+            if (w.getWorkspace().equals(workspace)) {
+                if (w.getUser().equals(corpse)) {
+                    deleteId = w.getId();
+                }
+            }
+        }
+
+        userWorkSpaceRepository.deleteUserWorkSpace(deleteId);
+        log.info("User with id: " + userId + " successfully deleted from workspace with id: {} ",workspaceId);
+        return new
+
+    SimpleResponse("User successfully deleted from workspace!","DELETE");
+
+}
 
     public SimpleResponse deleteParticipantFromBoard(Long id, Long boardId) {
         User user = userRepository.findById(id).orElseThrow(
@@ -107,8 +121,12 @@ public class ParticipantService {
     }
 
     public List<ParticipantResponse> getAllParticipantFromBoard(Long boardId) {
+        Board board = boardRepository.findById(boardId).orElseThrow(
+                () -> new NotFoundException("Board with id: " + boardId + " not found!")
+        );
+
         List<ParticipantResponse> participantResponse = new ArrayList<>();
-        for (User user1 : userRepository.getAllUserFromBoardId(boardId)) {
+        for (User user1 : board.getMembers()) {
             participantResponse.add(userRepository.getParticipant(user1.getId()));
         }
 

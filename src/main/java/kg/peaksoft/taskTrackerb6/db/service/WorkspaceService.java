@@ -80,7 +80,7 @@ public class WorkspaceService {
                 if (!exists) {
                     MimeMessage mimeMessage = mailSender.createMimeMessage();
                     MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-                    helper.setSubject("[Task tracker] invitation to my workspace");
+                    helper.setSubject("[Task tracker] invitation to my workspace!");
                     helper.setFrom("tasktracker.b6@gmail.com");
                     helper.setTo(email);
                     helper.setText(request.getLink() + "/" + Role.ADMIN + "/workspaceId/" + workspace.getId());
@@ -419,7 +419,7 @@ public class WorkspaceService {
                 );
             }
         }
-        
+
         return new WorkspaceInnerPageResponse(
                 saved.getId(),
                 saved.getName(),
