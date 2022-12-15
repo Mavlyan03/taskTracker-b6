@@ -84,7 +84,6 @@ public class ParticipantService {
         }
 
         Long deleteId = null;
-        log.info("is: " + deleteId);
         for (UserWorkSpace w : userWorkSpaces) {
             if (w.getWorkspace().equals(workspace)) {
                 if (w.getUser().equals(corpse)) {
@@ -93,7 +92,6 @@ public class ParticipantService {
             }
         }
 
-        log.info("delete id is: " + deleteId);
         userWorkSpaceRepository.deleteUserWorkSpace(deleteId);
         log.info("User with id: " + userId + " successfully deleted from workspace with id: {} ",workspaceId);
         return new
