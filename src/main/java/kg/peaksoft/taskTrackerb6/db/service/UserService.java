@@ -7,12 +7,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import kg.peaksoft.taskTrackerb6.config.security.JWTUtil;
-import kg.peaksoft.taskTrackerb6.db.model.User;
-import kg.peaksoft.taskTrackerb6.db.model.UserWorkSpace;
-import kg.peaksoft.taskTrackerb6.db.model.Workspace;
-import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
-import kg.peaksoft.taskTrackerb6.db.repository.UserWorkSpaceRepository;
-import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
+import kg.peaksoft.taskTrackerb6.db.model.*;
+import kg.peaksoft.taskTrackerb6.db.repository.*;
 import kg.peaksoft.taskTrackerb6.dto.request.AuthWithGoogleRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.ResetPasswordRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.SignInRequest;
@@ -50,6 +46,8 @@ public class UserService {
     private final JavaMailSender mailSender;
     private final WorkspaceRepository workspaceRepository;
     private final UserWorkSpaceRepository userWorkSpaceRepository;
+    private final BoardRepository boardRepository;
+    private final CardRepository cardRepository;
 
     public AuthResponse registration(SignUpRequest signUpRequest) {
 
@@ -169,7 +167,40 @@ public class UserService {
                 .build();
     }
 
-    public AuthResponse authWithGoogle(AuthWithGoogleRequest request) throws FirebaseAuthException {
+    public AuthResponse authWithGoogle(String tokenId) throws FirebaseAuthException {
+        FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdToken(tokenId);
+        User user;
+        if (!repository.existsUserByEmail(firebaseToken.getEmail())) {
+            String[] name = firebaseToken.getName().split(" ");
+            user = new User();
+            user.setFirstName(name[0]);
+            user.setLastName(name[1]);
+            user.setEmail(firebaseToken.getEmail());
+            user.setPassword(firebaseToken.getEmail());
+            user.setRole(Role.ADMIN);
+
+            user = repository.save(user);
+        }
+
+        user = repository.findUserByEmail(firebaseToken.getEmail()).orElseThrow(
+                () -> {
+                    log.error("User with this email not found!");
+                    throw new NotFoundException("User with this email not found!");
+                }
+        );
+
+        String token = jwtUtil.generateToken(user.getEmail());
+        return new AuthResponse(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getRole(),
+                token);
+    }
+
+
+    public AuthResponse authWithGoogleForInvitedMember(AuthWithGoogleRequest request) throws FirebaseAuthException {
         FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdToken(request.getToken());
         User user;
         if (!repository.existsUserByEmail(firebaseToken.getEmail())) {
@@ -185,9 +216,12 @@ public class UserService {
                 } else if (request.getIsAdmin().equals(false)) {
                     user.setRole(Role.USER);
                 }
+            } else {
+                user.setRole(Role.ADMIN);
             }
 
             user = repository.save(user);
+            log.info("Save user!");
         }
 
         user = repository.findUserByEmail(firebaseToken.getEmail()).orElseThrow(
@@ -197,13 +231,33 @@ public class UserService {
                 }
         );
 
-        if (request.getWorkspaceId() != null) {
-            Workspace workspace = workspaceRepository.findById(request.getWorkspaceId()).orElseThrow(
-                    () -> new NotFoundException("Workspace with id: " + request.getWorkspaceId() + " not found!")
-            );
+        log.info("Authenticate is finished!");
 
-            UserWorkSpace userWorkSpace = new UserWorkSpace(user, workspace, Role.USER);
-            userWorkSpaceRepository.save(userWorkSpace);
+        if (request.getIsBoard().equals(true)) {
+            if (request.getWorkspaceOrBoardId() != null && request.getWorkspaceOrBoardId() != 0) {
+                Board board = boardRepository.findById(request.getWorkspaceOrBoardId()).orElseThrow(
+                        () -> new NotFoundException("Board with id: " + request.getWorkspaceOrBoardId() + " not found!")
+                );
+
+                Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(
+                        () -> new NotFoundException("Workspace with id: " + board.getWorkspace().getId() + " not found!")
+                );
+
+                board.addMember(user);
+                UserWorkSpace userWorkSpace = new UserWorkSpace(user, workspace, user.getRole());
+                userWorkSpaceRepository.save(userWorkSpace);
+            }
+        }
+
+        if (request.getIsBoard().equals(false)) {
+            if (request.getWorkspaceOrBoardId() != null && request.getWorkspaceOrBoardId() != 0) {
+                Workspace workspace = workspaceRepository.findById(request.getWorkspaceOrBoardId()).orElseThrow(
+                        () -> new NotFoundException("Workspace with id: " + request.getWorkspaceOrBoardId() + " not found!")
+                );
+
+                UserWorkSpace userWorkSpace = new UserWorkSpace(user, workspace, user.getRole());
+                userWorkSpaceRepository.save(userWorkSpace);
+            }
         }
 
         String token = jwtUtil.generateToken(user.getEmail());

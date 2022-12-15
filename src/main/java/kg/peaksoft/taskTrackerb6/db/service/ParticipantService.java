@@ -9,6 +9,7 @@ import kg.peaksoft.taskTrackerb6.db.repository.*;
 import kg.peaksoft.taskTrackerb6.dto.request.InviteRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.ParticipantResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
+import kg.peaksoft.taskTrackerb6.enums.Role;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class ParticipantService {
     private final WorkspaceRepository workspaceRepository;
     private final BoardRepository boardRepository;
     private final JavaMailSender mailSender;
+    private final UserWorkSpaceRepository userWorkSpaceRepository;
 
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -46,16 +48,6 @@ public class ParticipantService {
                     throw new NotFoundException("User not found!");
                 }
         );
-    }
-
-    public ParticipantResponse mapToResponse(User user) {
-        ParticipantResponse participantResponse = new ParticipantResponse();
-        participantResponse.setId(user.getId());
-        participantResponse.setFirstName(user.getFirstName());
-        participantResponse.setLastName(user.getLastName());
-        participantResponse.setEmail(user.getEmail());
-        participantResponse.setRole(user.getRole());
-        return participantResponse;
     }
 
     public SimpleResponse deleteParticipantFromWorkspace(Long userId, Long workspaceId) {
@@ -86,14 +78,27 @@ public class ParticipantService {
         }
 
         List<User> workspaceUsers = new ArrayList<>();
-        for (UserWorkSpace userWorkSpace : workspace.getUserWorkSpaces()) {
+        List<UserWorkSpace> userWorkSpaces = workspace.getUserWorkSpaces();
+        for (UserWorkSpace userWorkSpace : userWorkSpaces) {
             workspaceUsers.add(userWorkSpace.getUser());
         }
 
-        workspaceUsers.remove(corpse);
-        log.info("User with id: " + userId + " successfully deleted from workspace with id: {} ", workspaceId);
-        return new SimpleResponse("User successfully deleted from workspace!", "DELETE");
-    }
+        Long deleteId = null;
+        for (UserWorkSpace w : userWorkSpaces) {
+            if (w.getWorkspace().equals(workspace)) {
+                if (w.getUser().equals(corpse)) {
+                    deleteId = w.getId();
+                }
+            }
+        }
+
+        userWorkSpaceRepository.deleteUserWorkSpace(deleteId);
+        log.info("User with id: " + userId + " successfully deleted from workspace with id: {} ",workspaceId);
+        return new
+
+    SimpleResponse("User successfully deleted from workspace!","DELETE");
+
+}
 
     public SimpleResponse deleteParticipantFromBoard(Long id, Long boardId) {
         User user = userRepository.findById(id).orElseThrow(
@@ -111,15 +116,18 @@ public class ParticipantService {
         );
 
         board.getMembers().remove(user);
-        user.setBoards(null);
         log.info("User with id: " + id + "successfully deleted from board with id: {}", boardId);
         return new SimpleResponse("User successfully deleted from board!", "DELETE");
     }
 
     public List<ParticipantResponse> getAllParticipantFromBoard(Long boardId) {
+        Board board = boardRepository.findById(boardId).orElseThrow(
+                () -> new NotFoundException("Board with id: " + boardId + " not found!")
+        );
+
         List<ParticipantResponse> participantResponse = new ArrayList<>();
-        for (User user1 : userRepository.getAllUserFromBoardId(boardId)) {
-            participantResponse.add(mapToResponse(user1));
+        for (User user1 : board.getMembers()) {
+            participantResponse.add(userRepository.getParticipant(user1.getId()));
         }
 
         log.info("Get all participant from board");
@@ -148,16 +156,31 @@ public class ParticipantService {
         return participantResponses;
     }
 
-    public SimpleResponse inviteParticipant(InviteRequest request) throws MessagingException {
+    public SimpleResponse inviteNewParticipantToBoard(InviteRequest request) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-        helper.setSubject("[task_tracker] registry new member");
+        helper.setSubject("[task_tracker] invite new member to board!");
         helper.setTo(request.getEmail());
-        if (request.getRole().toString().equals("ADMIN")) {
-            helper.setText(request.getLink() + request.getRole());
+        if (request.getRole().equals(Role.ADMIN)) {
+            helper.setText(request.getLink() + "/" + request.getRole() + "/boardId/" + request.getWorkspaceOrBoardId());
+        } else if (request.getRole().equals(Role.USER)) {
+            helper.setText(request.getLink() + "/" + request.getRole() + "/boardId/" + request.getWorkspaceOrBoardId());
         }
-        helper.setText(request.getLink() + request.getRole());
         mailSender.send(mimeMessage);
-        return new SimpleResponse("Email send", "ok");
+        return new SimpleResponse("Email send!", "OK");
+    }
+
+    public SimpleResponse inviteNewParticipant(InviteRequest request) throws MessagingException {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+        helper.setSubject("[task_tracker] invite new member!");
+        helper.setTo(request.getEmail());
+        if (request.getRole().equals(Role.ADMIN)) {
+            helper.setText(request.getLink() + "/" + request.getRole() + "/workspaceId/" + request.getWorkspaceOrBoardId());
+        } else if (request.getRole().equals(Role.USER)) {
+            helper.setText(request.getLink() + "/" + request.getRole() + "/workspaceId/" + request.getWorkspaceOrBoardId());
+        }
+        mailSender.send(mimeMessage);
+        return new SimpleResponse("Email send!", "OK");
     }
 }
