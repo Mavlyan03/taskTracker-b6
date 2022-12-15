@@ -170,10 +170,16 @@ public class UserService {
         FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdToken(tokenId);
         User user;
         if (!repository.existsUserByEmail(firebaseToken.getEmail())) {
-            String[] name = firebaseToken.getName().split(" ");
-            user = new User();
-            user.setFirstName(name[0]);
-            user.setLastName(name[1]);
+            if (firebaseToken.getName().matches(" ")) {
+                String[] name = firebaseToken.getName().split(" ");
+                user = new User();
+                user.setFirstName(name[0]);
+                user.setLastName(name[1]);
+            } else {
+                user = new User();
+                user.setFirstName(firebaseToken.getName());
+            }
+
             user.setEmail(firebaseToken.getEmail());
             user.setPassword(firebaseToken.getEmail());
             user.setRole(Role.ADMIN);
@@ -203,10 +209,15 @@ public class UserService {
         FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdToken(request.getToken());
         User user;
         if (!repository.existsUserByEmail(firebaseToken.getEmail())) {
-            String[] name = firebaseToken.getName().split(" ");
             user = new User();
-            user.setFirstName(name[0]);
-            user.setLastName(name[1]);
+            if (firebaseToken.getName().matches(" ")) {
+                String[] name = firebaseToken.getName().split(" ");
+                user.setFirstName(name[0]);
+                user.setLastName(name[1]);
+            } else {
+                user.setFirstName(firebaseToken.getName());
+            }
+
             user.setEmail(firebaseToken.getEmail());
             user.setPassword(firebaseToken.getEmail());
             if (request.getIsAdmin() != null) {

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.peaksoft.taskTrackerb6.db.service.CommentService;
 import kg.peaksoft.taskTrackerb6.dto.request.CommentRequest;
+import kg.peaksoft.taskTrackerb6.dto.request.UpdateRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.CommentResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,17 +22,16 @@ public class CommentApi {
     private final CommentService commentService;
 
     @Operation(summary = "Save comment", description = "Save new comment")
-    @PostMapping("card/{id}")
-    public CommentResponse saveComment(@PathVariable Long id,
+    @PostMapping("card/{cardId}")
+    public CommentResponse saveComment(@PathVariable Long cardId,
                                        @RequestBody CommentRequest request){
-        return commentService.saveComment(id, request);
+        return commentService.saveComment(cardId, request);
     }
 
-    @Operation(summary = "Edit comment", description = "Edit comment by id")
-    @PutMapping("{id}")
-    public CommentResponse updateComment(@PathVariable Long id,
-                                         @RequestBody CommentRequest request){
-        return commentService.editComment(id, request);
+    @Operation(summary = "Edit comment", description = "Edit comment")
+    @PutMapping
+    public CommentResponse updateComment(@RequestBody UpdateRequest request){
+        return commentService.editComment(request);
     }
 
     @Operation(summary = "Delete comment", description = "Delete comment by id")
@@ -41,8 +41,8 @@ public class CommentApi {
     }
 
     @Operation(summary = "Get all comments", description = "Get all comments by card id")
-    @GetMapping("card/{id}")
-    public List<CommentResponse> findAllCommentsByCardId(@PathVariable Long id){
-        return commentService.findAllComments(id);
+    @GetMapping("card/{cardId}")
+    public List<CommentResponse> findAllCommentsByCardId(@PathVariable Long cardId){
+        return commentService.findAllComments(cardId);
     }
 }

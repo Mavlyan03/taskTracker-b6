@@ -1,6 +1,7 @@
 package kg.peaksoft.taskTrackerb6.db.repository;
 
 import kg.peaksoft.taskTrackerb6.db.model.User;
+import kg.peaksoft.taskTrackerb6.dto.response.CommentedUserResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.CreatorResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.MemberResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.ParticipantResponse;
@@ -56,5 +57,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "u.image, " +
             "u.role) from User u where u.id = :id")
     ParticipantResponse getParticipant(Long id);
+
+
+    @Query("select new kg.peaksoft.taskTrackerb6.dto.response.CommentedUserResponse(" +
+            "u.id, " +
+            "u.firstName, " +
+            "u.lastName, " +
+            "u.image) from User u where u.id = :id")
+    CommentedUserResponse getCommentedUserResponse(Long id);
 }
 

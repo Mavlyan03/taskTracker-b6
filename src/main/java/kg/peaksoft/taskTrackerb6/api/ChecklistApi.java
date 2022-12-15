@@ -29,7 +29,7 @@ public class ChecklistApi {
     }
 
     @Operation(summary = "Update checklist title", description = "Update checklist title")
-    @PutMapping()
+    @PutMapping
     public ChecklistResponse updateTitle(@RequestBody UpdateRequest request){
         return checklistService.updateTitle(request);
     }

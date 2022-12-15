@@ -102,11 +102,7 @@ public class CardConverter {
 
     private CommentResponse convertCommentToResponse(Comment comment) {
         User user = getAuthenticateUser();
-        return new CommentResponse(comment.getId(), comment.getText(), comment.getCreatedAt(), convertToCommentedUserResponse(user));
-    }
-
-    private CommentedUserResponse convertToCommentedUserResponse(User user) {
-        return new CommentedUserResponse(user.getId(), user.getFirstName(), user.getLastName(), user.getImage());
+        return new CommentResponse(comment.getId(), comment.getText(), comment.getCreatedAt(), userRepository.getCommentedUserResponse(user.getId()));
     }
 
     private List<ChecklistResponse> getChecklistResponses(List<Checklist> checklists) {

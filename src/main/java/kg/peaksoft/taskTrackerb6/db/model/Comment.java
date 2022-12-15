@@ -6,7 +6,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.persistence.Column;
-import java.time.LocalDateTime;
 
 import static javax.persistence.CascadeType.*;
 
@@ -27,7 +26,7 @@ public class Comment {
 
     private String createdAt;
 
-    private LocalDateTime createdDate;
+    private Boolean isMyComment;
 
     @ManyToOne(cascade = {DETACH, MERGE, REFRESH})
     private User user;
@@ -35,8 +34,16 @@ public class Comment {
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
     private Card card;
 
-    public Comment(String text, LocalDateTime createdDate) {
+    public Comment(String text, String createdAt, Boolean isMyComment, User creator) {
         this.text = text;
-        this.createdDate = createdDate;
+        this.createdAt = createdAt;
+        this.isMyComment = isMyComment;
+        this.user = creator;
+    }
+
+    public Comment(String text, String addCommentDate, User user) {
+        this.text = text;
+        this.createdAt = addCommentDate;
+        this.user = user;
     }
 }

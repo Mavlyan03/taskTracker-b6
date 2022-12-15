@@ -7,6 +7,7 @@ import kg.peaksoft.taskTrackerb6.db.repository.FavoriteRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
 import kg.peaksoft.taskTrackerb6.dto.request.BoardRequest;
+import kg.peaksoft.taskTrackerb6.dto.request.UpdateRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.*;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +50,6 @@ public class BoardService {
 
         workspace.addBoard(board);
         board.setWorkspace(workspace);
-        board.setCreatedAt(LocalDateTime.now());
         boardRepository.save(board);
         log.info("Board successfully created");
         return new BoardResponse(board.getId(),
@@ -143,11 +142,11 @@ public class BoardService {
         );
     }
 
-    public BoardResponse updateTitle(Long id, BoardRequest boardRequest) {
-        Board board = boardRepository.findById(id).orElseThrow(
+    public BoardResponse updateTitle(UpdateRequest request) {
+        Board board = boardRepository.findById(request.getId()).orElseThrow(
                 () -> {
-                    log.error("Board with id: {} id not found", id);
-                    throw new NotFoundException(String.format("Board with %s id not found", id));
+                    log.error("Board with id: {} id not found", request.getId());
+                    throw new NotFoundException(String.format("Board with %s id not found", request.getId()));
                 }
         );
 
@@ -155,10 +154,9 @@ public class BoardService {
                 () -> new NotFoundException("Workspace with id: " + board.getWorkspace().getId() + " not found!")
         );
 
-        board.setTitle(boardRequest.getTitle());
-        board.setCreatedAt(board.getCreatedAt());
+        board.setTitle(request.getNewTitle());
         boardRepository.save(board);
-        log.info("Board title with id: {} successfully updated!", id);
+        log.info("Board title with id: {} successfully updated!", request.getId());
         return new BoardResponse(
                 board.getId(),
                 board.getTitle(),
