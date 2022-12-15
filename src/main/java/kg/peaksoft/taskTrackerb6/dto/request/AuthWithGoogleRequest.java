@@ -13,6 +13,6 @@ public class AuthWithGoogleRequest {
 
     private String token;
     private Boolean isAdmin;
-//    private Long workspaceId;
-//    private Long boardId;
+    private Boolean isBoard;
+    private Long workspaceOrBoardId;
 }

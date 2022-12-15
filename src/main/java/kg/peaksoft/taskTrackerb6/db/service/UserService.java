@@ -48,6 +48,7 @@ public class UserService {
     private final UserWorkSpaceRepository userWorkSpaceRepository;
     private final BoardRepository boardRepository;
     private final CardRepository cardRepository;
+    private final BoardRepository boardRepository;
 
     public AuthResponse registration(SignUpRequest signUpRequest) {
 
@@ -167,7 +168,40 @@ public class UserService {
                 .build();
     }
 
-    public AuthResponse authWithGoogle(AuthWithGoogleRequest request) throws FirebaseAuthException {
+    public AuthResponse authWithGoogle(String tokenId) throws FirebaseAuthException {
+        FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdToken(tokenId);
+        User user;
+        if (!repository.existsUserByEmail(firebaseToken.getEmail())) {
+            String[] name = firebaseToken.getName().split(" ");
+            user = new User();
+            user.setFirstName(name[0]);
+            user.setLastName(name[1]);
+            user.setEmail(firebaseToken.getEmail());
+            user.setPassword(firebaseToken.getEmail());
+            user.setRole(Role.ADMIN);
+
+            user = repository.save(user);
+        }
+
+        user = repository.findUserByEmail(firebaseToken.getEmail()).orElseThrow(
+                () -> {
+                    log.error("User with this email not found!");
+                    throw new NotFoundException("User with this email not found!");
+                }
+        );
+
+        String token = jwtUtil.generateToken(user.getEmail());
+        return new AuthResponse(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getRole(),
+                token);
+    }
+
+
+    public AuthResponse authWithGoogleForInvitedMember(AuthWithGoogleRequest request) throws FirebaseAuthException {
         FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdToken(request.getToken());
         User user;
         if (!userRepository.existsUserByEmail(firebaseToken.getEmail())) {
@@ -187,6 +221,8 @@ public class UserService {
                 user.setRole(Role.ADMIN);
             }
 
+            user = repository.save(user);
+            log.info("Save user!");
             user = userRepository.save(user);
         }
 
@@ -224,6 +260,34 @@ public class UserService {
 //            UserWorkSpace userWorkSpace = new UserWorkSpace(user, workspace, user.getRole());
 //            userWorkSpaceRepository.save(userWorkSpace);
 //        }
+        log.info("Authenticate is finished!");
+
+        if (request.getIsBoard().equals(true)) {
+            if (request.getWorkspaceOrBoardId() != null && request.getWorkspaceOrBoardId() != 0) {
+                Board board = boardRepository.findById(request.getWorkspaceOrBoardId()).orElseThrow(
+                        () -> new NotFoundException("Board with id: " + request.getWorkspaceOrBoardId() + " not found!")
+                );
+
+                Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(
+                        () -> new NotFoundException("Workspace with id: " + board.getWorkspace().getId() + " not found!")
+                );
+
+                board.addMember(user);
+                UserWorkSpace userWorkSpace = new UserWorkSpace(user, workspace, user.getRole());
+                userWorkSpaceRepository.save(userWorkSpace);
+            }
+        }
+
+        if (request.getIsBoard().equals(false)) {
+            if (request.getWorkspaceOrBoardId() != null && request.getWorkspaceOrBoardId() != 0) {
+                Workspace workspace = workspaceRepository.findById(request.getWorkspaceOrBoardId()).orElseThrow(
+                        () -> new NotFoundException("Workspace with id: " + request.getWorkspaceOrBoardId() + " not found!")
+                );
+
+                UserWorkSpace userWorkSpace = new UserWorkSpace(user, workspace, user.getRole());
+                userWorkSpaceRepository.save(userWorkSpace);
+            }
+        }
 
         String token = jwtUtil.generateToken(user.getEmail());
         return new AuthResponse(

@@ -1,6 +1,5 @@
 package kg.peaksoft.taskTrackerb6.db.service;
 
-
 import kg.peaksoft.taskTrackerb6.db.model.*;
 import kg.peaksoft.taskTrackerb6.db.repository.*;
 import kg.peaksoft.taskTrackerb6.dto.request.UpdateRequest;
@@ -86,14 +85,14 @@ public class WorkspaceService {
                     helper.setSubject("[Task tracker] invitation to my workspace");
                     helper.setFrom("tasktracker.b6@gmail.com");
                     helper.setTo(email);
-                    helper.setText(request.getLink() + "/workspaceId/" + workspace.getId());
+                    helper.setText(request.getLink() + "/" + Role.ADMIN + "/workspaceId/" + workspace.getId());
                     mailSender.send(mimeMessage);
                 } else {
                     User inviteMember = userRepository.findUserByEmail(email).orElseThrow(
                             () -> new NotFoundException("User with email: " + email + " not found!")
                     );
 
-                    UserWorkSpace member = new UserWorkSpace(inviteMember, workspace, Role.USER);
+                    UserWorkSpace member = new UserWorkSpace(inviteMember, workspace, Role.ADMIN);
                     userWorkSpaceRepository.save(member);
                 }
             }
@@ -376,7 +375,7 @@ public class WorkspaceService {
     }
 
 
-    public WorkspaceResponse updateWorkspaceName(UpdateRequest request) {
+    public WorkspaceInnerPageResponse updateWorkspaceName(UpdateRequest request) {
         User user = getAuthenticateUser();
         Workspace workspace = workspaceRepository.findById(request.getId()).orElseThrow(
                 () -> new NotFoundException("Workspace with id: " + request.getId() + " not found!")
@@ -389,11 +388,45 @@ public class WorkspaceService {
         workspace.setName(request.getNewTitle());
         workspace.setCreatedAt(workspace.getCreatedAt());
         Workspace saved = workspaceRepository.save(workspace);
-        return new WorkspaceResponse(
+
+        List<Favorite> favorites = user.getFavorites();
+        List<Board> workspaceBoards = workspace.getBoards();
+        List<Board> userFavoriteBoards = new ArrayList<>();
+        List<BoardResponse> boardResponses = new ArrayList<>();
+        for (Favorite fav : favorites) {
+            if (fav.getBoard() != null) {
+                userFavoriteBoards.add(fav.getBoard());
+            }
+        }
+
+        for (Board board : workspaceBoards) {
+            if (userFavoriteBoards.contains(board)) {
+                for (Board favBoard : userFavoriteBoards) {
+                    if (favBoard.equals(board)) {
+                        boardResponses.add(new BoardResponse(
+                                board.getId(),
+                                board.getTitle(),
+                                true,
+                                board.getBackground(),
+                                workspace.getId())
+                        );
+                    }
+                }
+            } else {
+                boardResponses.add(new BoardResponse(
+                        board.getId(),
+                        board.getTitle(),
+                        false,
+                        board.getBackground(),
+                        workspace.getId())
+                );
+            }
+        }
+
+        return new WorkspaceInnerPageResponse(
                 saved.getId(),
                 saved.getName(),
-                userRepository.getCreatorResponse(workspace.getLead().getId()),
-                saved.getIsFavorite()
-        );
+                boardResponses
+                );
     }
 }

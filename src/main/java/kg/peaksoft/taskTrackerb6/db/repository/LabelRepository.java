@@ -15,7 +15,7 @@ public interface LabelRepository extends JpaRepository<Label, Long> {
 
     @Query("select new kg.peaksoft.taskTrackerb6.dto.response.LabelResponse(l.id, l.description, l.color)" +
             " from Label l " +
-            "where l.card.id = ?1")
+            "where l.card.id = :cardId")
     List<LabelResponse> getAllLabelResponses(Long cardId);
 
     @Transactional

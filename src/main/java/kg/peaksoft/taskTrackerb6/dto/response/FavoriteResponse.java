@@ -19,6 +19,7 @@ public class FavoriteResponse {
     private String background;
     private String workspaceOrBoard;
     private boolean isFavorite;
+    private Long boardsWorkspaceID;
 
 
     public FavoriteResponse(Workspace workspace) {
@@ -33,6 +34,7 @@ public class FavoriteResponse {
     public FavoriteResponse(Board board) {
         this.id = board.getId();
         this.workspaceOrBoardID = board.getId();
+        this.boardsWorkspaceID = board.getWorkspace().getId();
         this.name = board.getTitle();
         this.background = board.getBackground();
         this.workspaceOrBoard = "BOARD";

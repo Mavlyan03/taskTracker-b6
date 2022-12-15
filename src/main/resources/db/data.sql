@@ -82,18 +82,18 @@ values (1, '2022-10-23', 'First text', 1, 1);
 insert into attachments (id, document_link, attached_date, card_id)
 values (1, 'link', '2022-10-12', 1);
 
-insert into users_boards (members_id, boards_id)
+insert into boards_members (board_id, members_id)
 values (1, 1),
-       (3, 1),
-       (5, 1),
-       (6, 1),
-       (7, 1),
-       (3, 2),
-       (11, 2),
-       (10, 2),
-       (9, 2),
-       (8, 2),
-       (7, 2);
+       (1, 3),
+       (1, 5),
+       (1, 6),
+       (1, 7),
+       (2, 3),
+       (2, 11),
+       (2, 10),
+       (2, 9),
+       (2, 8),
+       (2, 7);
 
 insert into user_workspace_roles (id, user_id, workspace_id, role)
 values (1, 1, 1, 'ADMIN'),
@@ -124,5 +124,3 @@ values (1, 1),
 
 insert into subtasks_workspaces_members(sub_task_id, workspaces_members_id)
 values (1, 1);
-
-

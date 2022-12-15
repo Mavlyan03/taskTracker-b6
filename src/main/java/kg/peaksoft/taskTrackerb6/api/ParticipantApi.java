@@ -47,10 +47,16 @@ public class ParticipantApi {
         return participantService.getAllParticipantFromWorkspace(id);
     }
 
-    @Operation(summary = "Invite member", description = "Invite member")
+    @Operation(summary = "Invite new participant to board", description = "Invite new participant to board")
+    @PostMapping("/board-invite")
+    public SimpleResponse inviteParticipant(@RequestBody InviteRequest request) throws MessagingException {
+        return participantService.inviteNewParticipantToBoard(request);
+    }
+
+    @Operation(summary = "Invite new participant to workspace", description = "Invite new participant to workspace")
     @PostMapping("/invite")
-    public SimpleResponse inviteParticipant(InviteRequest request) throws MessagingException {
-        return participantService.inviteParticipant(request);
+    public SimpleResponse inviteNewParticipant(@RequestBody InviteRequest request) throws MessagingException {
+        return participantService.inviteNewParticipant(request);
     }
 }
 

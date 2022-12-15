@@ -27,5 +27,6 @@ public class ParticipantResponse {
         this.email = user.getEmail();
         this.image = user.getImage();
         this.role = user.getRole();
+        this.image = user.getImage();
     }
 }

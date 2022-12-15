@@ -9,6 +9,7 @@ import kg.peaksoft.taskTrackerb6.db.repository.*;
 import kg.peaksoft.taskTrackerb6.dto.request.InviteRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.ParticipantResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
+import kg.peaksoft.taskTrackerb6.enums.Role;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,6 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 @Service
@@ -118,7 +118,6 @@ public class ParticipantService {
         );
 
         board.getMembers().remove(user);
-        user.setBoards(null);
         log.info("User with id: " + id + "successfully deleted from board with id: {}", boardId);
         return new SimpleResponse("User successfully deleted from board!", "DELETE");
     }
@@ -129,6 +128,8 @@ public class ParticipantService {
         );
 
         List<ParticipantResponse> participantResponse = new ArrayList<>();
+        for (User user1 : userRepository.getAllUserFromBoardId(boardId)) {
+            participantResponse.add(userRepository.getParticipant(user1.getId()));
         for (User user1 : board.getMembers()) {
             participantResponse.add(userRepository.getParticipant(user1.getId()));
         }
@@ -159,43 +160,31 @@ public class ParticipantService {
         return participantResponses;
     }
 
-    public SimpleResponse inviteParticipant(InviteRequest request) throws MessagingException {
-        Board board = boardRepository.findById(request.getBoardId()).orElseThrow(
-                () -> new NotFoundException("Board with id: " + request.getBoardId() + " not found!")
-        );
-
-        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(
-                () -> new NotFoundException("Workspace with id: " + board.getWorkspace().getId() + " not found!")
-        );
-
-        boolean exists = userRepository.existsUserByEmail(request.getEmail());
-        if (!exists) {
-            MimeMessage mimeMessage = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-            helper.setSubject("[task_tracker] invited you to board!");
-            helper.setTo(request.getEmail());
-            if (request.getRole().toString().equals("ADMIN")) {
-                helper.setText(request.getLink() + request.getRole() + request.getBoardId());
-            } else {
-                helper.setText(request.getLink() + "/role/" + request.getRole() + "/boardId/" + request.getBoardId());
-            }
-            mailSender.send(mimeMessage);
-        } else {
-            User user = userRepository.findUserByEmail(request.getEmail()).orElseThrow(
-                    () -> new NotFoundException("User with email: " + request.getEmail() + " not found!")
-            );
-
-            board.addMember(user);
-            UserWorkSpace userWorkSpace = new UserWorkSpace(user, workspace, request.getRole());
-            userWorkSpaceRepository.save(userWorkSpace);
-            MimeMessage mimeMessage = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-            helper.setSubject("[task_tracker] You added to board!");
-            helper.setTo(request.getEmail());
-            helper.setText(request.getLink() + "/boardId/" + request.getBoardId());
-            mailSender.send(mimeMessage);
-
+    public SimpleResponse inviteNewParticipantToBoard(InviteRequest request) throws MessagingException {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+        helper.setSubject("[task_tracker] invite new member to board!");
+        helper.setTo(request.getEmail());
+        if (request.getRole().equals(Role.ADMIN)) {
+            helper.setText(request.getLink() + "/" + request.getRole() + "/boardId/" + request.getWorkspaceOrBoardId());
+        } else if (request.getRole().equals(Role.USER)) {
+            helper.setText(request.getLink() + "/" + request.getRole() + "/boardId/" + request.getWorkspaceOrBoardId());
         }
-        return new SimpleResponse("Email send", "ok");
+        mailSender.send(mimeMessage);
+        return new SimpleResponse("Email send!", "OK");
+    }
+
+    public SimpleResponse inviteNewParticipant(InviteRequest request) throws MessagingException {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+        helper.setSubject("[task_tracker] invite new member!");
+        helper.setTo(request.getEmail());
+        if (request.getRole().equals(Role.ADMIN)) {
+            helper.setText(request.getLink() + "/" + request.getRole() + "/workspaceId/" + request.getWorkspaceOrBoardId());
+        } else if (request.getRole().equals(Role.USER)) {
+            helper.setText(request.getLink() + "/" + request.getRole() + "/workspaceId/" + request.getWorkspaceOrBoardId());
+        }
+        mailSender.send(mimeMessage);
+        return new SimpleResponse("Email send!", "OK");
     }
 }
