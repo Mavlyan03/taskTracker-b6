@@ -42,7 +42,6 @@ public class Board {
     @OneToMany(cascade = ALL, mappedBy = "board")
     private List<Column> columns;
 
-    //    @ManyToMany(cascade = {DETACH, REFRESH, MERGE}, mappedBy = "boards")
     @ManyToMany(cascade = {DETACH, REFRESH, MERGE})
     private List<User> members;
 
