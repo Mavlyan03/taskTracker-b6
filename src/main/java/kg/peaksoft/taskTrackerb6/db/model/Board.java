@@ -42,7 +42,8 @@ public class Board {
     @OneToMany(cascade = ALL, mappedBy = "board")
     private List<Column> columns;
 
-    @ManyToMany(cascade = {DETACH, REFRESH, MERGE}, mappedBy = "boards")
+    //    @ManyToMany(cascade = {DETACH, REFRESH, MERGE}, mappedBy = "boards")
+    @ManyToMany(cascade = {DETACH, REFRESH, MERGE})
     private List<User> members;
 
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE, PERSIST})
@@ -51,10 +52,17 @@ public class Board {
     @OneToOne(cascade = ALL, mappedBy = "board")
     private Favorite favorite;
 
-    public void addColumn(Column column){
-        if (columns== null){
+    public void addColumn(Column column) {
+        if (columns == null) {
             columns = new ArrayList<>();
         }
         columns.add(column);
+    }
+
+    public void addMember(User user) {
+        if (members == null) {
+            members = new ArrayList<>();
+        }
+        members.add(user);
     }
 }

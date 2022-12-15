@@ -9,6 +9,7 @@ import kg.peaksoft.taskTrackerb6.db.repository.*;
 import kg.peaksoft.taskTrackerb6.dto.request.InviteRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.ParticipantResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
+import kg.peaksoft.taskTrackerb6.enums.Role;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -111,7 +112,6 @@ public class ParticipantService {
         );
 
         board.getMembers().remove(user);
-        user.setBoards(null);
         log.info("User with id: " + id + "successfully deleted from board with id: {}", boardId);
         return new SimpleResponse("User successfully deleted from board!", "DELETE");
     }
@@ -148,16 +148,31 @@ public class ParticipantService {
         return participantResponses;
     }
 
-    public SimpleResponse inviteParticipant(InviteRequest request) throws MessagingException {
+    public SimpleResponse inviteNewParticipantToBoard(InviteRequest request) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-        helper.setSubject("[task_tracker] registry new member");
+        helper.setSubject("[task_tracker] invite new member to board!");
         helper.setTo(request.getEmail());
-        if (request.getRole().toString().equals("ADMIN")) {
-            helper.setText(request.getLink() + request.getRole());
+        if (request.getRole().equals(Role.ADMIN)) {
+            helper.setText(request.getLink() + "/" + request.getRole() + "/boardId/" + request.getWorkspaceOrBoardId());
+        } else if (request.getRole().equals(Role.USER)) {
+            helper.setText(request.getLink() + "/" + request.getRole() + "/boardId/" + request.getWorkspaceOrBoardId());
         }
-        helper.setText(request.getLink() + request.getRole());
         mailSender.send(mimeMessage);
-        return new SimpleResponse("Email send", "ok");
+        return new SimpleResponse("Email send!", "OK");
+    }
+
+    public SimpleResponse inviteNewParticipant(InviteRequest request) throws MessagingException {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+        helper.setSubject("[task_tracker] invite new member!");
+        helper.setTo(request.getEmail());
+        if (request.getRole().equals(Role.ADMIN)) {
+            helper.setText(request.getLink() + "/" + request.getRole() + "/workspaceId/" + request.getWorkspaceOrBoardId());
+        } else if (request.getRole().equals(Role.USER)) {
+            helper.setText(request.getLink() + "/" + request.getRole() + "/workspaceId/" + request.getWorkspaceOrBoardId());
+        }
+        mailSender.send(mimeMessage);
+        return new SimpleResponse("Email send!", "OK");
     }
 }

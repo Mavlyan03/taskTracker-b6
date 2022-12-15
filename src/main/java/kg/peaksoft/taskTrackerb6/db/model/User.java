@@ -62,8 +62,8 @@ public class User implements UserDetails {
     @OneToMany(cascade = {ALL}, mappedBy = "user")
     public List<UserWorkSpace> userWorkSpaces;
 
-    @ManyToMany(cascade = {DETACH, REFRESH, MERGE})
-    private List<Board> boards;
+//    @ManyToMany(cascade = {DETACH, REFRESH, MERGE})
+//    private List<Board> boards;
 
     @Enumerated(EnumType.STRING)
     private Role role;

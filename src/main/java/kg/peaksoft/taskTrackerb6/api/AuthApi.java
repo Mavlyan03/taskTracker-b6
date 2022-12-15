@@ -54,8 +54,8 @@ public class AuthApi {
 
     @Operation(summary = "Google authentication", description = "Any user can authenticate with Google")
     @PostMapping("authenticate/google")
-    public AuthResponse authWithGoogleAccount(@RequestBody AuthWithGoogleRequest request) throws FirebaseAuthException {
-        return userService.authWithGoogle(request);
+    public AuthResponse authWithGoogleAccount(@RequestParam String tokenId) throws FirebaseAuthException {
+        return userService.authWithGoogle(tokenId);
     }
 
     @Operation(summary = "Search members", description = "Search members by workspace id")
@@ -63,5 +63,11 @@ public class AuthApi {
     public List<MemberResponse> globalSearch(@PathVariable Long id,
                                              @RequestParam String email) {
         return memberService.searchByEmailOrName(id, email);
+    }
+
+    @Operation(summary = "Google authentication for invited member", description = "Google authenticate with google for invited member")
+    @PostMapping("/authenticate/google/invite-member")
+    public AuthResponse authenticateForInvitedMember(@RequestBody AuthWithGoogleRequest request) throws FirebaseAuthException {
+        return userService.authWithGoogleForInvitedMember(request);
     }
 }
