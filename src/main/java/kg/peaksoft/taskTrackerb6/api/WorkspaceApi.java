@@ -68,7 +68,7 @@ public class WorkspaceApi {
         return favoriteService.getAllUserFavoriteWorkspacesAndBoards();
     }
 
-    @Operation(summary = "Update workspace name", description = "Update workspace name by id")
+    @Operation(summary = "Update workspace name", description = "Update workspace name")
     @PutMapping
     public WorkspaceInnerPageResponse update(@RequestBody UpdateRequest request) {
         return service.updateWorkspaceName(request);

@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.peaksoft.taskTrackerb6.dto.request.AddLabelRequest;
 import kg.peaksoft.taskTrackerb6.db.service.LabelService;
 import kg.peaksoft.taskTrackerb6.dto.request.LabelRequest;
-import kg.peaksoft.taskTrackerb6.dto.request.UpdateRequest;
+import kg.peaksoft.taskTrackerb6.dto.request.UpdateLabelRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.LabelResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class LabelApi {
 
     @Operation(summary = "Update label", description = "Update label")
     @PutMapping
-    public LabelResponse updateLabel(@RequestBody UpdateRequest request) {
+    public LabelResponse updateLabel(@RequestBody UpdateLabelRequest request) {
         return labelService.updateLabel(request);
     }
 

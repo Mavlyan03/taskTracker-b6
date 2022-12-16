@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,7 +69,6 @@ public class WorkspaceService {
         user.addUserWorkSpace(userWorkSpace);
         workspace.addUserWorkSpace(userWorkSpace);
         workspace.setLead(user);
-        workspace.setCreatedAt(LocalDateTime.now());
         Workspace savedWorkspace = workspaceRepository.save(workspace);
         userWorkSpaceRepository.save(userWorkSpace);
         if (request.getEmails().isEmpty() || request.getEmails().get(0).equals("") || request.getEmails().get(0).isBlank()) {
@@ -391,7 +389,6 @@ public class WorkspaceService {
         }
 
         workspace.setName(request.getNewTitle());
-        workspace.setCreatedAt(workspace.getCreatedAt());
         Workspace saved = workspaceRepository.save(workspace);
 
         List<Favorite> favorites = user.getFavorites();

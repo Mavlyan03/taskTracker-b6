@@ -3,11 +3,11 @@ package kg.peaksoft.taskTrackerb6.dto.request;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
-public class ChecklistRequest {
+public class UpdateLabelRequest {
 
-    private String title;
+    private Long id;
+    private String newTitle;
+    private String color;
 }

@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
-    @Query("select b from Board b where b.workspace.id = :id order by b.createdAt")
+    @Query("select b from Board b where b.workspace.id = :id order by b.id")
     List<Board> getAll(Long id);
 
     @Transactional

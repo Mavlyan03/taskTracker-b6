@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.peaksoft.taskTrackerb6.db.model.Board;
 import kg.peaksoft.taskTrackerb6.db.service.BoardService;
 import kg.peaksoft.taskTrackerb6.dto.request.BoardRequest;
+import kg.peaksoft.taskTrackerb6.dto.request.UpdateRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.ArchiveResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.BoardResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
@@ -57,10 +58,9 @@ public class BoardApi {
     }
 
     @Operation(summary = "Change title", description = "Change title to a new one")
-    @PutMapping("/title/{id}")
-    public BoardResponse updateTitle(@PathVariable Long id,
-                                     @RequestBody BoardRequest boardRequest) {
-        return boardService.updateTitle(id, boardRequest);
+    @PutMapping("/title")
+    public BoardResponse updateTitle(@RequestBody UpdateRequest request) {
+        return boardService.updateTitle(request);
     }
 
     @Operation(summary = "Get all boards", description = "Get all boards by workspace id")
