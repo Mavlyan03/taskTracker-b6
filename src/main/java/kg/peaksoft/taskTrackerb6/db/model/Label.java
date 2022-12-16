@@ -31,8 +31,8 @@ public class Label {
 
     private String color;
 
-//    @ManyToMany(cascade = {DETACH, REFRESH, MERGE})
-//    private List<Card> cards;
+    @ManyToMany(cascade = {DETACH, REFRESH, MERGE}, mappedBy = "labels")
+    private List<Card> cards;
 
     @JsonCreator
     public Label(@JsonProperty("description") String description,@JsonProperty("color") String color) {
@@ -40,10 +40,10 @@ public class Label {
         this.color = color;
     }
 
-//    public void addCard(Card card) {
-//        if (cards == null) {
-//            cards = new ArrayList<>();
-//        }
-//        cards.add(card);
-//    }
+    public void addCard(Card card) {
+        if (cards == null) {
+            cards = new ArrayList<>();
+        }
+        cards.add(card);
+    }
 }

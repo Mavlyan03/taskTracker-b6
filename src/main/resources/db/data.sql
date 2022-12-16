@@ -122,5 +122,8 @@ values (1, 1),
        (2, 8),
        (2, 7);
 
-insert into subtasks_workspaces_members(sub_task_id, workspaces_members_id)
+insert into subtasks_workspaces_members (sub_task_id, workspaces_members_id)
+values (1, 1);
+
+insert into cards_labels (cards_id, labels_id)
 values (1, 1);

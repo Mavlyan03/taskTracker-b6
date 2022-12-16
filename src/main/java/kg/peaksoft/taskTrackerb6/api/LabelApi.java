@@ -64,4 +64,10 @@ public class LabelApi {
     public SimpleResponse deleteLabel(@PathVariable Long id){
         return labelService.deleteLabelById(id);
     }
+
+    @Operation(summary = "Get all labels", description = "Get all ready labels")
+    @GetMapping("/ready-labels")
+    public List<LabelResponse> getAllReadyLabels() {
+        return labelService.getAllReadyLabels();
+    }
 }

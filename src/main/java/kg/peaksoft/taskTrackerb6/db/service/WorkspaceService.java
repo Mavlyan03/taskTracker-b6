@@ -40,7 +40,6 @@ public class WorkspaceService {
     private final BoardRepository boardRepository;
     private final CardRepository cardRepository;
     private final ColumnRepository columnRepository;
-    private final LabelRepository labelRepository;
     private final EstimationRepository estimationRepository;
     private final NotificationRepository notificationRepository;
     private final ChecklistRepository checklistRepository;
@@ -207,9 +206,8 @@ public class WorkspaceService {
                             commentRepository.deleteComment(comment.getId());
                         }
 
-                        for (Label label : card.getLabels()) {
-                            labelRepository.deleteLabel(label.getId());
-                        }
+                        card.setLabels(null);
+                        log.info("labels is null");
 
                         List<Notification> cardNotification = notificationRepository.findAllByCardId(card.getId());
                         if (cardNotification != null) {
@@ -279,22 +277,12 @@ public class WorkspaceService {
             }
         }
 
-        Long deleteId = null;
         List<UserWorkSpace> workSpaces = workspace.getUserWorkSpaces();
         for (UserWorkSpace userWorkspace : workSpaces) {
             if (userWorkspace.getWorkspace().equals(workspace)) {
-                deleteId = userWorkspace.getId();
-                log.info("delete id: " + deleteId);
-                userWorkSpaceRepository.deleteUserWorkSpace(deleteId);
+                userWorkSpaceRepository.deleteUserWorkSpace(userWorkspace.getId());
             }
         }
-//        List<UserWorkSpace> userWorkSpaces = user.getUserWorkSpaces();
-//        for (UserWorkSpace userWorkSpace : userWorkSpaces) {
-//            if (userWorkSpace.getWorkspace().equals(workspace)) {
-//                deleteId = userWorkSpace.getId();
-//            }
-//        }
-
 
         workspaceRepository.deleteWorkspaceById(workspace.getId());
         log.info("Workspace with id: {} successfully deleted!", id);
