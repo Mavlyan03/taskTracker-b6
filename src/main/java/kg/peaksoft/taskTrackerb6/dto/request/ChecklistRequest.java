@@ -10,5 +10,4 @@ import java.util.List;
 public class ChecklistRequest {
 
     private String title;
-    private List<SubTaskRequest> subTaskRequests;
 }
