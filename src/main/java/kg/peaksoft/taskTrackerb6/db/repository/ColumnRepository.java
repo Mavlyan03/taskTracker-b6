@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface ColumnRepository extends JpaRepository<Column, Long> {
 
-    @Query("select c from Column c where c.board.id = ?1 order by c.createdAt")
+    @Query("select c from Column c where c.board.id = ?1 order by c.id")
     List<Column> findAllColumnsByBoardId(Long id);
 
     @Transactional

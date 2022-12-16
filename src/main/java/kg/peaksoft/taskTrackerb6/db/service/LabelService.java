@@ -6,10 +6,9 @@ import kg.peaksoft.taskTrackerb6.db.repository.CardRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.LabelRepository;
 import kg.peaksoft.taskTrackerb6.dto.request.AddLabelRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.LabelRequest;
-import kg.peaksoft.taskTrackerb6.dto.request.UpdateRequest;
+import kg.peaksoft.taskTrackerb6.dto.request.UpdateLabelRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.LabelResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
-import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.BadRequestException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +55,7 @@ public class LabelService {
         return new SimpleResponse("Label successfully deleted!", "DELETE");
     }
 
-    public LabelResponse updateLabel(UpdateRequest update) {
+    public LabelResponse updateLabel(UpdateLabelRequest update) {
         Label label = labelRepository.findById(update.getId()).orElseThrow(
                 () -> {
                     log.error("Label with id: {} not found!", update.getId());

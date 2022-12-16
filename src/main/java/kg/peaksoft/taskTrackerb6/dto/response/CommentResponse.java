@@ -1,23 +1,32 @@
 package kg.peaksoft.taskTrackerb6.dto.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class CommentResponse {
 
     private Long id;
     private String text;
-    private LocalDateTime createdAt;
+    private String createdAt;
     private CommentedUserResponse commentedUserResponse;
+    private Boolean isMyComment;
 
-    public CommentResponse(Long id, String text, LocalDateTime createdAt, CommentedUserResponse commentedUserResponse) {
-        this.id = id;
+    public CommentResponse(String text, String createdAt, CommentedUserResponse commentedUserResponse, Boolean isMyComment) {
         this.text = text;
         this.createdAt = createdAt;
         this.commentedUserResponse = commentedUserResponse;
+        this.isMyComment = isMyComment;
+    }
+
+    public CommentResponse(Long id, String text, String createdAt, CommentedUserResponse response) {
+        this.id = id;
+        this.text = text;
+        this.createdAt = createdAt;
+        this.commentedUserResponse = response;
     }
 }
