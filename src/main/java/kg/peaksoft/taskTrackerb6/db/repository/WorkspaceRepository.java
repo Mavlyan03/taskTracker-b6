@@ -20,7 +20,4 @@ public interface WorkspaceRepository extends JpaRepository<Workspace, Long> {
 
     @Query("select distinct w from Workspace w join UserWorkSpace s on w.id = s.workspace.id order by w.id")
     List<Workspace> getAllUserWorkspaces();
-
-//    @Query("select distinct w from Workspace w join UserWorkSpace s on s.user = ?1 order by w.id")
-//    List<Workspace> getAllUserWorkspaces(User user);
 }
