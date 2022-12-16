@@ -66,7 +66,7 @@ public class LabelApi {
     }
 
     @Operation(summary = "Get all labels ready label", description = "Get all ready labels")
-    @GetMapping("/ready-labels")
+    @GetMapping
     public List<LabelResponse> getAllReadyLabels() {
         return labelService.getAllReadyLabels();
     }

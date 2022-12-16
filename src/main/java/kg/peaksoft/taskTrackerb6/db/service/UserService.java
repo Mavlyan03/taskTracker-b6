@@ -47,7 +47,6 @@ public class UserService {
     private final WorkspaceRepository workspaceRepository;
     private final UserWorkSpaceRepository userWorkSpaceRepository;
     private final BoardRepository boardRepository;
-    private final CardRepository cardRepository;
 
     public AuthResponse registration(SignUpRequest signUpRequest) {
 
