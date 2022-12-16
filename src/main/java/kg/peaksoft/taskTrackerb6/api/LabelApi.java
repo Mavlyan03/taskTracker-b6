@@ -65,7 +65,7 @@ public class LabelApi {
         return labelService.deleteLabelById(id);
     }
 
-    @Operation(summary = "Get all labels", description = "Get all ready labels")
+    @Operation(summary = "Get all labels ready label", description = "Get all ready labels")
     @GetMapping("/ready-labels")
     public List<LabelResponse> getAllReadyLabels() {
         return labelService.getAllReadyLabels();

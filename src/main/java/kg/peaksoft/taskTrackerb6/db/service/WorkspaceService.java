@@ -333,9 +333,15 @@ public class WorkspaceService {
     public List<WorkspaceResponse> getAllUserWorkspaces() {
         User user = getAuthenticateUser();
         List<Workspace> workspaces = new ArrayList<>();
+        List<Workspace> workspacesRepositoryGetAll = workspaceRepository.getAllUserWorkspaces();
         List<UserWorkSpace> userWorkSpaces = user.getUserWorkSpaces();
         for (UserWorkSpace userWorkSpace : userWorkSpaces) {
-            workspaces.add(userWorkSpace.getWorkspace());
+            for (Workspace w : workspacesRepositoryGetAll) {
+                if (userWorkSpace.getWorkspace().equals(w)) {
+                    workspaces.add(userWorkSpace.getWorkspace());
+
+                }
+            }
         }
 
         List<Workspace> favoriteWorkspaces = new ArrayList<>();
@@ -426,6 +432,6 @@ public class WorkspaceService {
                 saved.getId(),
                 saved.getName(),
                 boardResponses
-                );
+        );
     }
 }

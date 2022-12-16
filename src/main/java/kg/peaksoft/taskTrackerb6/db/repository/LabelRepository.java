@@ -13,11 +13,6 @@ import java.util.List;
 @Repository
 public interface LabelRepository extends JpaRepository<Label, Long> {
 
-//    @Query("select new kg.peaksoft.taskTrackerb6.dto.response.LabelResponse(l.id, l.description, l.color)" +
-//            " from Label l " +
-//            "join Card c on l.id.c.id = :cardId")
-//    List<LabelResponse> getAllLabelResponses(Long cardId);
-
     @Transactional
     @Modifying
     @Query("delete from Label l where l.id = :id")
