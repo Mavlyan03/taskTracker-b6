@@ -73,8 +73,8 @@ insert into notifications (id, message, created_at, notification_type, from_user
                            user_id, card_id, column_id, board_id)
 values (1, 'First Text', '2022-11-21T16:28', 'ASSIGN', 1, 2, 1, 1, 1);
 
-insert into labels (id, color, description, card_id)
-values (1, 'RED', 'Complete this task immediately', 1);
+insert into labels (id, color, description)
+values (1, 'RED', 'Complete this task immediately');
 
 insert into comments (id, created_at, text, user_id, card_id)
 values (1, '2022-10-23', 'First text', 1, 1);

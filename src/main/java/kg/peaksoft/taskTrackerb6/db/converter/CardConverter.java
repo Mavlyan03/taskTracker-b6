@@ -37,7 +37,7 @@ public class CardConverter {
     public CardInnerPageResponse convertToCardInnerPageResponse(Card card) {
         CardInnerPageResponse response = new CardInnerPageResponse(card);
         if (card.getLabels() != null) {
-            response.setLabelResponses(labelRepository.getAllLabelResponses(card.getId()));
+            response.setLabelResponses(getAllLabelsByCardId(card.getId()));
         }
 
         if (card.getEstimation() != null) {
@@ -60,7 +60,7 @@ public class CardConverter {
     public CardResponse convertToResponseForGetAll(Card card) {
         CardResponse response = new CardResponse(card);
         response.setCreator(userRepository.getCreatorResponse(card.getCreator().getId()));
-        response.setLabelResponses(labelRepository.getAllLabelResponses(card.getId()));
+        response.setLabelResponses(getAllLabelsByCardId(card.getId()));
         if (card.getEstimation() != null) {
             int between = Period.between(card.getEstimation().getStartDate(), card.getEstimation().getDueDate()).getDays();
             response.setDuration("" + between + " days");
@@ -154,5 +154,19 @@ public class CardConverter {
 
     private MyTimeClassResponse convertStartTimeToResponse(MyTimeClass timeClass) {
         return new MyTimeClassResponse(timeClass.getId(), String.format("%02d:%02d", timeClass.getHour(), timeClass.getMinute()));
+    }
+
+    private List<LabelResponse> getAllLabelsByCardId(Long cardId) {
+        Card card = cardRepository.findById(cardId).orElseThrow(
+                () -> new NotFoundException("Card with id: " + cardId + " not found!")
+        );
+
+        List<Label> cardLabels = card.getLabels();
+        List<LabelResponse> labelResponses = new ArrayList<>();
+        for (Label l : cardLabels) {
+            labelResponses.add(labelRepository.getLabelResponse(l.getId()));
+        }
+
+        return labelResponses;
     }
 }

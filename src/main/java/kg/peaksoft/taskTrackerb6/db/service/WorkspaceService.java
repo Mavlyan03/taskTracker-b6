@@ -279,12 +279,23 @@ public class WorkspaceService {
             }
         }
 
-        List<UserWorkSpace> userWorkSpaces = user.getUserWorkSpaces();
-        for (UserWorkSpace userWorkSpace : userWorkSpaces) {
-            if (userWorkSpace.getUser().equals(user) && userWorkSpace.getWorkspace().equals(workspace)) {
-                userWorkSpaceRepository.deleteUserWorkSpace(userWorkSpace.getId());
+        Long deleteId = null;
+        List<UserWorkSpace> workSpaces = workspace.getUserWorkSpaces();
+        for (UserWorkSpace userWorkspace : workSpaces) {
+            if (userWorkspace.getWorkspace().equals(workspace)) {
+                deleteId = userWorkspace.getId();
+                log.info("delete id: " + deleteId);
+                userWorkSpaceRepository.deleteUserWorkSpace(deleteId);
             }
         }
+//        List<UserWorkSpace> userWorkSpaces = user.getUserWorkSpaces();
+//        for (UserWorkSpace userWorkSpace : userWorkSpaces) {
+//            if (userWorkSpace.getWorkspace().equals(workspace)) {
+//                deleteId = userWorkSpace.getId();
+//            }
+//        }
+
+
         workspaceRepository.deleteWorkspaceById(workspace.getId());
         log.info("Workspace with id: {} successfully deleted!", id);
         return new SimpleResponse("Workspace with id: " + id + " successfully!", "DELETE");

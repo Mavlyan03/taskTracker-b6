@@ -24,7 +24,7 @@ public class LabelApi {
 
     @Operation(summary = "Create new label", description = "Create new label")
     @PostMapping
-    public SimpleResponse createLabel(@RequestBody LabelRequest request) {
+    public LabelResponse createLabel(@RequestBody LabelRequest request) {
         return labelService.saveLabel(request);
     }
 
