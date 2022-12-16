@@ -205,7 +205,6 @@ public class WorkspaceService {
                         }
 
                         card.setLabels(null);
-                        log.info("labels is null");
 
                         List<Notification> cardNotification = notificationRepository.findAllByCardId(card.getId());
                         if (cardNotification != null) {

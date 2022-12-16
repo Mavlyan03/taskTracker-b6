@@ -62,7 +62,7 @@ public class LabelService {
         label.setColor(update.getColor());
         label.setDescription(update.getNewTitle());
         labelRepository.save(label);
-        log.info("Label successfully created!");
+        log.info("Label successfully updated!");
         return labelRepository.getLabelResponse(label.getId());
     }
 
