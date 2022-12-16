@@ -18,6 +18,6 @@ public interface WorkspaceRepository extends JpaRepository<Workspace, Long> {
     @Query("delete from Workspace w where w.id = :id")
     void deleteWorkspaceById(Long id);
 
-    @Query("select distinct w from Workspace w join UserWorkSpace s on s.user = ?1 order by w.id")
-    List<Workspace> getAllUserWorkspacesSortedById(User user);
+    @Query("select distinct w from Workspace w join UserWorkSpace s on w.id = s.workspace.id order by w.id")
+    List<Workspace> getAllUserWorkspaces();
 }

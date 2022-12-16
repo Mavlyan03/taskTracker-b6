@@ -39,7 +39,6 @@ public class WorkspaceService {
     private final BoardRepository boardRepository;
     private final CardRepository cardRepository;
     private final ColumnRepository columnRepository;
-    private final LabelRepository labelRepository;
     private final EstimationRepository estimationRepository;
     private final NotificationRepository notificationRepository;
     private final ChecklistRepository checklistRepository;
@@ -205,9 +204,7 @@ public class WorkspaceService {
                             commentRepository.deleteComment(comment.getId());
                         }
 
-                        for (Label label : card.getLabels()) {
-                            labelRepository.deleteLabel(label.getId());
-                        }
+                        card.setLabels(null);
 
                         List<Notification> cardNotification = notificationRepository.findAllByCardId(card.getId());
                         if (cardNotification != null) {
@@ -277,12 +274,13 @@ public class WorkspaceService {
             }
         }
 
-        List<UserWorkSpace> userWorkSpaces = user.getUserWorkSpaces();
-        for (UserWorkSpace userWorkSpace : userWorkSpaces) {
-            if (userWorkSpace.getUser().equals(user) && userWorkSpace.getWorkspace().equals(workspace)) {
-                userWorkSpaceRepository.deleteUserWorkSpace(userWorkSpace.getId());
+        List<UserWorkSpace> workSpaces = workspace.getUserWorkSpaces();
+        for (UserWorkSpace userWorkspace : workSpaces) {
+            if (userWorkspace.getWorkspace().equals(workspace)) {
+                userWorkSpaceRepository.deleteUserWorkSpace(userWorkspace.getId());
             }
         }
+
         workspaceRepository.deleteWorkspaceById(workspace.getId());
         log.info("Workspace with id: {} successfully deleted!", id);
         return new SimpleResponse("Workspace with id: " + id + " successfully!", "DELETE");
@@ -332,9 +330,15 @@ public class WorkspaceService {
     public List<WorkspaceResponse> getAllUserWorkspaces() {
         User user = getAuthenticateUser();
         List<Workspace> workspaces = new ArrayList<>();
+        List<Workspace> workspacesRepositoryGetAll = workspaceRepository.getAllUserWorkspaces();
         List<UserWorkSpace> userWorkSpaces = user.getUserWorkSpaces();
         for (UserWorkSpace userWorkSpace : userWorkSpaces) {
-            workspaces.add(userWorkSpace.getWorkspace());
+            for (Workspace w : workspacesRepositoryGetAll) {
+                if (userWorkSpace.getWorkspace().equals(w)) {
+                    workspaces.add(userWorkSpace.getWorkspace());
+
+                }
+            }
         }
 
         List<Workspace> favoriteWorkspaces = new ArrayList<>();
@@ -424,6 +428,6 @@ public class WorkspaceService {
                 saved.getId(),
                 saved.getName(),
                 boardResponses
-                );
+        );
     }
 }

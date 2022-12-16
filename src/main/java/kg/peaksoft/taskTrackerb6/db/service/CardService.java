@@ -3,8 +3,11 @@ package kg.peaksoft.taskTrackerb6.db.service;
 import kg.peaksoft.taskTrackerb6.db.converter.CardConverter;
 import kg.peaksoft.taskTrackerb6.db.model.*;
 import kg.peaksoft.taskTrackerb6.db.repository.*;
-import kg.peaksoft.taskTrackerb6.dto.request.*;
-import kg.peaksoft.taskTrackerb6.dto.response.*;
+import kg.peaksoft.taskTrackerb6.dto.request.CardRequest;
+import kg.peaksoft.taskTrackerb6.dto.request.UpdateRequest;
+import kg.peaksoft.taskTrackerb6.dto.response.CardInnerPageResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.CardResponse;
+import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.enums.NotificationType;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
@@ -33,6 +36,11 @@ public class CardService {
     private final NotificationRepository notificationRepository;
     private final BasketRepository basketRepository;
     private final WorkspaceRepository workspaceRepository;
+    private final AttachmentRepository attachmentRepository;
+    private final ChecklistRepository checklistRepository;
+    private final SubTaskRepository subTaskRepository;
+    private final CommentRepository commentRepository;
+    private final EstimationRepository estimationRepository;
 
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -44,7 +52,6 @@ public class CardService {
                 }
         );
     }
-
 
     public List<CardResponse> moveCard(Long cardId, Long columnId) {
         User user = getAuthenticateUser();
@@ -114,6 +121,37 @@ public class CardService {
                 }
             }
         }
+
+        List<Attachment> attachments = card.getAttachments();
+        for (Attachment attachment : attachments) {
+            attachmentRepository.deleteAttachment(attachment.getId());
+        }
+
+        for (Checklist c : checklistRepository.findAllChecklists(card.getId())) {
+            for (SubTask s : c.getSubTasks()) {
+                Estimation estimation = s.getEstimation();
+                if (estimation != null) {
+                    estimationRepository.deleteEstimation(estimation.getId());
+                }
+
+                subTaskRepository.deleteSubTask(s.getId());
+            }
+
+            checklistRepository.deleteChecklist(c.getId());
+        }
+
+        for (Comment comment : card.getComments()) {
+            commentRepository.deleteComment(comment.getId());
+        }
+
+        List<Notification> cardNotification = notificationRepository.findAllByCardId(card.getId());
+        if (cardNotification != null) {
+            for (Notification n : cardNotification) {
+                notificationRepository.deleteNotification(n.getId());
+            }
+        }
+
+        card.setLabels(null);
 
         cardRepository.deleteCard(card.getId());
         log.info("Card with id: {} successfully deleted", id);

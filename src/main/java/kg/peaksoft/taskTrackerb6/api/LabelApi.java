@@ -24,7 +24,7 @@ public class LabelApi {
 
     @Operation(summary = "Create new label", description = "Create new label")
     @PostMapping
-    public SimpleResponse createLabel(@RequestBody LabelRequest request) {
+    public LabelResponse createLabel(@RequestBody LabelRequest request) {
         return labelService.saveLabel(request);
     }
 
@@ -63,5 +63,11 @@ public class LabelApi {
     @DeleteMapping("/{id}")
     public SimpleResponse deleteLabel(@PathVariable Long id){
         return labelService.deleteLabelById(id);
+    }
+
+    @Operation(summary = "Get all labels ready label", description = "Get all ready labels")
+    @GetMapping
+    public List<LabelResponse> getAllReadyLabels() {
+        return labelService.getAllReadyLabels();
     }
 }

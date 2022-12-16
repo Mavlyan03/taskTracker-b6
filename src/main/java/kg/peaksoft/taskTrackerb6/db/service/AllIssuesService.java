@@ -65,7 +65,7 @@ public class AllIssuesService {
 
         response.setAssignee(cardMemberResponses);
 
-        List<LabelResponse> labelResponses = labelRepository.getAllLabelResponses(card.getId());
+        List<LabelResponse> labelResponses = getAllLabelsByCardId(card.getId());
         response.setLabels(labelResponses);
 
         for (Checklist checklist : card.getChecklists()) {
@@ -142,5 +142,20 @@ public class AllIssuesService {
 
         log.info("Get all member assigned cards");
         return memberAssignedCards;
+    }
+
+    private List<LabelResponse> getAllLabelsByCardId(Long cardId) {
+        Card card = cardRepository.findById(cardId).orElseThrow(
+                () -> new NotFoundException("Card with id: " + cardId + " not found!")
+        );
+
+        List<Label> cardLabels = card.getLabels();
+        List<LabelResponse> labelResponses = new ArrayList<>();
+        for (Label l : cardLabels) {
+            labelResponses.add(labelRepository.getLabelResponse(l.getId()));
+        }
+
+        log.info("Get all labels by card's id");
+        return labelResponses;
     }
 }

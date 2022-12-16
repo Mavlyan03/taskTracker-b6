@@ -9,6 +9,9 @@ import lombok.Setter;
 import javax.persistence.*;
 import javax.persistence.Column;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static javax.persistence.CascadeType.*;
 
 @Entity
@@ -28,12 +31,19 @@ public class Label {
 
     private String color;
 
-    @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
-    private Card card;
+    @ManyToMany(cascade = {DETACH, REFRESH, MERGE}, mappedBy = "labels")
+    private List<Card> cards;
 
     @JsonCreator
     public Label(@JsonProperty("description") String description,@JsonProperty("color") String color) {
         this.description = description;
         this.color = color;
+    }
+
+    public void addCard(Card card) {
+        if (cards == null) {
+            cards = new ArrayList<>();
+        }
+        cards.add(card);
     }
 }

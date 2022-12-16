@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,10 +28,10 @@ public class LabelService {
     private final LabelRepository labelRepository;
     private final CardRepository cardRepository;
 
-    public SimpleResponse saveLabel(LabelRequest labelRequest) {
+    public LabelResponse saveLabel(LabelRequest labelRequest) {
         Label label = new Label(labelRequest.getDescription(), labelRequest.getColor());
-        labelRepository.save(label);
-        return new SimpleResponse("New label saved!", "OK");
+        Label save = labelRepository.save(label);
+        return labelRepository.getLabelResponse(save.getId());
     }
 
     public SimpleResponse deleteLabelFromCard(Long cardId, Long labelId) {
@@ -42,14 +43,9 @@ public class LabelService {
                 () -> new NotFoundException("Label with id: " + labelId + " not found!")
         );
 
-        if (!card.getLabels().contains(label)) {
+        if (card.getLabels().contains(label)) {
             card.getLabels().remove(label);
-            label.setCard(null);
-        }
-
-        if (label.getCard() != null) {
-            label.setCard(null);
-            labelRepository.save(label);
+            log.info("label is removed from card!");
         }
 
         return new SimpleResponse("Label successfully deleted!", "DELETE");
@@ -66,7 +62,7 @@ public class LabelService {
         label.setColor(update.getColor());
         label.setDescription(update.getNewTitle());
         labelRepository.save(label);
-        log.info("Label successfully created!");
+        log.info("Label successfully updated!");
         return labelRepository.getLabelResponse(label.getId());
     }
 
@@ -81,8 +77,19 @@ public class LabelService {
     }
 
     public List<LabelResponse> getAllLabelsByCardId(Long cardId) {
+        Card card = cardRepository.findById(cardId).orElseThrow(
+                () -> new NotFoundException("Card with id: " + cardId + " not found!")
+        );
+
+
+        List<Label> cardLabels = card.getLabels();
+        List<LabelResponse> labelResponses = new ArrayList<>();
+        for (Label l : cardLabels) {
+            labelResponses.add(labelRepository.getLabelResponse(l.getId()));
+        }
+
         log.info("Get all labels by card's id");
-        return labelRepository.getAllLabelResponses(cardId);
+        return labelResponses;
     }
 
     public SimpleResponse addLabelToCard(AddLabelRequest request) {
@@ -96,7 +103,7 @@ public class LabelService {
 
         if (!card.getLabels().contains(label)) {
             card.addLabel(label);
-            label.setCard(card);
+            label.addCard(card);
             return new SimpleResponse("Label added to this card!", "OK");
         } else {
             throw new BadRequestException("Label already added to card!");
@@ -104,7 +111,22 @@ public class LabelService {
     }
 
     public SimpleResponse deleteLabelById(Long id) {
-        labelRepository.deleteById(id);
+        Label label = labelRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Label with id: " + id + " not found!")
+        );
+
+        label.setCards(null);
+        labelRepository.deleteLabel(id);
         return new SimpleResponse("Label successfully deleted!", "OK");
+    }
+
+    public List<LabelResponse> getAllReadyLabels() {
+        List<Label> getAll = labelRepository.findAll();
+        List<LabelResponse> labelResponses = new ArrayList<>();
+        for (Label label : getAll) {
+            labelResponses.add(labelRepository.getLabelResponse(label.getId()));
+        }
+
+        return labelResponses;
     }
 }

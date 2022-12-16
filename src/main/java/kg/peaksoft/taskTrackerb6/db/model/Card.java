@@ -53,7 +53,7 @@ public class Card {
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
     private kg.peaksoft.taskTrackerb6.db.model.Column column;
 
-    @OneToMany(cascade = {ALL}, mappedBy = "card")
+    @ManyToMany(cascade = {DETACH, REFRESH, MERGE})
     private List<Label> labels;
 
     @OneToMany(cascade = {ALL}, mappedBy = "card")
