@@ -43,11 +43,8 @@ public class ChecklistService {
     private final CardRepository cardRepository;
     private final ChecklistRepository checklistRepository;
     private final UserRepository userRepository;
-    private final WorkspaceRepository workspaceRepository;
-    private final BoardRepository boardRepository;
 
     public ChecklistResponse createChecklist(Long id, ChecklistRequest request) {
-        User authUser = getAuthenticateUser();
         Card card = cardRepository.findById(id).orElseThrow(
                 () -> {
                     log.error("Card with id: {} not found!", id);
@@ -55,53 +52,8 @@ public class ChecklistService {
                 }
         );
 
-        Board board = boardRepository.findById(card.getColumn().getBoard().getId()).orElseThrow(
-                () -> {
-                    log.error("Board with id: {} not found!", id);
-                    throw new NoSuchElementException(Board.class, id);
-                }
-        );
-
-        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(
-                () -> {
-                    log.error("Workspace with id: {} not found!", id);
-                    throw new NoSuchElementException(Workspace.class, id);
-                }
-        );
-
         Checklist checklist = new Checklist();
         checklist.setTitle(request.getTitle());
-        List<MemberResponse> members = new ArrayList<>();
-        for (UserWorkSpace userWorkSpace : workspace.getUserWorkSpaces()) {
-            if (!authUser.equals(userWorkSpace.getUser())) {
-                members.add(convertToMemberResponse(userWorkSpace.getUser()));
-            }
-        }
-
-        for (SubTaskRequest subTaskRequest : request.getSubTaskRequests()) {
-            SubTask subTask = new SubTask(subTaskRequest.getDescription(), subTaskRequest.getIsDone());
-            for (MemberResponse memberResponse : members) {
-                for (MemberRequest memberRequest : subTaskRequest.getMemberRequests()) {
-                    if (memberResponse.getEmail().equals(memberRequest.getEmail())) {
-                        subTask.addMember(convertMemberToUser(memberRequest));
-                    }
-                }
-            }
-
-            subTask.setChecklist(checklist);
-            checklist.addSubTaskToChecklist(subTask);
-            if (subTaskRequest.getEstimationRequest() != null) {
-                Estimation estimation = new Estimation();
-                estimation.setStartDate(subTaskRequest.getEstimationRequest().getStartDate());
-                estimation.setDueDate(subTaskRequest.getEstimationRequest().getDueDate());
-                estimation.setReminder(subTaskRequest.getEstimationRequest().getReminder());
-                estimation.setStartTime(convertTimeToEntity(subTaskRequest.getEstimationRequest().getStartTime()));
-                estimation.setDeadlineTime(convertTimeToEntity(subTaskRequest.getEstimationRequest().getDeadlineTime()));
-                estimation.setUser(authUser);
-                subTask.setEstimation(estimation);
-                estimation.setSubTask(subTask);
-            }
-        }
 
         checklist.setCard(card);
         card.addChecklist(checklist);
