@@ -22,7 +22,7 @@ public class CommentApi {
     private final CommentService commentService;
 
     @Operation(summary = "Save comment", description = "Save new comment")
-    @PostMapping("card/{cardId}")
+    @PostMapping("/{cardId}")
     public CommentResponse saveComment(@PathVariable Long cardId,
                                        @RequestBody CommentRequest request){
         return commentService.saveComment(cardId, request);
@@ -35,13 +35,13 @@ public class CommentApi {
     }
 
     @Operation(summary = "Delete comment", description = "Delete comment by id")
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public SimpleResponse deleteComment(@PathVariable Long id){
         return commentService.deleteComment(id);
     }
 
     @Operation(summary = "Get all comments", description = "Get all comments by card id")
-    @GetMapping("card/{cardId}")
+    @GetMapping("/{cardId}")
     public List<CommentResponse> findAllCommentsByCardId(@PathVariable Long cardId){
         return commentService.findAllComments(cardId);
     }
