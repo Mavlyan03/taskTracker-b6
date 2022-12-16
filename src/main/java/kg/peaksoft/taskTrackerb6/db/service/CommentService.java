@@ -41,7 +41,7 @@ public class CommentService {
         );
 
         User user = getAuthenticatedUser();
-        Comment comment = new Comment(request.getText(), request.getAddCommentDate(), user);
+        Comment comment = new Comment(request.getText(), request.getCreatedAt(), user);
         comment.setCard(card);
         card.addComment(comment);
         commentRepository.save(comment);
