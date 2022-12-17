@@ -145,7 +145,7 @@ public class CardConverter {
                 () -> new NotFoundException("Estimation not found!")
         );
 
-        return new EstimationResponse(estimation.getId(), estimation.getStartDate(), convertStartTimeToResponse(estimation.getStartTime()), estimation.getDueDate(), convertStartTimeToResponse(estimation.getDeadlineTime()), estimation.getReminder());
+        return new EstimationResponse(estimation.getId(), estimation.getStartDate(), estimation.getDueDate(), estimation.getStartTime(), estimation.getDueTime(), estimation.getReminder());
     }
 
 

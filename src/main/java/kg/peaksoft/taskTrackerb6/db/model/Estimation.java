@@ -33,6 +33,7 @@ public class Estimation {
 
     private ReminderType reminder;
 
+    @Enumerated(EnumType.STRING)
     private LocalDateTime notificationTime;
 
     @OneToOne(cascade = {DETACH, REFRESH, MERGE})
@@ -41,9 +42,10 @@ public class Estimation {
     @OneToOne(cascade = {DETACH, REFRESH, MERGE})
     private User user;
 
-//    public Estimation(LocalDate startDate, LocalDate dueDate, int reminder) {
-//        this.startDate = startDate;
-//        this.dueDate = dueDate;
-//        this.reminder = reminder;
-//    }
+    public Estimation(LocalDate startDate, LocalDate dueDate, LocalDateTime startTime, LocalDateTime dueTime) {
+        this.startDate = startDate;
+        this.dueDate = dueDate;
+        this.startTime = startTime;
+        this.dueTime = dueTime;
+    }
 }

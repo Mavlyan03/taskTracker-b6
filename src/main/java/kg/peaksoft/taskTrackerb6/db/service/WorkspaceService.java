@@ -189,11 +189,6 @@ public class WorkspaceService {
 
                         for (Checklist c : checklistRepository.findAllChecklists(card.getId())) {
                             for (SubTask s : c.getSubTasks()) {
-                                Estimation estimation = s.getEstimation();
-                                if (estimation != null) {
-                                    estimationRepository.deleteEstimation(estimation.getId());
-                                }
-
                                 subTaskRepository.deleteSubTask(s.getId());
                             }
 

@@ -19,4 +19,13 @@ public class EstimationResponse {
     private LocalDateTime startTime;
     private LocalDateTime dueTime;
     private ReminderType reminder;
+
+    public EstimationResponse(Long id, LocalDate startDate, LocalDate dueDate, LocalDateTime startTime, LocalDateTime dueTime, ReminderType reminder) {
+        this.id = id;
+        this.startDate = startDate;
+        this.dueDate = dueDate;
+        this.startTime = startTime;
+        this.dueTime = dueTime;
+        this.reminder = reminder;
+    }
 }
