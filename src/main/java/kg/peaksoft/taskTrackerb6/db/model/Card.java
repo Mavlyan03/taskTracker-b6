@@ -79,9 +79,8 @@ public class Card {
         this.description = description;
     }
 
-    public Card(String title, String description, User user) {
+    public Card(String title, User user) {
         this.title = title;
-        this.description = description;
         this.creator = user;
     }
 
