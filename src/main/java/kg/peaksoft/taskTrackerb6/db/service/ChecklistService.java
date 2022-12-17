@@ -1,19 +1,12 @@
 package kg.peaksoft.taskTrackerb6.db.service;
 
-import kg.peaksoft.taskTrackerb6.db.model.Board;
 import kg.peaksoft.taskTrackerb6.db.model.Card;
 import kg.peaksoft.taskTrackerb6.db.model.Checklist;
-import kg.peaksoft.taskTrackerb6.db.model.Estimation;
-import kg.peaksoft.taskTrackerb6.db.model.MyTimeClass;
 import kg.peaksoft.taskTrackerb6.db.model.SubTask;
 import kg.peaksoft.taskTrackerb6.db.model.User;
-import kg.peaksoft.taskTrackerb6.db.model.UserWorkSpace;
-import kg.peaksoft.taskTrackerb6.db.model.Workspace;
-import kg.peaksoft.taskTrackerb6.db.repository.BoardRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.CardRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.ChecklistRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
-import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
 import kg.peaksoft.taskTrackerb6.dto.request.*;
 import kg.peaksoft.taskTrackerb6.dto.response.ChecklistResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.EstimationResponse;
