@@ -1,12 +1,13 @@
 package kg.peaksoft.taskTrackerb6.db.model;
 
+import kg.peaksoft.taskTrackerb6.enums.ReminderType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import javax.persistence.Column;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static javax.persistence.CascadeType.*;
 
@@ -24,18 +25,15 @@ public class Estimation {
 
     private LocalDate startDate;
 
-    @OneToOne(cascade = {ALL})
-    private MyTimeClass startTime;
-
     private LocalDate dueDate;
 
-    @OneToOne(cascade = {ALL})
-    private MyTimeClass deadlineTime;
+    private LocalDateTime startTime;
 
-    private int reminder;
+    private LocalDateTime dueTime;
 
-    @Column(length = 10000)
-    private String text;
+    private ReminderType reminder;
+
+    private LocalDateTime notificationTime;
 
     @OneToOne(cascade = {DETACH, REFRESH, MERGE})
     private SubTask subTask;
@@ -46,9 +44,9 @@ public class Estimation {
     @OneToOne(cascade = {DETACH, REFRESH, MERGE})
     private User user;
 
-    public Estimation(LocalDate startDate, LocalDate dueDate, int reminder) {
-        this.startDate = startDate;
-        this.dueDate = dueDate;
-        this.reminder = reminder;
-    }
+//    public Estimation(LocalDate startDate, LocalDate dueDate, int reminder) {
+//        this.startDate = startDate;
+//        this.dueDate = dueDate;
+//        this.reminder = reminder;
+//    }
 }
