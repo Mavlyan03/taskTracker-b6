@@ -4,12 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-
 @Getter
 @Setter
 @AllArgsConstructor
-public class CardRequest {
+public class UpdateCardRequest {
 
-    private Long columnId;
-    private String title;
+    private Long cardId;
+    private String newTitle;
+    private String description;
 }
