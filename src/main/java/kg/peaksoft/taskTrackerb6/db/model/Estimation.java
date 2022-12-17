@@ -36,9 +36,6 @@ public class Estimation {
     private LocalDateTime notificationTime;
 
     @OneToOne(cascade = {DETACH, REFRESH, MERGE})
-    private SubTask subTask;
-
-    @OneToOne(cascade = {DETACH, REFRESH, MERGE})
     private Card card;
 
     @OneToOne(cascade = {DETACH, REFRESH, MERGE})

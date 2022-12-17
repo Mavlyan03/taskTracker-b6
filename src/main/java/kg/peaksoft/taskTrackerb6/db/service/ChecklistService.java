@@ -11,7 +11,6 @@ import kg.peaksoft.taskTrackerb6.dto.request.*;
 import kg.peaksoft.taskTrackerb6.dto.response.ChecklistResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.EstimationResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.MemberResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.MyTimeClassResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SubTaskResponse;
 import kg.peaksoft.taskTrackerb6.exceptions.NoSuchElementException;

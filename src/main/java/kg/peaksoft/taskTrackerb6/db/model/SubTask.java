@@ -4,10 +4,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
 import javax.persistence.Column;
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.*;
 
 import static javax.persistence.CascadeType.*;
 
@@ -28,12 +26,6 @@ public class SubTask {
 
     private Boolean isDone = false;
 
-    @ManyToMany(cascade = {DETACH, REFRESH, MERGE})
-    private List<User> workspacesMembers;
-
-    @OneToOne(cascade = {ALL}, mappedBy = "subTask")
-    private Estimation estimation;
-
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
     private Checklist checklist;
 
@@ -41,12 +33,4 @@ public class SubTask {
         this.description = description;
         this.isDone = isDone;
     }
-
-    public void addMember(User user){
-        if (workspacesMembers == null){
-            workspacesMembers = new ArrayList<>();
-        }
-        workspacesMembers.add(user);
-    }
-
 }
