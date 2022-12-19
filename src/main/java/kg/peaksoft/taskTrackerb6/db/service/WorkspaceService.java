@@ -79,7 +79,7 @@ public class WorkspaceService {
                 if (!exists) {
                     MimeMessage mimeMessage = mailSender.createMimeMessage();
                     MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-                    helper.setSubject("[Task tracker] invitation to my workspace!");
+                    helper.setSubject("Hello, " );
                     helper.setFrom("tasktracker.b6@gmail.com");
                     helper.setTo(email);
                     helper.setText(request.getLink() + "/" + Role.ADMIN + "/workspaceId/" + workspace.getId());
@@ -189,11 +189,6 @@ public class WorkspaceService {
 
                         for (Checklist c : checklistRepository.findAllChecklists(card.getId())) {
                             for (SubTask s : c.getSubTasks()) {
-                                Estimation estimation = s.getEstimation();
-                                if (estimation != null) {
-                                    estimationRepository.deleteEstimation(estimation.getId());
-                                }
-
                                 subTaskRepository.deleteSubTask(s.getId());
                             }
 

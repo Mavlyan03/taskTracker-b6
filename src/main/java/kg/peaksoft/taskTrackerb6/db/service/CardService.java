@@ -40,7 +40,6 @@ public class CardService {
     private final ChecklistRepository checklistRepository;
     private final SubTaskRepository subTaskRepository;
     private final CommentRepository commentRepository;
-    private final EstimationRepository estimationRepository;
 
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -88,7 +87,9 @@ public class CardService {
             notification.setUser(card.getColumn().getBoard().getWorkspace().getLead());
             notification.setBoard(board);
             notification.setCreatedAt(LocalDateTime.now());
-            notification.setMessage("Card status with id: " + cardId + " has changed by " + user.getFirstName() + " " + user.getLastName());
+            notification.setMessage("Card " + card.getTitle() + " has moved to column: "
+                    + column.getTitle() + ", by " + user.getFirstName());
+            notification.setIsRead(false);
             notificationRepository.save(notification);
             cardResponses.add(converter.convertToResponseForGetAll(cardRepository.save(card)));
         }
@@ -129,11 +130,6 @@ public class CardService {
 
         for (Checklist c : checklistRepository.findAllChecklists(card.getId())) {
             for (SubTask s : c.getSubTasks()) {
-                Estimation estimation = s.getEstimation();
-                if (estimation != null) {
-                    estimationRepository.deleteEstimation(estimation.getId());
-                }
-
                 subTaskRepository.deleteSubTask(s.getId());
             }
 

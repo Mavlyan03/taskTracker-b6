@@ -1,11 +1,11 @@
 package kg.peaksoft.taskTrackerb6.dto.response;
 
-import lombok.AllArgsConstructor;
+import kg.peaksoft.taskTrackerb6.enums.ReminderType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -13,18 +13,14 @@ import java.time.LocalDate;
 public class EstimationResponse {
 
     private Long id;
-    private LocalDate startDate;
-    private MyTimeClassResponse startTime;
-    private LocalDate dueDate;
-    private MyTimeClassResponse deadlineTime;
-    private int reminder;
+    private LocalDateTime startDateTime;
+    private LocalDateTime dueDateTime;
+    private ReminderType reminder;
 
-    public EstimationResponse(Long id, LocalDate startDate, MyTimeClassResponse startTime, LocalDate dueDate, MyTimeClassResponse deadlineTime, int reminder) {
+    public EstimationResponse(Long id, LocalDateTime startDateTime, LocalDateTime dueDateTime, ReminderType reminder) {
         this.id = id;
-        this.startDate = startDate;
-        this.startTime = startTime;
-        this.dueDate = dueDate;
-        this.deadlineTime = deadlineTime;
+        this.startDateTime = startDateTime;
+        this.dueDateTime = dueDateTime;
         this.reminder = reminder;
     }
 }

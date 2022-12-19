@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -24,10 +23,11 @@ public class Notification {
     @SequenceGenerator(name = "notification_gen", sequenceName = "notification_seq", allocationSize = 1, initialValue = 2)
     private Long id;
 
-    @Column(length = 10000)
+    private LocalDateTime createdAt;
+
     private String message;
 
-    private LocalDateTime createdAt;
+    private Boolean isRead;
 
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
@@ -37,9 +37,6 @@ public class Notification {
 
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
     private User user;
-
-    @OneToOne(cascade = {DETACH, REFRESH, MERGE})
-    private SubTask subTask;
 
     @OneToOne(cascade = {DETACH, REFRESH, MERGE})
     private Card card;
@@ -52,5 +49,4 @@ public class Notification {
 
     @OneToOne(cascade = {DETACH, REFRESH, MERGE})
     private Board board;
-
 }

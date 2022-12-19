@@ -1,24 +1,16 @@
 package kg.peaksoft.taskTrackerb6.db.service;
 
-import kg.peaksoft.taskTrackerb6.db.model.Board;
 import kg.peaksoft.taskTrackerb6.db.model.Card;
 import kg.peaksoft.taskTrackerb6.db.model.Checklist;
-import kg.peaksoft.taskTrackerb6.db.model.Estimation;
-import kg.peaksoft.taskTrackerb6.db.model.MyTimeClass;
 import kg.peaksoft.taskTrackerb6.db.model.SubTask;
 import kg.peaksoft.taskTrackerb6.db.model.User;
-import kg.peaksoft.taskTrackerb6.db.model.UserWorkSpace;
-import kg.peaksoft.taskTrackerb6.db.model.Workspace;
-import kg.peaksoft.taskTrackerb6.db.repository.BoardRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.CardRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.ChecklistRepository;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
-import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
-import kg.peaksoft.taskTrackerb6.dto.request.*;
+import kg.peaksoft.taskTrackerb6.dto.request.ChecklistRequest;
+import kg.peaksoft.taskTrackerb6.dto.request.MemberRequest;
+import kg.peaksoft.taskTrackerb6.dto.request.UpdateRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.ChecklistResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.EstimationResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.MemberResponse;
-import kg.peaksoft.taskTrackerb6.dto.response.MyTimeClassResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SubTaskResponse;
 import kg.peaksoft.taskTrackerb6.exceptions.NoSuchElementException;
@@ -84,7 +76,6 @@ public class ChecklistService {
 
         for (SubTask subTask : checklist.getSubTasks()) {
             subTask.setChecklist(null);
-            subTask.setEstimation(null);
         }
 
         checklistRepository.delete(checklist);
@@ -120,42 +111,6 @@ public class ChecklistService {
                 }
             }
 
-            for (SubTask subTask : allSubTasks) {
-                List<MemberResponse> memberResponses = new ArrayList<>();
-                EstimationResponse estimationResponse = new EstimationResponse();
-                if (subTask.getWorkspacesMembers() == null) {
-                    if (subTask.getEstimation() == null) {
-                        subTaskResponses.add(new SubTaskResponse(subTask.getId(), subTask.getDescription(),
-                                subTask.getIsDone(), memberResponses, estimationResponse));
-                    } else {
-                        subTaskResponses.add(new SubTaskResponse(subTask.getId(), subTask.getDescription(), subTask.getIsDone(), memberResponses,
-                                new EstimationResponse(subTask.getEstimation().getId(),
-                                        subTask.getEstimation().getStartDate(),
-                                        convertStartTimeToResponse(subTask.getEstimation().getStartTime()),
-                                        subTask.getEstimation().getDueDate(),
-                                        convertStartTimeToResponse(subTask.getEstimation().getDeadlineTime()),
-                                        subTask.getEstimation().getReminder())));
-                    }
-
-                } else {
-                    for (User user : subTask.getWorkspacesMembers()) {
-                        memberResponses.add(convertToMemberResponse(user));
-                    }
-                    if (subTask.getEstimation() != null) {
-                        subTaskResponses.add(new SubTaskResponse(subTask.getId(), subTask.getDescription(), subTask.getIsDone(), memberResponses,
-                                new EstimationResponse(subTask.getEstimation().getId(),
-                                        subTask.getEstimation().getStartDate(),
-                                        convertStartTimeToResponse(subTask.getEstimation().getStartTime()),
-                                        subTask.getEstimation().getDueDate(),
-                                        convertStartTimeToResponse(subTask.getEstimation().getDeadlineTime()),
-                                        subTask.getEstimation().getReminder())));
-                    } else {
-                        subTaskResponses.add(new SubTaskResponse(subTask.getId(), subTask.getDescription(), subTask.getIsDone(),
-                                memberResponses, estimationResponse));
-                    }
-                }
-            }
-
             int count;
             if (countOfCompletedSubTask <= 0) {
                 count = 0;
@@ -169,22 +124,6 @@ public class ChecklistService {
         return new ChecklistResponse(checklist.getId(), checklist.getTitle(),
                 countOfCompletedSubTask, countOfSubTasks,
                 checklist.getCount(), subTaskResponses);
-    }
-
-    public MemberResponse convertToMemberResponse(User user) {
-        return new MemberResponse(
-                user.getId(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getEmail(),
-                user.getImage(),
-                user.getRole()
-        );
-    }
-
-    public MyTimeClassResponse convertStartTimeToResponse(MyTimeClass timeClass) {
-        return new MyTimeClassResponse(timeClass.getId(),
-                String.format("%02d:%02d", timeClass.getHour(), timeClass.getMinute()));
     }
 
     public User getAuthenticateUser() {
@@ -206,11 +145,4 @@ public class ChecklistService {
                 }
         );
     }
-
-    public MyTimeClass convertTimeToEntity(MyTimeClassRequest request) {
-        MyTimeClass myTimeClass = new MyTimeClass();
-        myTimeClass.setTime(request.getHour(), request.getMinute());
-        return myTimeClass;
-    }
-
 }

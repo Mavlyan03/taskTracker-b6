@@ -9,7 +9,6 @@ import kg.peaksoft.taskTrackerb6.dto.response.SearchCard;
 import kg.peaksoft.taskTrackerb6.dto.response.AllIssuesResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.CardMemberResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.LabelResponse;
-import kg.peaksoft.taskTrackerb6.enums.LabelsColor;
 import kg.peaksoft.taskTrackerb6.exceptions.BadCredentialException;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -109,14 +108,14 @@ public class AllIssuesService {
         return responses;
     }
 
-    public List<AllIssuesResponse> filterByLabelColor(Long id, List<LabelsColor> colors) {
+    public List<AllIssuesResponse> filterByLabelColor(Long id, List<Label> labels) {
         Workspace workspace = workspaceRepository.findById(id).get();
         List<Card> workspaceCards = cardRepository.findAllByWorkspaceId(workspace.getId());
         List<AllIssuesResponse> allIssues = new ArrayList<>();
         for (Card card : workspaceCards) {
             for (Label label : card.getLabels()) {
-                for (LabelsColor color : colors) {
-                    if (color.equals(label.getColor())) {
+                for (Label l : labels) {
+                    if (l.equals(label)) {
                         allIssues.add(convertToResponse(card));
                     }
                 }

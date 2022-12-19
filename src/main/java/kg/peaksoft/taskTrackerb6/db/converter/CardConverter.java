@@ -145,12 +145,14 @@ public class CardConverter {
                 () -> new NotFoundException("Estimation not found!")
         );
 
-        return new EstimationResponse(estimation.getId(), estimation.getStartDate(), convertStartTimeToResponse(estimation.getStartTime()), estimation.getDueDate(), convertStartTimeToResponse(estimation.getDeadlineTime()), estimation.getReminder());
+        return new EstimationResponse(
+                estimation.getId(),
+                estimation.getStartTime(),
+                estimation.getDueTime(),
+                estimation.getReminder()
+        );
     }
 
-    private MyTimeClassResponse convertStartTimeToResponse(MyTimeClass timeClass) {
-        return new MyTimeClassResponse(timeClass.getId(), String.format("%02d:%02d", timeClass.getHour(), timeClass.getMinute()));
-    }
 
     private List<LabelResponse> getAllLabelsByCardId(Long cardId) {
         Card card = cardRepository.findById(cardId).orElseThrow(

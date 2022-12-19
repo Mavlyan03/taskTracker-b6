@@ -1,6 +1,5 @@
 package kg.peaksoft.taskTrackerb6.dto.response;
 
-import kg.peaksoft.taskTrackerb6.enums.LabelsColor;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

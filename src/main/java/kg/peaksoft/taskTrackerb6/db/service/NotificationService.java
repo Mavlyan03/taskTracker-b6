@@ -40,11 +40,22 @@ public class NotificationService {
         User user = getAuthenticateUser();
         List<NotificationResponse> notificationResponses = new ArrayList<>();
         for (Notification notification : user.getNotifications()) {
-            notificationResponses.add(new NotificationResponse(notification));
+            if (notification.getIsRead().equals(false))
+                notificationResponses.add(new NotificationResponse(notification));
         }
 
         log.info("Get all user's notifications");
         return notificationResponses;
+    }
+
+    public List<NotificationResponse> markAsRead() {
+        User user = getAuthenticateUser();
+        List<Notification> userNotification = user.getNotifications();
+        for (Notification notification : userNotification) {
+            notification.setIsRead(true);
+        }
+
+        return new ArrayList<>();
     }
 
     public NotificationResponse getById(Long id) {
@@ -59,7 +70,8 @@ public class NotificationService {
                 notification.getFromUser().getImage(),
                 notification.getCreatedAt(),
                 notification.getNotificationType(),
-                notification.getMessage()
+                notification.getMessage(),
+                notification.getIsRead()
         );
     }
 }
