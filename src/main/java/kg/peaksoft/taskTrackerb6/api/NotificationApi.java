@@ -30,4 +30,9 @@ public class NotificationApi {
         return notificationService.getById(id);
     }
 
+    @Operation(summary = "Mark notification as read", description = "Mark notification as read")
+    @PutMapping
+    public List<NotificationResponse> markAsRead() {
+        return notificationService.markAsRead();
+    }
 }

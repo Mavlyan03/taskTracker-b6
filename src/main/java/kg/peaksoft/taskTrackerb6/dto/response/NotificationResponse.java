@@ -16,25 +16,25 @@ public class NotificationResponse {
     private Long id;
     private String boardTitle;
     private String background;
-    private Long notifierId;
+    private Long fromUserId;
     private String firstName;
     private String lastName;
     private String image;
     private LocalDateTime createdAt;
     private NotificationType type;
-    private String message;
+    private Boolean isRead;
 
     public NotificationResponse(Notification notification) {
         this.id = notification.getId();
         this.boardTitle = notification.getBoard().getTitle();
         this.background = notification.getBoard().getBackground();
-        this.notifierId = notification.getFromUser().getId();
+        this.fromUserId = notification.getFromUser().getId();
         this.firstName = notification.getFromUser().getFirstName();
         this.lastName = notification.getFromUser().getLastName();
         this.image = notification.getFromUser().getImage();
         this.createdAt = notification.getCreatedAt();
         this.type = notification.getNotificationType();
-        this.message = notification.getMessage();
+        this.isRead = notification.getIsRead();
     }
 
 }

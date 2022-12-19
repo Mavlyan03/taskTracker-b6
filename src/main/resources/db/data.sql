@@ -61,16 +61,18 @@ values (1, 'First Checklist', 1, 1);
 insert into subtasks (id, description, is_done, checklist_id)
 values (1, 'Subtasks description ', false, 1);
 
--- insert into estimations (id, start_date, due_date, start_time, due_time, reminder,
---                          text, card_id, user_id)
--- values (1, '2022-02-01', 1, '2022-12-12', , 5, 'First Text', 1, 1, 1);
+insert into estimations (id, start_date, due_date, start_time, due_time, reminder,
+                         notification_time, card_id, user_id)
+values (1, '2022-02-01', '2022-12-12', '2022-12-17 17:05:00.000000','2022-12-19 17:11:00.000000',
+        'FIVE_MINUTE', '2022-12-19 17:06:00.000000',1, 1);
 
-insert into notifications (id, message, created_at, notification_type, from_user_id,
+insert into notifications (id, created_at, is_read, message, notification_type, from_user_id,
                            user_id, card_id, column_id, board_id)
-values (1, 'First Text', '2022-11-21T16:28', 'ASSIGN', 1, 2, 1, 1, 1);
+values (1, '2022-11-21T16:28', false,'You assigned', 'ASSIGN', 1, 2, 1, 1, 1);
 
 insert into labels (id, color, description)
-values (1, 'RED', 'Complete this task immediately');
+values (1, 'RED', 'Complete this task immediately'),
+       (2, 'BLUE', 'New label');
 
 insert into comments (id, text, created_at, user_id, card_id)
 values (1, 'First text', '2022-10-23', 1, 1);
@@ -118,8 +120,6 @@ values (1, 1),
        (2, 8),
        (2, 7);
 
-insert into subtasks_workspaces_members (sub_task_id, workspaces_members_id)
-values (1, 1);
-
 insert into cards_labels (cards_id, labels_id)
-values (1, 1);
+values (1, 1),
+       (1, 2);
