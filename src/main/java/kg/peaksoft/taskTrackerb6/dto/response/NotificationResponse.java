@@ -22,6 +22,7 @@ public class NotificationResponse {
     private String image;
     private LocalDateTime createdAt;
     private NotificationType type;
+    private String message;
     private Boolean isRead;
 
     public NotificationResponse(Notification notification) {
@@ -34,6 +35,7 @@ public class NotificationResponse {
         this.image = notification.getFromUser().getImage();
         this.createdAt = notification.getCreatedAt();
         this.type = notification.getNotificationType();
+        this.message = notification.getMessage();
         this.isRead = notification.getIsRead();
     }
 

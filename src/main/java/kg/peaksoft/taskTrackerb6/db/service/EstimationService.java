@@ -24,8 +24,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 @Service
-@Transactional
 @Slf4j
+@Transactional
 @RequiredArgsConstructor
 public class EstimationService {
 

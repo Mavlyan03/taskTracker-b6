@@ -41,10 +41,8 @@ public class ScheduledConfig {
 
     @Scheduled(cron = "0 0/1 * * * *")
     public void reminder() {
-        log.info("before check estimation");
         List<Estimation> estimations = estimationRepository.findAll();
         for (Estimation e : estimations) {
-            log.info("in for each");
             if (!e.getReminder().equals(ReminderType.NONE)) {
                 LocalDateTime nowForParse = LocalDateTime.now();
                 LocalDate today = LocalDate.now();
@@ -52,9 +50,6 @@ public class ScheduledConfig {
                 String[] parseTime = timeNow.toString().split(":");
                 String parsed = today + " " + parseTime[0] + ":" + parseTime[1];
                 LocalDateTime now = parseToLocalDateTime(parsed);
-                log.info("now is: " + now);
-                log.info("time now is no parsed: " + timeNow );
-                log.info("notification time is: " + e.getNotificationTime());
                 assert now != null;
                 if (now.equals(e.getNotificationTime())) {
                     Notification notification = new Notification();
@@ -74,7 +69,5 @@ public class ScheduledConfig {
                 }
             }
         }
-
-        log.info("finish");
     }
 }

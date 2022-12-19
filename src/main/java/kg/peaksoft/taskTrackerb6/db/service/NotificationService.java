@@ -70,6 +70,7 @@ public class NotificationService {
                 notification.getFromUser().getImage(),
                 notification.getCreatedAt(),
                 notification.getNotificationType(),
+                notification.getMessage(),
                 notification.getIsRead()
         );
     }
