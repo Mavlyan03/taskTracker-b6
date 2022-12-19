@@ -4,7 +4,7 @@ import kg.peaksoft.taskTrackerb6.db.converter.CardConverter;
 import kg.peaksoft.taskTrackerb6.db.model.*;
 import kg.peaksoft.taskTrackerb6.db.repository.*;
 import kg.peaksoft.taskTrackerb6.dto.request.CardRequest;
-import kg.peaksoft.taskTrackerb6.dto.request.UpdateRequest;
+import kg.peaksoft.taskTrackerb6.dto.request.UpdateCardRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.CardInnerPageResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.CardResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.SimpleResponse;
@@ -187,23 +187,28 @@ public class CardService {
     }
 
 
-    public CardInnerPageResponse updateTitle(UpdateRequest request) {
-        User user = getAuthenticateUser();
-        Card card = cardRepository.findById(request.getId()).orElseThrow(
+    public CardInnerPageResponse updateTitle(UpdateCardRequest request) {
+        Card card = cardRepository.findById(request.getCardId()).orElseThrow(
                 () -> {
-                    log.error("Card with id: {} not found!", request.getId());
-                    throw new NotFoundException("Card with id: " + request.getId() + " not found!");
+                    log.error("Card with id: {} not found!", request.getCardId());
+                    throw new NotFoundException("Card with id: " + request.getCardId() + " not found!");
                 }
         );
 
-        if (!card.getCreator().equals(user)) {
-            throw new BadCredentialException("You can not update this card title!");
+        if (request.getNewTitle().equals(card.getTitle()) || request.getNewTitle().isBlank()) {
+            card.setTitle(card.getTitle());
+        } else {
+            card.setTitle(request.getNewTitle());
         }
 
-        card.setTitle(request.getNewTitle());
-        card.setCreatedAt(card.getCreatedAt());
+        if (request.getDescription().equals(card.getDescription()) || request.getDescription().isBlank()) {
+            card.setDescription(card.getDescription());
+        } else {
+            card.setDescription(request.getDescription());
+        }
+
         log.info("Card with id:{} successfully updated!", card.getId());
-        return converter.convertToCardInnerPageResponse(card);
+        return converter.convertToCardInnerPageResponse(cardRepository.save(card));
     }
 
 
@@ -213,13 +218,12 @@ public class CardService {
         );
 
         User user = getAuthenticateUser();
-        Card card = new Card(request.getTitle(), request.getDescription(), user);
+        Card card = new Card(request.getTitle(), user);
         card.setColumn(column);
         column.addCard(card);
         card.setCreatedAt(LocalDateTime.now());
         user.addCard(card);
-        Card save = cardRepository.save(card);
-        return converter.convertToCardInnerPageResponse(save);
+        return converter.convertToCardInnerPageResponse(cardRepository.save(card));
     }
 
 
@@ -253,14 +257,13 @@ public class CardService {
 
             if (card.getIsArchive().equals(false)) {
                 List<Basket> baskets = basketRepository.findAll();
-                    for (Basket b : baskets) {
-                        if (b.getCard() != null && b.getCard().equals(card)) {
-                            basketRepository.deleteBasket(b.getId());
-                        }
+                for (Basket b : baskets) {
+                    if (b.getCard() != null && b.getCard().equals(card)) {
+                        basketRepository.deleteBasket(b.getId());
+                    }
                 }
             }
         } else {
-            System.out.println("In card service!");
             throw new BadCredentialException("You can not archive this card!");
         }
 
