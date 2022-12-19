@@ -23,4 +23,11 @@ public class EstimationApi {
                                                   @RequestBody EstimationRequest request) {
         return estimationService.addEstimationToCard(cardId, request);
     }
+
+    @Operation(summary = "Update estimation", description = "Update esmitation by id")
+    @PutMapping("{id}")
+    public EstimationResponse updateEstimation(@PathVariable Long id,
+                                               @RequestBody EstimationRequest request) {
+        return estimationService.updateEstimation(id, request);
+    }
 }

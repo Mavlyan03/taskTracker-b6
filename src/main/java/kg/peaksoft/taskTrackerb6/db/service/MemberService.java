@@ -1,29 +1,44 @@
 package kg.peaksoft.taskTrackerb6.db.service;
 
 import kg.peaksoft.taskTrackerb6.db.model.*;
-import kg.peaksoft.taskTrackerb6.db.repository.BoardRepository;
-import kg.peaksoft.taskTrackerb6.db.repository.CardRepository;
-import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
-import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
+import kg.peaksoft.taskTrackerb6.db.repository.*;
 import kg.peaksoft.taskTrackerb6.dto.response.AllMemberResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.MemberResponse;
+import kg.peaksoft.taskTrackerb6.enums.NotificationType;
 import kg.peaksoft.taskTrackerb6.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
+@Slf4j
 @Transactional
+@RequiredArgsConstructor
 public class MemberService {
 
     private final UserRepository userRepository;
     private final WorkspaceRepository workspaceRepository;
     private final CardRepository cardRepository;
     private final BoardRepository boardRepository;
+    private final NotificationRepository notificationRepository;
+
+    private User getAuthenticateUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String login = authentication.getName();
+        return userRepository.findUserByEmail(login).orElseThrow(
+                () -> {
+                    log.error("User not found!");
+                    throw new NotFoundException("User not found!");
+                }
+        );
+    }
 
     public List<MemberResponse> searchByEmailOrName(Long id, String emailOrName) {
         Workspace workspace = workspaceRepository.findById(id).orElseThrow(
@@ -66,6 +81,7 @@ public class MemberService {
 
 
     public MemberResponse assignMemberToCard(Long memberId, Long cardId) {
+        User authenticateUser = getAuthenticateUser();
         User user = userRepository.findById(memberId).orElseThrow(
                 () -> new NotFoundException("User with id: " + memberId + " not found!")
         );
@@ -75,6 +91,16 @@ public class MemberService {
         );
 
         card.addMember(user);
+        Notification notification = new Notification();
+        notification.setCard(card);
+        notification.setNotificationType(NotificationType.ASSIGN);
+        notification.setFromUser(authenticateUser);
+        notification.setUser(user);
+        notification.setBoard(card.getColumn().getBoard());
+        notification.setCreatedAt(LocalDateTime.now());
+        notification.setMessage("You assigned to card: " + card + ", by " + authenticateUser);
+        notification.setIsRead(false);
+        notificationRepository.save(notification);
         cardRepository.save(card);
         return new MemberResponse(user);
     }
