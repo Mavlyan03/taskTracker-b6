@@ -38,19 +38,27 @@ public class CardConverter {
         CardInnerPageResponse response = new CardInnerPageResponse(card);
         if (card.getLabels() != null) {
             response.setLabelResponses(getAllLabelsByCardId(card.getId()));
+        } else {
+            response.setLabelResponses(new ArrayList<>());
         }
 
         if (card.getEstimation() != null) {
             response.setEstimationResponse(getEstimationByCardId(card.getId()));
+        } else {
+            response.setEstimationResponse(new EstimationResponse());
         }
 
         if (card.getMembers() != null) {
             response.setMemberResponses(getAllCardMembers(card.getMembers()));
+        } else {
+            response.setMemberResponses(new ArrayList<>());
         }
 
         response.setChecklistResponses(getChecklistResponses(checklistRepository.findAllChecklists(card.getId())));
         if (card.getComments() != null) {
             response.setCommentResponses(getCommentResponses(card.getComments()));
+        } else {
+            response.setCommentResponses(new ArrayList<>());
         }
 
         response.setCreator(userRepository.getCreatorResponse(card.getCreator().getId()));
@@ -70,7 +78,7 @@ public class CardConverter {
         int subTask = 0;
         for (Checklist checklist : checklistRepository.findAllChecklists(card.getId())) {
             for (int i = 0; i < checklist.getSubTasks().size(); i++) {
-            subTask++;
+                subTask++;
             }
         }
 
@@ -90,9 +98,9 @@ public class CardConverter {
 
     private List<CommentResponse> getCommentResponses(List<Comment> comments) {
         List<CommentResponse> commentResponses = new ArrayList<>();
-        if (comments == null){
+        if (comments == null) {
             return commentResponses;
-        }else {
+        } else {
             for (Comment c : comments) {
                 commentResponses.add(convertCommentToResponse(c));
             }
@@ -107,9 +115,9 @@ public class CardConverter {
 
     private List<ChecklistResponse> getChecklistResponses(List<Checklist> checklists) {
         List<ChecklistResponse> responses = new ArrayList<>();
-        if (checklists == null){
+        if (checklists == null) {
             return responses;
-        }else {
+        } else {
             for (Checklist c : checklists) {
                 responses.add(checklistService.convertToResponse(c));
             }

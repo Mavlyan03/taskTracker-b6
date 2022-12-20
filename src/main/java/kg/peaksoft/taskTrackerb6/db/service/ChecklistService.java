@@ -106,6 +106,12 @@ public class ChecklistService {
         if (allSubTasks != null) {
             for (SubTask subTask : allSubTasks) {
                 countOfSubTasks++;
+                subTaskResponses.add(new SubTaskResponse(
+                                subTask.getId(),
+                                subTask.getDescription(),
+                                subTask.getIsDone()
+                        )
+                );
                 if (subTask.getIsDone().equals(true)) {
                     countOfCompletedSubTask++;
                 }

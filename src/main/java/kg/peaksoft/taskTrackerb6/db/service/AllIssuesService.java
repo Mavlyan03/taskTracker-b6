@@ -55,8 +55,10 @@ public class AllIssuesService {
         int isDoneCounter = 0;
         int allSubTasksCounter = 0;
 
-        int period = Period.between(card.getEstimation().getStartDate(), card.getEstimation().getDueDate()).getDays();
-        response.setPeriod("" + period + " days");
+        if (card.getEstimation() != null) {
+            int period = Period.between(card.getEstimation().getStartDate(), card.getEstimation().getDueDate()).getDays();
+            response.setPeriod("" + period + " days");
+        }
 
         for (User user : card.getMembers()) {
             cardMemberResponses.add(new CardMemberResponse(user));
