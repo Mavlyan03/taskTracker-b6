@@ -93,12 +93,9 @@ public class ParticipantService {
         }
 
         userWorkSpaceRepository.deleteUserWorkSpace(deleteId);
-        log.info("User with id: " + userId + " successfully deleted from workspace with id: {} ",workspaceId);
-        return new
-
-    SimpleResponse("User successfully deleted from workspace!","DELETE");
-
-}
+        log.info("User with id: " + userId + " successfully deleted from workspace with id: {} ", workspaceId);
+        return new SimpleResponse("User successfully deleted from workspace!", "DELETE");
+    }
 
     public SimpleResponse deleteParticipantFromBoard(Long id, Long boardId) {
         User user = userRepository.findById(id).orElseThrow(
@@ -161,11 +158,20 @@ public class ParticipantService {
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
         helper.setSubject("[task_tracker] invite new member to board!");
         helper.setTo(request.getEmail());
+        Board board = boardRepository.findById(request.getWorkspaceOrBoardId()).orElseThrow(
+                () -> new NotFoundException("Board with id: " + request.getWorkspaceOrBoardId() + " not found!")
+        );
+
+        Workspace workspace = workspaceRepository.findById(board.getWorkspace().getId()).orElseThrow(
+                () -> new NotFoundException("Workspace with id: " + board.getWorkspace().getId() + " not found!")
+        );
+
         if (request.getRole().equals(Role.ADMIN)) {
-            helper.setText(request.getLink() + "/" + request.getRole() + "/boardId/" + request.getWorkspaceOrBoardId());
+            helper.setText(request.getLink() + request.getRole() + "/workspaceId/" + workspace.getId() + " /boardId/" + request.getWorkspaceOrBoardId());
         } else if (request.getRole().equals(Role.USER)) {
-            helper.setText(request.getLink() + "/" + request.getRole() + "/boardId/" + request.getWorkspaceOrBoardId());
+            helper.setText(request.getLink() + request.getRole() + "/workspaceId/" + workspace.getId() + "/boardId/" + request.getWorkspaceOrBoardId());
         }
+
         mailSender.send(mimeMessage);
         return new SimpleResponse("Email send!", "OK");
     }
@@ -180,6 +186,7 @@ public class ParticipantService {
         } else if (request.getRole().equals(Role.USER)) {
             helper.setText(request.getLink() + "/" + request.getRole() + "/workspaceId/" + request.getWorkspaceOrBoardId());
         }
+
         mailSender.send(mimeMessage);
         return new SimpleResponse("Email send!", "OK");
     }
