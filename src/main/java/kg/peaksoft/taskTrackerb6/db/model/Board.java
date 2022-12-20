@@ -37,9 +37,6 @@ public class Board {
         this.background = boardRequest.getBackground();
     }
 
-//    @OneToMany(cascade = ALL, mappedBy = "board")
-//    private List<Column> columns;
-
     @ManyToMany(cascade = {DETACH, REFRESH, MERGE})
     private List<User> members;
 
@@ -49,12 +46,6 @@ public class Board {
     @OneToOne(cascade = ALL, mappedBy = "board")
     private Favorite favorite;
 
-//    public void addColumn(Column column) {
-//        if (columns == null) {
-//            columns = new ArrayList<>();
-//        }
-//        columns.add(column);
-//    }
 
     public void addMember(User user) {
         if (members == null) {

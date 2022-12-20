@@ -5,8 +5,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 import static javax.persistence.CascadeType.*;
 
@@ -26,9 +24,6 @@ public class Column {
 
     private Boolean isArchive = false;
 
-//    @OneToMany(cascade = ALL, mappedBy = "column")
-//    private List<Card> cards;
-
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
     private User creator;
 
@@ -45,11 +40,4 @@ public class Column {
         this.creator = user;
         this.board = board;
     }
-
-//    public void addCard(Card card) {
-//        if (cards == null) {
-//            cards = new ArrayList<>();
-//        }
-//        cards.add(card);
-//    }
 }
