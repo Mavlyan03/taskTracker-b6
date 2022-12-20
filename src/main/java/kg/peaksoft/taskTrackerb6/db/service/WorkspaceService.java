@@ -79,7 +79,7 @@ public class WorkspaceService {
                 if (!exists) {
                     MimeMessage mimeMessage = mailSender.createMimeMessage();
                     MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-                    helper.setSubject("Hello, " );
+                    helper.setSubject("Hello, welcome to my workspace! To join click on the link!");
                     helper.setFrom("tasktracker.b6@gmail.com");
                     helper.setTo(email);
                     helper.setText(request.getLink() + "/" + Role.ADMIN + "/workspaceId/" + workspace.getId());

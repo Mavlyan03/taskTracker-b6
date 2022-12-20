@@ -40,6 +40,7 @@ public class CardService {
     private final ChecklistRepository checklistRepository;
     private final SubTaskRepository subTaskRepository;
     private final CommentRepository commentRepository;
+    private final EstimationRepository estimationRepository;
 
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -145,6 +146,10 @@ public class CardService {
             for (Notification n : cardNotification) {
                 notificationRepository.deleteNotification(n.getId());
             }
+        }
+
+        if (card.getEstimation() != null) {
+            estimationRepository.deleteEstimation(card.getEstimation().getId());
         }
 
         card.setLabels(null);

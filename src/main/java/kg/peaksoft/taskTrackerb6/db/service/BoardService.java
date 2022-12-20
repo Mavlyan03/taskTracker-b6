@@ -2,10 +2,7 @@ package kg.peaksoft.taskTrackerb6.db.service;
 
 import kg.peaksoft.taskTrackerb6.db.converter.CardConverter;
 import kg.peaksoft.taskTrackerb6.db.model.*;
-import kg.peaksoft.taskTrackerb6.db.repository.BoardRepository;
-import kg.peaksoft.taskTrackerb6.db.repository.FavoriteRepository;
-import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
-import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
+import kg.peaksoft.taskTrackerb6.db.repository.*;
 import kg.peaksoft.taskTrackerb6.dto.request.BoardRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.UpdateRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.*;
@@ -31,6 +28,16 @@ public class BoardService {
     private final FavoriteRepository favoriteRepository;
     private final WorkspaceRepository workspaceRepository;
     private final CardConverter converter;
+    private final ColumnRepository columnRepository;
+    private final CardRepository cardRepository;
+    private final BasketRepository basketRepository;
+    private final AttachmentRepository attachmentRepository;
+    private final ChecklistRepository checklistRepository;
+    private final SubTaskRepository subTaskRepository;
+    private final CommentRepository commentRepository;
+    private final NotificationRepository notificationRepository;
+    private final EstimationRepository estimationRepository;
+
 
     private User getAuthenticateUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -60,17 +67,64 @@ public class BoardService {
         );
     }
 
-    public SimpleResponse deleteBoardById(Long id, Board board) {
-        boardRepository.findById(id).orElseThrow(
+    public SimpleResponse deleteBoardById(Long id) {
+        Board board = boardRepository.findById(id).orElseThrow(
                 () -> {
                     log.error("Board with id: {} not found!", id);
                     throw new NotFoundException("Board with id: " + id + " not found!");
                 }
         );
-            boardRepository.delete(board);
-            log.info("Board with id: {} successfully deleted!", id);
-            return new SimpleResponse(
-                    "Board with id " + id + " is deleted successfully!", "DELETE");
+
+        for (Column column : board.getColumns()) {
+            for (Card card : column.getCards()) {
+                List<Basket> baskets = basketRepository.findAll();
+                if (card.getIsArchive().equals(true)) {
+                    for (Basket b : baskets) {
+                        if (b.getCard() != null && b.getCard().equals(card)) {
+                            basketRepository.deleteBasket(b.getId());
+                        }
+                    }
+                }
+
+                for (Checklist c : checklistRepository.findAllChecklists(card.getId())) {
+                    for (SubTask s : c.getSubTasks()) {
+                        subTaskRepository.deleteSubTask(s.getId());
+                    }
+
+                    checklistRepository.deleteChecklist(c.getId());
+                }
+
+                for (Comment comment : card.getComments()) {
+                    commentRepository.deleteComment(comment.getId());
+                }
+
+                List<Notification> cardNotification = notificationRepository.findAllByCardId(card.getId());
+                if (cardNotification != null) {
+                    for (Notification n : cardNotification) {
+                        notificationRepository.deleteNotification(n.getId());
+                    }
+                }
+
+                if (card.getEstimation() != null) {
+                    estimationRepository.deleteEstimation(card.getEstimation().getId());
+                }
+
+                List<Attachment> attachments = card.getAttachments();
+                if (attachments != null) {
+                    for (Attachment a : attachments) {
+                        attachmentRepository.deleteAttachment(a.getId());
+                    }
+                }
+
+                cardRepository.deleteCard(card.getId());
+            }
+
+            columnRepository.deleteColumn(column.getId());
+        }
+
+        boardRepository.delete(board);
+        log.info("Board with id: {} successfully deleted!", id);
+        return new SimpleResponse("Board with id " + id + " is deleted successfully!", "DELETE");
     }
 
     public BoardResponse makeFavorite(Long id) {

@@ -45,9 +45,8 @@ public class BoardApi {
 
     @Operation(summary = "Delete board", description = "Delete board by id")
     @DeleteMapping("/{id}")
-    public SimpleResponse deleteById(@PathVariable Long id,
-                                     @Valid Board board) {
-        return boardService.deleteBoardById(id, board);
+    public SimpleResponse deleteById(@PathVariable Long id) {
+        return boardService.deleteBoardById(id);
     }
 
     @Operation(summary = "Change background", description = "Change background to a new one")
