@@ -75,13 +75,22 @@ public class BoardService {
                 }
         );
 
-        for (Column column : board.getColumns()) {
-            for (Card card : column.getCards()) {
+        for (Column column : columnRepository.findAllColumnsByBoardId(board.getId())) {
+            List<Basket> columnBasket = basketRepository.findAll();
+            for (Basket basket : columnBasket) {
+                if (basket.getColumn() != null && basket.getColumn().equals(column)){
+                    basketRepository.deleteBasket(basket.getId());
+                    log.info("column in basket deleted");
+                }
+            }
+
+            for (Card card : cardRepository.findCardsByColumnId(column.getId())) {
                 List<Basket> baskets = basketRepository.findAll();
                 if (card.getIsArchive().equals(true)) {
                     for (Basket b : baskets) {
                         if (b.getCard() != null && b.getCard().equals(card)) {
                             basketRepository.deleteBasket(b.getId());
+                            log.info("delete card in basket");
                         }
                     }
                 }
@@ -89,39 +98,55 @@ public class BoardService {
                 for (Checklist c : checklistRepository.findAllChecklists(card.getId())) {
                     for (SubTask s : c.getSubTasks()) {
                         subTaskRepository.deleteSubTask(s.getId());
+                        log.info("subTask deleted");
                     }
 
                     checklistRepository.deleteChecklist(c.getId());
+                    log.info("checklist deleted");
                 }
 
-                for (Comment comment : card.getComments()) {
+                for (Comment comment : commentRepository.findAllCommentsByCardId(card.getId())) {
                     commentRepository.deleteComment(comment.getId());
+                    log.info("comment deleted");
                 }
 
                 List<Notification> cardNotification = notificationRepository.findAllByCardId(card.getId());
                 if (cardNotification != null) {
                     for (Notification n : cardNotification) {
                         notificationRepository.deleteNotification(n.getId());
+                        log.info("card notification deleted");
                     }
                 }
 
-                if (card.getEstimation() != null) {
-                    estimationRepository.deleteEstimation(card.getEstimation().getId());
+                Estimation estimation = estimationRepository.findEstimationByCardId(card.getId());
+                if (estimation != null) {
+                    estimationRepository.deleteEstimation(estimation.getId());
+                    log.info("estimation deleted");
                 }
 
-                List<Attachment> attachments = card.getAttachments();
+                List<Attachment> attachments = attachmentRepository.getAllByCardId(card.getId());
                 if (attachments != null) {
                     for (Attachment a : attachments) {
+                        log.info("Before delete attachment");
                         attachmentRepository.deleteAttachment(a.getId());
+                        log.info("After delete attachment");
                     }
+
                 }
 
+                log.info("Card attachments: " + attachments);
+
+                card.setLabels(null);
+                card.setMembers(null);
                 cardRepository.deleteCard(card.getId());
+                log.info("card deleted");
             }
 
             columnRepository.deleteColumn(column.getId());
+            log.info("column deleted");
         }
 
+        board.setMembers(null);
         boardRepository.delete(board);
         log.info("Board with id: {} successfully deleted!", id);
         return new SimpleResponse("Board with id " + id + " is deleted successfully!", "DELETE");
@@ -292,11 +317,11 @@ public class BoardService {
                 () -> new NotFoundException("Board with id: " + id + " not found!")
         );
 
-        List<Column> columns = board.getColumns();
+        List<Column> columns = columnRepository.findAllColumnsByBoardId(board.getId());
         List<ColumnResponse> archivedColumns = new ArrayList<>();
         List<CardResponse> archivedCardResponse = new ArrayList<>();
         for (Column column : columns) {
-            for (Card card : column.getCards()) {
+            for (Card card : cardRepository.findCardsByColumnId(column.getId())) {
                 if (card.getIsArchive().equals(true)) {
                     archivedCardResponse.add(converter.convertToResponseForGetAll(card));
 

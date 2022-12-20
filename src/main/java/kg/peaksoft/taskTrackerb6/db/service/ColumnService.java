@@ -62,7 +62,6 @@ public class ColumnService {
                 }
         );
 
-        board.addColumn(column);
         column.setBoard(board);
         column.setCreator(user);
         user.addColumn(column);
@@ -93,8 +92,8 @@ public class ColumnService {
         ColumnResponse response = new ColumnResponse(column1);
         response.setCreator(userRepository.getCreatorResponse(user.getId()));
         List<CardResponse> cardResponses = new ArrayList<>();
-        if (column.getCards() != null) {
-            for (Card card : column1.getCards()) {
+        if (cardRepository.findCardsByColumnId(column1.getId()) != null) {
+            for (Card card : cardRepository.findCardsByColumnId(column1.getId())) {
                 if (card.getIsArchive().equals(false)) {
                     cardResponses.add(converter.convertToResponseForGetAll(card));
                 }
@@ -119,23 +118,21 @@ public class ColumnService {
             throw new BadCredentialException("You can not delete this column!");
         }
 
-        List<Basket> baskets = user.getBaskets();
-        if (baskets != null) {
-            for (Basket b : baskets) {
-                for (Card c : column.getCards()) {
-                    if (b.getCard() != null && b.getCard().equals(c)) {
-                        c.setIsArchive(false);
-                        basketRepository.deleteBasket(b.getId());
-                    }
-                }
-
-                if (b.getColumn() != null && b.getColumn().equals(column)) {
+        List<Basket> baskets = basketRepository.findAll();
+        for (Basket b : baskets) {
+            for (Card c : cardRepository.findCardsByColumnId(column.getId())) {
+                if (b.getCard() != null && b.getCard().equals(c)) {
+                    c.setIsArchive(false);
                     basketRepository.deleteBasket(b.getId());
                 }
             }
+
+            if (b.getColumn() != null && b.getColumn().equals(column)) {
+                basketRepository.deleteBasket(b.getId());
+            }
         }
 
-        List<Card> cards = column.getCards();
+        List<Card> cards = cardRepository.findCardsByColumnId(column.getId());
         for (Card card : cards) {
             List<Notification> cardNotification = notificationRepository.findAllByCardId(card.getId());
             if (cardNotification != null) {
@@ -143,6 +140,33 @@ public class ColumnService {
                     notificationRepository.deleteNotification(n.getId());
                 }
             }
+
+            List<Attachment> attachments = attachmentRepository.getAllByCardId(card.getId());
+            for (Attachment attachment : attachments) {
+                attachmentRepository.deleteAttachment(attachment.getId());
+            }
+
+            for (Checklist c : checklistRepository.findAllChecklists(card.getId())) {
+                for (SubTask s : c.getSubTasks()) {
+                    subTaskRepository.deleteSubTask(s.getId());
+                }
+
+                checklistRepository.deleteChecklist(c.getId());
+            }
+
+            for (Comment comment : commentRepository.findAllCommentsByCardId(card.getId())) {
+                commentRepository.deleteComment(comment.getId());
+            }
+
+            Estimation estimation = estimationRepository.findEstimationByCardId(card.getId());
+            if (estimation != null) {
+                estimationRepository.deleteEstimation(estimation.getId());
+            }
+
+            if (card.getLabels() != null) {
+                card.setLabels(null);
+            }
+
             cardRepository.deleteCard(card.getId());
         }
 
@@ -163,11 +187,12 @@ public class ColumnService {
             ColumnResponse response = new ColumnResponse(column);
             response.setCreator(userRepository.getCreatorResponse(column.getCreator().getId()));
             List<CardResponse> cardResponsesList = new ArrayList<>();
-            if (column.getCards().isEmpty()) {
+            List<Card> cards = cardRepository.findCardsByColumnId(column.getId());
+            if (cards.isEmpty()) {
                 List<CardResponse> list = new ArrayList<>();
                 response.setColumnCards(list);
             } else {
-                for (Card card : column.getCards()) {
+                for (Card card : cards) {
                     if (card.getIsArchive().equals(false)) {
                         cardResponsesList.add(converter.convertToResponseForGetAll(card));
                         response.setColumnCards(cardResponsesList);
@@ -201,6 +226,7 @@ public class ColumnService {
                 () -> new NotFoundException("Workspace with id: " + board.getWorkspace().getId() + " not found!")
         );
 
+        List<Card> cards = cardRepository.findCardsByColumnId(column.getId());
         if (column.getCreator().equals(user) || workspace.getLead().equals(user)) {
             column.setIsArchive(!column.getIsArchive());
             if (column.getIsArchive().equals(true)) {
@@ -209,7 +235,7 @@ public class ColumnService {
                 basket.setColumn(column);
                 basket.setArchivedUser(user);
                 column.setBasket(basket);
-                for (Card card : column.getCards()) {
+                for (Card card : cards) {
                     Basket cardBasket = new Basket();
                     card.setIsArchive(true);
                     cardBasket.setCard(card);
@@ -223,7 +249,7 @@ public class ColumnService {
             if (column.getIsArchive().equals(false)) {
                 List<Basket> baskets = basketRepository.findAll();
                 for (Basket b : baskets) {
-                    for (Card c : column.getCards()) {
+                    for (Card c : cards) {
                         if (b.getCard() != null && b.getCard().equals(c)) {
                             c.setIsArchive(false);
                             basketRepository.deleteBasket(b.getId());
@@ -260,11 +286,11 @@ public class ColumnService {
         );
 
         if (column.getCreator().equals(user) || workspace.getLead().equals(user)) {
-            List<Card> cards = column.getCards();
+            List<Card> cards = cardRepository.findCardsByColumnId(columnId);
             if (cards == null) {
                 throw new BadRequestException("This column is empty!");
             }
-            for (Card card : column.getCards()) {
+            for (Card card : cards) {
                 Basket cardBasket = new Basket();
                 if (card.getIsArchive().equals(false)) {
                     card.setIsArchive(true);
@@ -295,20 +321,20 @@ public class ColumnService {
             throw new BadCredentialException("You can not delete!");
         }
 
-        List<Card> cards = column.getCards();
+        List<Card> cards = cardRepository.findCardsByColumnId(column.getId());
         List<Basket> baskets = user.getBaskets();
         for (Card card : cards) {
             if (card.getIsArchive().equals(true)) {
                 if (baskets != null) {
                     for (Basket b : baskets) {
-                        if (b.getCard().equals(card)) {
+                        if (b.getCard() != null && b.getCard().equals(card)) {
                             basketRepository.deleteBasket(b.getId());
                         }
                     }
                 }
             }
 
-            for (Attachment attachment : card.getAttachments()) {
+            for (Attachment attachment : attachmentRepository.getAllByCardId(card.getId())) {
                 attachmentRepository.deleteAttachment(attachment.getId());
             }
 
@@ -320,7 +346,7 @@ public class ColumnService {
                 checklistRepository.deleteChecklist(c.getId());
             }
 
-            for (Comment comment : card.getComments()) {
+            for (Comment comment : commentRepository.findAllCommentsByCardId(card.getId())) {
                 commentRepository.deleteComment(comment.getId());
             }
 

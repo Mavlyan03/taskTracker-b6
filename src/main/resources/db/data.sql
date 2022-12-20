@@ -8,7 +8,7 @@ values (1, 'Esen', 'Niyazov',
         'admin@gmail.com',
         '$2a$12$TbmCs13/KkzrcHd.rSnZeOH5qvVc79nuGb/bYhbC3sT8dYK9unj2q', 'ADMIN'),
 
-       (3, 'Nursultan', 'Askarov', 'https://i.pinimg.com/564x/98/7b/9c/987b9c1a2c16192d4d86f996f97fc5dd.jpg',
+       (3, 'Nursultan', 'Askarov', 'https://cdn.vox-cdn.com/thumbor/WOflf2rxk4WRyARjv75LqHuobbg=/0x0:706x644/1400x1050/filters:focal(353x322:354x323)/cdn.vox-cdn.com/uploads/chorus_asset/file/13873773/stevejobs.1419962519.png',
         'user@gmail.com',
         '$2a$12$LcHYIlKllzvoMqfQpLOdqeNedFtk.SMb.CeRUyX/n7lBIPx00rtgW', 'USER'),
 

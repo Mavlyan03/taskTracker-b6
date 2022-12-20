@@ -15,4 +15,7 @@ public interface EstimationRepository extends JpaRepository<Estimation, Long> {
     @Modifying
     @Query("delete from Estimation e where e.id = :id")
     void deleteEstimation(Long id);
+
+    @Query("select e from Estimation e where e.card.id = :cardId")
+    Estimation findEstimationByCardId(Long cardId);
 }

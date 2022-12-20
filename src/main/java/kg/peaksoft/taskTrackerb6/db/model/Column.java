@@ -26,8 +26,8 @@ public class Column {
 
     private Boolean isArchive = false;
 
-    @OneToMany(cascade = ALL, mappedBy = "column")
-    private List<Card> cards;
+//    @OneToMany(cascade = ALL, mappedBy = "column")
+//    private List<Card> cards;
 
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
     private User creator;
@@ -46,10 +46,10 @@ public class Column {
         this.board = board;
     }
 
-    public void addCard(Card card) {
-        if (cards == null) {
-            cards = new ArrayList<>();
-        }
-        cards.add(card);
-    }
+//    public void addCard(Card card) {
+//        if (cards == null) {
+//            cards = new ArrayList<>();
+//        }
+//        cards.add(card);
+//    }
 }

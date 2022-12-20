@@ -24,6 +24,7 @@ public class CardConverter {
     private final CardRepository cardRepository;
     private final ChecklistRepository checklistRepository;
     private final ChecklistService checklistService;
+    private final CommentRepository commentRepository;
 
 
     private User getAuthenticateUser() {
@@ -42,7 +43,8 @@ public class CardConverter {
             response.setLabelResponses(new ArrayList<>());
         }
 
-        if (card.getEstimation() != null) {
+        Estimation estimation = estimationRepository.findEstimationByCardId(card.getId());
+        if (estimation != null) {
             response.setEstimationResponse(getEstimationByCardId(card.getId()));
         } else {
             response.setEstimationResponse(new EstimationResponse());
@@ -55,8 +57,8 @@ public class CardConverter {
         }
 
         response.setChecklistResponses(getChecklistResponses(checklistRepository.findAllChecklists(card.getId())));
-        if (card.getComments() != null) {
-            response.setCommentResponses(getCommentResponses(card.getComments()));
+        if (commentRepository.findAllCommentsByCardId(card.getId()) != null) {
+            response.setCommentResponses(getCommentResponses(commentRepository.findAllCommentsByCardId(card.getId())));
         } else {
             response.setCommentResponses(new ArrayList<>());
         }
@@ -69,8 +71,9 @@ public class CardConverter {
         CardResponse response = new CardResponse(card);
         response.setCreator(userRepository.getCreatorResponse(card.getCreator().getId()));
         response.setLabelResponses(getAllLabelsByCardId(card.getId()));
-        if (card.getEstimation() != null) {
-            int between = Period.between(card.getEstimation().getStartDate(), card.getEstimation().getDueDate()).getDays();
+        Estimation estimation = estimationRepository.findEstimationByCardId(card.getId());
+        if (estimation != null) {
+            int between = Period.between(estimation.getStartDate(), estimation.getDueDate()).getDays();
             response.setDuration("" + between + " days");
         }
 
@@ -149,9 +152,7 @@ public class CardConverter {
                 () -> new NotFoundException("Card with id: " + cardId + " not found!")
         );
 
-        Estimation estimation = estimationRepository.findById(card.getEstimation().getId()).orElseThrow(
-                () -> new NotFoundException("Estimation not found!")
-        );
+        Estimation estimation = estimationRepository.findEstimationByCardId(card.getId());
 
         return new EstimationResponse(
                 estimation.getId(),
