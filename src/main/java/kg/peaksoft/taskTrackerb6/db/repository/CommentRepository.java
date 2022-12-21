@@ -12,8 +12,8 @@ import java.util.List;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    @Query("select c from Comment c where c.card.id = ?1")
-    List<Comment> findAllComments(Long id);
+    @Query("select c from Comment c where c.card.id = :cardId")
+    List<Comment> findAllCommentsByCardId(Long cardId);
 
     @Transactional
     @Modifying

@@ -72,14 +72,13 @@ public class CardService {
         Board board = boardRepository.findById(card.getColumn().getBoard().getId()).get();
 
         List<CardResponse> cardResponses = new ArrayList<>();
-        for (Card c : column.getCards()) {
+        for (Card c : cardRepository.findCardsByColumnId(column.getId())) {
             cardResponses.add(converter.convertToResponseForGetAll(c));
         }
 
         if (!card.getColumn().equals(column)) {
             card.setMovedUser(user);
             card.setColumn(column);
-            column.addCard(card);
             card.setColumn(column);
             Notification notification = new Notification();
             notification.setCard(card);
@@ -113,18 +112,16 @@ public class CardService {
             throw new BadCredentialException("You can not delete this card!");
         }
 
-        List<Basket> baskets = user.getBaskets();
+        List<Basket> baskets = basketRepository.findAll();
         if (card.getIsArchive().equals(true)) {
-            if (baskets != null) {
-                for (Basket b : baskets) {
-                    if (b.getCard() != null && b.getCard().equals(card)) {
-                        basketRepository.deleteBasket(b.getId());
-                    }
+            for (Basket b : baskets) {
+                if (b.getCard() != null && b.getCard().equals(card)) {
+                    basketRepository.deleteBasket(b.getId());
                 }
             }
         }
 
-        List<Attachment> attachments = card.getAttachments();
+        List<Attachment> attachments = attachmentRepository.getAllByCardId(card.getId());
         for (Attachment attachment : attachments) {
             attachmentRepository.deleteAttachment(attachment.getId());
         }
@@ -137,7 +134,7 @@ public class CardService {
             checklistRepository.deleteChecklist(c.getId());
         }
 
-        for (Comment comment : card.getComments()) {
+        for (Comment comment : commentRepository.findAllCommentsByCardId(card.getId())) {
             commentRepository.deleteComment(comment.getId());
         }
 
@@ -148,8 +145,9 @@ public class CardService {
             }
         }
 
-        if (card.getEstimation() != null) {
-            estimationRepository.deleteEstimation(card.getEstimation().getId());
+        Estimation estimation = estimationRepository.findEstimationByCardId(card.getId());
+        if (estimation != null) {
+            estimationRepository.deleteEstimation(estimation.getId());
         }
 
         card.setLabels(null);
@@ -225,7 +223,6 @@ public class CardService {
         User user = getAuthenticateUser();
         Card card = new Card(request.getTitle(), user);
         card.setColumn(column);
-        column.addCard(card);
         card.setCreatedAt(LocalDateTime.now());
         user.addCard(card);
         return converter.convertToCardInnerPageResponse(cardRepository.save(card));

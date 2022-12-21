@@ -29,4 +29,7 @@ public interface CardRepository extends JpaRepository<Card, Long> {
 
     @Query("select c from Card c where c.column.id = :columnId order by c.id desc")
     List<Card> cards(Long columnId);
+
+    @Query("select c from Card c where c.column.id = :columnId")
+    List<Card> findCardsByColumnId(Long columnId);
 }

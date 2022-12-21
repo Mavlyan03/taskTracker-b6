@@ -47,20 +47,11 @@ public class Card {
     @OneToMany(cascade = {ALL}, mappedBy = "card")
     private List<Checklist> checklists;
 
-    @OneToOne(cascade = {ALL}, mappedBy = "card")
-    private Estimation estimation;
-
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
     private kg.peaksoft.taskTrackerb6.db.model.Column column;
 
     @ManyToMany(cascade = {DETACH, REFRESH, MERGE})
     private List<Label> labels;
-
-    @OneToMany(cascade = {ALL}, mappedBy = "card")
-    private List<Comment> comments;
-
-    @OneToMany(cascade = {ALL}, mappedBy = "card")
-    private List<Attachment> attachments;
 
     @OneToOne(cascade = {ALL}, mappedBy = "card")
     private Basket basket;
@@ -103,12 +94,5 @@ public class Card {
             checklists = new ArrayList<>();
         }
         checklists.add(checklist);
-    }
-
-    public void addComment(Comment comment) {
-        if (comments == null) {
-            comments = new ArrayList<>();
-        }
-        comments.add(comment);
     }
 }

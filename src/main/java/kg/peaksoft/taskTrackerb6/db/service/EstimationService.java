@@ -69,7 +69,8 @@ public class EstimationService {
                 () -> new NotFoundException("Card with id: " + cardId + " not found!")
         );
 
-        if (card.getEstimation() != null) {
+        Estimation e = estimationRepository.findEstimationByCardId(card.getId());
+        if (e != null) {
             throw new BadCredentialException("Card with id: " + card.getId() + " already have estimation!");
         }
 
@@ -103,7 +104,6 @@ public class EstimationService {
             estimation.setReminder(ReminderType.NONE);
         }
 
-        card.setEstimation(estimation);
         estimation.setCard(card);
         Estimation save = estimationRepository.save(estimation);
         return new EstimationResponse(

@@ -1,10 +1,7 @@
 package kg.peaksoft.taskTrackerb6.db.service;
 
 import kg.peaksoft.taskTrackerb6.db.model.*;
-import kg.peaksoft.taskTrackerb6.db.repository.CardRepository;
-import kg.peaksoft.taskTrackerb6.db.repository.LabelRepository;
-import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
-import kg.peaksoft.taskTrackerb6.db.repository.WorkspaceRepository;
+import kg.peaksoft.taskTrackerb6.db.repository.*;
 import kg.peaksoft.taskTrackerb6.dto.response.SearchCard;
 import kg.peaksoft.taskTrackerb6.dto.response.AllIssuesResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.CardMemberResponse;
@@ -31,6 +28,7 @@ public class AllIssuesService {
     private final LabelRepository labelRepository;
     private final UserRepository userRepository;
     private final CardRepository cardRepository;
+    private final EstimationRepository estimationRepository;
 
     public List<AllIssuesResponse> allIssues(Long workspaceId) {
         Workspace workspace = workspaceRepository.findById(workspaceId).orElseThrow(
@@ -55,8 +53,9 @@ public class AllIssuesService {
         int isDoneCounter = 0;
         int allSubTasksCounter = 0;
 
-        if (card.getEstimation() != null) {
-            int period = Period.between(card.getEstimation().getStartDate(), card.getEstimation().getDueDate()).getDays();
+        Estimation estimation = estimationRepository.findEstimationByCardId(card.getId());
+        if (estimation != null) {
+            int period = Period.between(estimation.getStartDate(), estimation.getDueDate()).getDays();
             response.setPeriod("" + period + " days");
         }
 
