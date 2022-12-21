@@ -12,9 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -28,6 +26,16 @@ public class ScheduledConfig {
     private final EstimationRepository estimationRepository;
     private final NotificationRepository notificationRepository;
     private final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+
+
+    private LocalDate parse(String value) {
+        try {
+            return DATE_FORMATTER.parse(value, LocalDate::from);
+        } catch (DateTimeParseException e) {
+            return null;
+        }
+    }
 
 
     private LocalDateTime parseToLocalDateTime(String value) {
@@ -44,8 +52,8 @@ public class ScheduledConfig {
         List<Estimation> estimations = estimationRepository.findAll();
         for (Estimation e : estimations) {
             if (!e.getReminder().equals(ReminderType.NONE)) {
-                LocalDateTime nowForParse = LocalDateTime.now();
-                LocalDate today = LocalDate.now();
+                LocalDateTime nowForParse = LocalDateTime.now(ZoneId.of("Asia/Almaty"));
+                LocalDate today = LocalDate.now(ZoneId.of("Asia/Almaty"));
                 LocalTime timeNow = nowForParse.toLocalTime();
                 String[] parseTime = timeNow.toString().split(":");
                 String parsed = today + " " + parseTime[0] + ":" + parseTime[1];
