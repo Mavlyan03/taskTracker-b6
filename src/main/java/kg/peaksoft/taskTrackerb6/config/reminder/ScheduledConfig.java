@@ -16,6 +16,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -46,8 +47,8 @@ public class ScheduledConfig {
         if (!estimations.isEmpty()) {
             for (Estimation e : estimations) {
                 if (!e.getReminder().equals(ReminderType.NONE)) {
-                    LocalDateTime nowForParse = LocalDateTime.now();
-                    LocalDate today = LocalDate.now();
+                    LocalDateTime nowForParse = LocalDateTime.now(ZoneId.of("Asia/Almaty"));
+                    LocalDate today = LocalDate.now(ZoneId.of("Asia/Almaty"));
                     LocalTime timeNow = nowForParse.toLocalTime();
                     String[] parseTime = timeNow.toString().split(":");
                     String parsed = today + " " + parseTime[0] + ":" + parseTime[1];
