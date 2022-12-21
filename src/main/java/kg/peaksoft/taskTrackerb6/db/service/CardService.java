@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,7 +87,8 @@ public class CardService {
             notification.setFromUser(user);
             notification.setUser(card.getColumn().getBoard().getWorkspace().getLead());
             notification.setBoard(board);
-            notification.setCreatedAt(LocalDateTime.now());
+            notification.setColumn(column);
+            notification.setCreatedAt(LocalDateTime.now(ZoneId.of("Asia/Almaty")));
             notification.setMessage("Card " + card.getTitle() + " has moved to column: "
                     + column.getTitle() + ", by " + user.getFirstName());
             notification.setIsRead(false);
@@ -223,6 +225,7 @@ public class CardService {
         User user = getAuthenticateUser();
         Card card = new Card(request.getTitle(), user);
         card.setColumn(column);
+        card.setCreatedAt(LocalDateTime.now(ZoneId.of("Asia/Almaty")));
         card.setCreatedAt(LocalDateTime.now());
         user.addCard(card);
         return converter.convertToCardInnerPageResponse(cardRepository.save(card));

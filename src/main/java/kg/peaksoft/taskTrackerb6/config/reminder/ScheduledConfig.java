@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import java.time.*;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,6 +31,16 @@ public class ScheduledConfig {
     private final EstimationRepository estimationRepository;
     private final NotificationRepository notificationRepository;
     private final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+
+
+    private LocalDate parse(String value) {
+        try {
+            return DATE_FORMATTER.parse(value, LocalDate::from);
+        } catch (DateTimeParseException e) {
+            return null;
+        }
+    }
 
 
     private LocalDateTime parseToLocalDateTime(String value) {
@@ -62,11 +73,12 @@ public class ScheduledConfig {
                         notification.setBoard(e.getCard().getColumn().getBoard());
                         notification.setColumn(e.getCard().getColumn());
                         notification.setEstimation(e);
+                        notification.setColumn(e.getCard().getColumn());
                         notification.setUser(e.getCard().getCreator());
                         notification.setBoard(e.getCard().getColumn().getBoard());
-                        notification.setCreatedAt(LocalDateTime.now());
+                        notification.setCreatedAt(LocalDateTime.now(ZoneId.of("Asia/Almaty")));
                         notification.setIsRead(false);
-                        notification.setMessage("The deadline given to the card: " + e.getCard() + " task will end in: " + e.getReminder() + " minutes");
+                        notification.setMessage("Task deadline: " + e.getCard() + " will end in: " + e.getReminder() + " minutes!");
                         notificationRepository.save(notification);
                         log.info("notification is saved");
                     }

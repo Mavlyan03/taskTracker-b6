@@ -16,6 +16,7 @@ public class NotificationResponse {
     private Long id;
     private String boardTitle;
     private String background;
+    private String nameOfColumn;
     private Long fromUserId;
     private String firstName;
     private String lastName;
@@ -29,6 +30,7 @@ public class NotificationResponse {
         this.id = notification.getId();
         this.boardTitle = notification.getBoard().getTitle();
         this.background = notification.getBoard().getBackground();
+        this.nameOfColumn = notification.getColumn().getTitle();
         this.fromUserId = notification.getFromUser().getId();
         this.firstName = notification.getFromUser().getFirstName();
         this.lastName = notification.getFromUser().getLastName();

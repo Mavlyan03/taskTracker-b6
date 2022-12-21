@@ -4,6 +4,7 @@ import kg.peaksoft.taskTrackerb6.db.model.User;
 import kg.peaksoft.taskTrackerb6.db.model.UserWorkSpace;
 import kg.peaksoft.taskTrackerb6.db.model.Workspace;
 import kg.peaksoft.taskTrackerb6.db.repository.UserRepository;
+import kg.peaksoft.taskTrackerb6.dto.request.UpdateImageRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.UpdateProfileRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.ProfileResponse;
 import kg.peaksoft.taskTrackerb6.dto.response.ProjectResponse;
@@ -39,6 +40,20 @@ public class AdminService {
                 user.getLastName(),
                 user.getEmail(),
                 user.getImage(),
+                getAllProjectResponse()
+        );
+    }
+
+    public ProfileResponse updateProfileAvatar(UpdateImageRequest request) {
+        User user = getAuthenticatedUser();
+        user.setImage(request.getImage());
+        User save = userRepository.save(user);
+        return new ProfileResponse(
+                save.getId(),
+                save.getFirstName(),
+                save.getLastName(),
+                save.getEmail(),
+                save.getImage(),
                 getAllProjectResponse()
         );
     }
@@ -90,7 +105,8 @@ public class AdminService {
                 save.getLastName(),
                 save.getEmail(),
                 save.getImage(),
-                getAllProjectResponse());
+                getAllProjectResponse()
+        );
     }
 
     private User getAuthenticatedUser() {

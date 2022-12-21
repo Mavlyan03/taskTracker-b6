@@ -3,6 +3,7 @@ package kg.peaksoft.taskTrackerb6.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.peaksoft.taskTrackerb6.db.service.AdminService;
+import kg.peaksoft.taskTrackerb6.dto.request.UpdateImageRequest;
 import kg.peaksoft.taskTrackerb6.dto.request.UpdateProfileRequest;
 import kg.peaksoft.taskTrackerb6.dto.response.ProfileResponse;
 import lombok.RequiredArgsConstructor;
@@ -34,5 +35,11 @@ public class ProfileApi {
     @GetMapping("/{id}")
     public ProfileResponse getOtherMemberProfile(@PathVariable Long id) {
         return adminService.getProfileById(id);
+    }
+
+    @Operation(summary = "Update profile avatar", description = "Update profile avatar")
+    @PutMapping("/avatar")
+    public ProfileResponse updateProfileAvatar(@RequestBody UpdateImageRequest request) {
+        return adminService.updateProfileAvatar(request);
     }
 }

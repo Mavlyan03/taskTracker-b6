@@ -8,31 +8,31 @@ values (1, 'Esen', 'Niyazov',
         'admin@gmail.com',
         '$2a$12$TbmCs13/KkzrcHd.rSnZeOH5qvVc79nuGb/bYhbC3sT8dYK9unj2q', 'ADMIN'),
 
-       (3, 'Nursultan', 'Askarov', 'https://cdn.vox-cdn.com/thumbor/WOflf2rxk4WRyARjv75LqHuobbg=/0x0:706x644/1400x1050/filters:focal(353x322:354x323)/cdn.vox-cdn.com/uploads/chorus_asset/file/13873773/stevejobs.1419962519.png',
+       (3, 'Nursultan', 'Askarov', 'https://www.meme-arsenal.com/memes/b877babd9c07f94b952c7f152c4e264e.jpg',
         'user@gmail.com',
         '$2a$12$LcHYIlKllzvoMqfQpLOdqeNedFtk.SMb.CeRUyX/n7lBIPx00rtgW', 'USER'),
 
        (4, 'Kamchybek', 'Kuzobaev', 'image', 'manasbekovich@gmail.com',
-        '$2a$12$sfgAFhShn3b2usZuwvvPV.9G.5dVhwWPC4XfwRz6FaGkpYoB6jAf.', 'ADMIN'),
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEcIMH0pwffCbskbuSa-X5bvnUwWavnn1OFw&usqp=CAU', 'ADMIN'),
 
-       (5, 'Tynychbek', 'Kursanali Uulu', 'image', 'tkursanaliuulu01@gmail.com',
+       (5, 'Tynychbek', 'Kursanali Uulu', 'https://bipbap.ru/wp-content/uploads/2021/07/modnye-avatarki-dlya-vk_0.jpg', 'tkursanaliuulu01@gmail.com',
         '$2a$12$BB1Vljti/nWN4SfGtnBW6.IYPf4x3ChoXKUI/tuLkdwwTOfM4AdTa', 'USER'),
 
-       (6, 'Daniel', 'Kamilzhanov', 'image', 'zadrot105217@gmail.com',
+       (6, 'Daniel', 'Kamilzhanov', 'http://pm1.narvii.com/7620/1e77e3a13124a5f7b3bf5484eb5c2da285b3d02cr1-700-690v2_uhq.jpg', 'zadrot105217@gmail.com',
         '$2a$12$aAfKQF9kDMarOhLlbGN9ke5oBBIHUyklIUIedqp9eq1h.ffcDkCzu', 'ADMIN'),
 
-       (7, 'Nurmuhammad', 'Nurbekov', 'image', 'nur.nurbekov.01@gmail.com',
+       (7, 'Nurmuhammad', 'Nurbekov', 'https://www.meme-arsenal.com/memes/b877babd9c07f94b952c7f152c4e264e.jpg', 'nur.nurbekov.01@gmail.com',
         '$2a$12$bTfSe4x3gy7OiD/yTp2sc.CW8eR5hpG3RunZZLJjZR/9gsv7MDLD6', 'USER'),
 
-       (8, 'Ulan', 'Mamatisaev', 'image', 'umamatisaev@gmail.com',
+       (8, 'Ulan', 'Mamatisaev', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYC1MUr5qp4y37dbg0R5kSUgFhf7SpE7ndDQ&usqp=CAU', 'umamatisaev@gmail.com',
         '$2a$12$CYpA7sQefuc6j0BUUOU9AO6FlI7EzMBr8LPonf9YAKBfiDZDafqSG', 'USER'),
 
-       (9, 'Nurbek', 'Isakov', 'image', 'nurbisak@gmail.com',
+       (9, 'Nurbek', 'Isakov', 'https://klike.net/uploads/posts/2019-03/medium/1551512888_2.jpg', 'nurbisak@gmail.com',
         '$2a$12$uTJIUPEgw80zM4wS7KMF2.8g3NexM00C/l8Vg8qvK8O6h6t/v.MRK', 'USER'),
 
-       (10, 'Maksat', 'Omuraliev', 'image', 'bilalimus@gmail.com', 'bilalimus@gmail.com', 'USER'),
+       (10, 'Maksat', 'Omuraliev', 'https://w-hatsapp.ru/wp-content/uploads/2017/05/5-6.png', 'bilalimus@gmail.com', 'bilalimus@gmail.com', 'USER'),
 
-       (11, 'Tynchtyk', 'Akmatov', 'image', 'tynchtyk7@mail.ru',
+       (11, 'Tynchtyk', 'Akmatov', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDATwYwwNGQUhEBH7V8QlkfxJbSVkOjx_Jtg&usqp=CAU', 'tynchtyk7@mail.ru',
         '$2a$12$30Zbq/rKLDFuqhB8JJauVu0RGaWqK4.RDF.l2Q5R.13fLRm3rmWo2', 'USER');
 
 
