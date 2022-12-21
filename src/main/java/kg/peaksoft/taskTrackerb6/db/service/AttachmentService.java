@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Service
 @Slf4j
@@ -32,8 +34,9 @@ public class AttachmentService {
         );
 
         Attachment attachment = new Attachment(request);
-        card.addAttachment(attachment);
         attachment.setCard(card);
+        attachment.setAttachedDate(LocalDateTime.now(ZoneId.of("Asia/Almaty")));
+        card.addAttachment(attachment);
         Attachment save = attachmentRepository.save(attachment);
         log.info("Attachment successfully added to card!");
         return new AttachmentResponse(save);

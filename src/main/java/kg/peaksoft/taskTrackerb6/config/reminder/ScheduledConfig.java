@@ -69,7 +69,7 @@ public class ScheduledConfig {
                     notification.setEstimation(e);
                     notification.setUser(e.getCard().getCreator());
                     notification.setBoard(e.getCard().getColumn().getBoard());
-                    notification.setCreatedAt(LocalDateTime.now());
+                    notification.setCreatedAt(LocalDateTime.now(ZoneId.of("Asia/Almaty")));
                     notification.setIsRead(false);
                     notification.setMessage("The deadline given to the card: " + e.getCard() + " task will end in: " + e.getReminder() + " minutes");
                     notificationRepository.save(notification);

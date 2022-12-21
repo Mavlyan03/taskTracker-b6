@@ -31,6 +31,5 @@ public class Attachment {
 
     public Attachment(AttachmentRequest request) {
         this.documentLink = request.getDocumentLink();
-        this.attachedDate = request.getAttachedDate();
     }
 }

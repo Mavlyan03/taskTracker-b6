@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,7 +98,7 @@ public class MemberService {
         notification.setFromUser(authenticateUser);
         notification.setUser(user);
         notification.setBoard(card.getColumn().getBoard());
-        notification.setCreatedAt(LocalDateTime.now());
+        notification.setCreatedAt(LocalDateTime.now(ZoneId.of("Asia/Almaty")));
         notification.setMessage("You assigned to card: " + card + ", by " + authenticateUser);
         notification.setIsRead(false);
         notificationRepository.save(notification);

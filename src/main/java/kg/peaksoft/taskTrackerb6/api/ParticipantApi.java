@@ -54,9 +54,9 @@ public class ParticipantApi {
     }
 
     @Operation(summary = "Invite new participant to workspace", description = "Invite new participant to workspace")
-    @PostMapping("/invite")
-    public SimpleResponse inviteNewParticipant(@RequestBody InviteRequest request) throws MessagingException {
-        return participantService.inviteNewParticipant(request);
+    @PostMapping("/invite-workspace")
+    public SimpleResponse inviteNewParticipantToWorkspace(@RequestBody InviteRequest request) throws MessagingException {
+        return participantService.inviteNewParticipantToWorkspace(request);
     }
 }
 
