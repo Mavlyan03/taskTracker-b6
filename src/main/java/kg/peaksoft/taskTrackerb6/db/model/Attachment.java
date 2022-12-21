@@ -1,5 +1,6 @@
 package kg.peaksoft.taskTrackerb6.db.model;
 
+import kg.peaksoft.taskTrackerb6.dto.request.AttachmentRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,4 +28,9 @@ public class Attachment {
 
     @ManyToOne(cascade = {DETACH, REFRESH, MERGE})
     private Card card;
+
+    public Attachment(AttachmentRequest request) {
+        this.documentLink = request.getDocumentLink();
+        this.attachedDate = request.getAttachedDate();
+    }
 }

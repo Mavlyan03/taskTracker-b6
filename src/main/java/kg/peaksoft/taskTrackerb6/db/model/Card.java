@@ -111,4 +111,11 @@ public class Card {
         }
         comments.add(comment);
     }
+
+    public void addAttachment(Attachment attachment) {
+        if (attachments == null) {
+            attachments = new ArrayList<>();
+        }
+        attachments.add(attachment);
+    }
 }
