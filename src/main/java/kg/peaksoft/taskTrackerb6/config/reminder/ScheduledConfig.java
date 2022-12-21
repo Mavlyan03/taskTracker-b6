@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import java.time.*;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -78,7 +77,15 @@ public class ScheduledConfig {
                         notification.setBoard(e.getCard().getColumn().getBoard());
                         notification.setCreatedAt(LocalDateTime.now(ZoneId.of("Asia/Almaty")));
                         notification.setIsRead(false);
-                        notification.setMessage("Task deadline: " + e.getCard() + " will end in: " + e.getReminder() + " minutes!");
+                        if (e.getReminder().equals(ReminderType.FIVE_MINUTE)) {
+                            notification.setMessage(e.getCard().getTitle() + ": timeout expires in 5 minutes!");
+                        }
+                        if (e.getReminder().equals(ReminderType.THIRTY_MINUTE)) {
+                            notification.setMessage(e.getCard().getTitle() + ": timeout expires in 30 minutes!");
+                        }
+                        if (e.getReminder().equals(ReminderType.ONE_HOUR)) {
+                            notification.setMessage(e.getCard().getTitle() + ": timeout expires in 1 hour!");
+                        }
                         notificationRepository.save(notification);
                         log.info("notification is saved");
                     }

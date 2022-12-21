@@ -40,8 +40,9 @@ public class NotificationService {
         User user = getAuthenticateUser();
         List<NotificationResponse> notificationResponses = new ArrayList<>();
         for (Notification notification : user.getNotifications()) {
-            if (notification.getIsRead().equals(false))
+            if (notification.getIsRead().equals(false)) {
                 notificationResponses.add(new NotificationResponse(notification));
+            }
         }
 
         log.info("Get all user's notifications");

@@ -100,7 +100,7 @@ public class MemberService {
         notification.setColumn(card.getColumn());
         notification.setBoard(card.getColumn().getBoard());
         notification.setCreatedAt(LocalDateTime.now(ZoneId.of("Asia/Almaty")));
-        notification.setMessage("You assigned to card: " + card + ", by " + authenticateUser);
+        notification.setMessage("You assigned to card: " + card.getTitle() + ", by " + authenticateUser.getFirstName());
         notification.setIsRead(false);
         notificationRepository.save(notification);
         cardRepository.save(card);

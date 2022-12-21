@@ -23,7 +23,7 @@ public class Label {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "label_gen")
-    @SequenceGenerator(name = "label_gen", sequenceName = "label_seq", allocationSize = 1, initialValue = 2)
+    @SequenceGenerator(name = "label_gen", sequenceName = "label_seq", allocationSize = 1, initialValue = 3)
     private Long id;
 
     @Column(length = 10000)
