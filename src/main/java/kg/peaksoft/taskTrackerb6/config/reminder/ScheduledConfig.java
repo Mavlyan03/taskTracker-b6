@@ -67,6 +67,7 @@ public class ScheduledConfig {
                     notification.setBoard(e.getCard().getColumn().getBoard());
                     notification.setColumn(e.getCard().getColumn());
                     notification.setEstimation(e);
+                    notification.setColumn(e.getCard().getColumn());
                     notification.setUser(e.getCard().getCreator());
                     notification.setBoard(e.getCard().getColumn().getBoard());
                     notification.setCreatedAt(LocalDateTime.now(ZoneId.of("Asia/Almaty")));

@@ -64,6 +64,7 @@ public class NotificationService {
                 notification.getId(),
                 notification.getBoard().getTitle(),
                 notification.getBoard().getBackground(),
+                notification.getColumn().getTitle(),
                 notification.getFromUser().getId(),
                 notification.getFromUser().getFirstName(),
                 notification.getFromUser().getLastName(),

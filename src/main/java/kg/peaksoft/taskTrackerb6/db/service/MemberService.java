@@ -97,6 +97,7 @@ public class MemberService {
         notification.setNotificationType(NotificationType.ASSIGN);
         notification.setFromUser(authenticateUser);
         notification.setUser(user);
+        notification.setColumn(card.getColumn());
         notification.setBoard(card.getColumn().getBoard());
         notification.setCreatedAt(LocalDateTime.now(ZoneId.of("Asia/Almaty")));
         notification.setMessage("You assigned to card: " + card + ", by " + authenticateUser);

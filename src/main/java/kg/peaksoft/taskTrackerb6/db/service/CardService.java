@@ -88,6 +88,7 @@ public class CardService {
             notification.setFromUser(user);
             notification.setUser(card.getColumn().getBoard().getWorkspace().getLead());
             notification.setBoard(board);
+            notification.setColumn(column);
             notification.setCreatedAt(LocalDateTime.now(ZoneId.of("Asia/Almaty")));
             notification.setMessage("Card " + card.getTitle() + " has moved to column: "
                     + column.getTitle() + ", by " + user.getFirstName());
