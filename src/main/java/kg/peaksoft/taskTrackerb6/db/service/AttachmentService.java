@@ -36,7 +36,6 @@ public class AttachmentService {
         Attachment attachment = new Attachment(request);
         attachment.setCard(card);
         attachment.setAttachedDate(LocalDateTime.now(ZoneId.of("Asia/Almaty")));
-        card.addAttachment(attachment);
         Attachment save = attachmentRepository.save(attachment);
         log.info("Attachment successfully added to card!");
         return new AttachmentResponse(save);

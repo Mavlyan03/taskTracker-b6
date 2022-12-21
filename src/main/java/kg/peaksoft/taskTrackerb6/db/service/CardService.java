@@ -225,7 +225,6 @@ public class CardService {
         User user = getAuthenticateUser();
         Card card = new Card(request.getTitle(), user);
         card.setColumn(column);
-        column.addCard(card);
         card.setCreatedAt(LocalDateTime.now(ZoneId.of("Asia/Almaty")));
         card.setCreatedAt(LocalDateTime.now());
         user.addCard(card);

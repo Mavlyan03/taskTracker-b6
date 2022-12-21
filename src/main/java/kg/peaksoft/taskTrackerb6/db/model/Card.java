@@ -95,18 +95,4 @@ public class Card {
         }
         checklists.add(checklist);
     }
-
-    public void addComment(Comment comment) {
-        if (comments == null) {
-            comments = new ArrayList<>();
-        }
-        comments.add(comment);
-    }
-
-    public void addAttachment(Attachment attachment) {
-        if (attachments == null) {
-            attachments = new ArrayList<>();
-        }
-        attachments.add(attachment);
-    }
 }
