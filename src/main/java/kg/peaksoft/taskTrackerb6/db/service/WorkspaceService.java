@@ -198,6 +198,11 @@ public class WorkspaceService {
 
                         Estimation estimation = estimationRepository.findEstimationByCardId(card.getId());
                         if (estimation != null) {
+                            Notification notification = notificationRepository.findNotification(estimation.getId());
+                            if (notification != null) {
+                                notificationRepository.deleteNotification(notification.getId());
+                            }
+
                             estimationRepository.deleteEstimation(estimation.getId());
                         }
 
