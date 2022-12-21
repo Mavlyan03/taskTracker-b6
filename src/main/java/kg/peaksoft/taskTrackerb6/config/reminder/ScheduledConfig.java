@@ -13,6 +13,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.*;
+import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -46,7 +51,7 @@ public class ScheduledConfig {
         }
     }
 
-
+    @Transactional
     @Scheduled(cron = "0 0/1 * * * *")
     public void reminder() {
         List<Estimation> estimations = estimationRepository.findAll();
@@ -75,6 +80,32 @@ public class ScheduledConfig {
                     notification.setMessage("Task deadline: " + e.getCard() + " will end in: " + e.getReminder() + " minutes!");
                     notificationRepository.save(notification);
                     log.info("notification is saved");
+        if (!estimations.isEmpty()) {
+            for (Estimation e : estimations) {
+                if (!e.getReminder().equals(ReminderType.NONE)) {
+                    LocalDateTime nowForParse = LocalDateTime.now(ZoneId.of("Asia/Almaty"));
+                    LocalDate today = LocalDate.now(ZoneId.of("Asia/Almaty"));
+                    LocalTime timeNow = nowForParse.toLocalTime();
+                    String[] parseTime = timeNow.toString().split(":");
+                    String parsed = today + " " + parseTime[0] + ":" + parseTime[1];
+                    LocalDateTime now = parseToLocalDateTime(parsed);
+                    assert now != null;
+                    if (now.equals(e.getNotificationTime())) {
+                        Notification notification = new Notification();
+                        notification.setCard(e.getCard());
+                        notification.setNotificationType(NotificationType.REMINDER);
+                        notification.setFromUser(e.getCard().getColumn().getCreator());
+                        notification.setBoard(e.getCard().getColumn().getBoard());
+                        notification.setColumn(e.getCard().getColumn());
+                        notification.setEstimation(e);
+                        notification.setUser(e.getCard().getCreator());
+                        notification.setBoard(e.getCard().getColumn().getBoard());
+                        notification.setCreatedAt(LocalDateTime.now());
+                        notification.setIsRead(false);
+                        notification.setMessage("The deadline given to the card: " + e.getCard() + " task will end in: " + e.getReminder() + " minutes");
+                        notificationRepository.save(notification);
+                        log.info("notification is saved");
+                    }
                 }
             }
         }

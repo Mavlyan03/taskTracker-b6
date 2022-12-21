@@ -172,6 +172,11 @@ public class ParticipantService {
             } else if (request.getRole().equals(Role.USER)) {
                 helper.setText(request.getLink() + "/" + request.getRole() + "/workspaceId/" + workspace.getId() + "/boardId/" + request.getWorkspaceOrBoardId());
             }
+        if (request.getRole().equals(Role.ADMIN)) {
+            helper.setText(request.getLink() + "/" + request.getRole() + "/workspaceId/" + workspace.getId() + " /boardId/" + request.getWorkspaceOrBoardId());
+        } else if (request.getRole().equals(Role.USER)) {
+            helper.setText(request.getLink() + "/" + request.getRole() + "/workspaceId/" + workspace.getId() + "/boardId/" + request.getWorkspaceOrBoardId());
+        }
 
             mailSender.send(mimeMessage);
         } else {

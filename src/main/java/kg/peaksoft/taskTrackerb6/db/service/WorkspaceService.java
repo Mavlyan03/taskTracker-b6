@@ -168,22 +168,23 @@ public class WorkspaceService {
             throw new BadCredentialException("You can not delete this workspace!");
         }
 
-        List<Basket> baskets = user.getBaskets();
+        List<Basket> baskets = basketRepository.findAll();
         for (Board b : workspace.getBoards()) {
-            if (b.getColumns() != null) {
-                for (Column column : b.getColumns()) {
-                    for (Card card : column.getCards()) {
-                        if (card.getIsArchive().equals(true)) {
-                            if (baskets != null) {
-                                for (Basket basket : baskets) {
-                                    if (basket.getCard().equals(card)) {
-                                        basketRepository.deleteBasket(basket.getId());
-                                    }
-                                }
+            List<Column> columns = columnRepository.findAllColumnsByBoardId(b.getId());
+            if (columns != null) {
+                for (Column column : columns) {
+                    for (Card card : cardRepository.findCardsByColumnId(column.getId())) {
+                        for (Basket basket : baskets) {
+                            if (basket.getCard() != null && basket.getCard().equals(card)) {
+                                basketRepository.deleteBasket(basket.getId());
+                            }
+                            if (basket.getColumn() != null && basket.getColumn().equals(column)) {
+                                basketRepository.deleteBasket(basket.getId());
                             }
                         }
 
-                        for (Attachment attachment : card.getAttachments()) {
+
+                        for (Attachment attachment : attachmentRepository.getAllByCardId(card.getId())) {
                             attachmentRepository.deleteAttachment(attachment.getId());
                         }
 
@@ -195,7 +196,12 @@ public class WorkspaceService {
                             checklistRepository.deleteChecklist(c.getId());
                         }
 
-                        for (Comment comment : card.getComments()) {
+                        Estimation estimation = estimationRepository.findEstimationByCardId(card.getId());
+                        if (estimation != null) {
+                            estimationRepository.deleteEstimation(estimation.getId());
+                        }
+
+                        for (Comment comment : commentRepository.findAllCommentsByCardId(card.getId())) {
                             commentRepository.deleteComment(comment.getId());
                         }
 
@@ -218,18 +224,16 @@ public class WorkspaceService {
                         }
                     }
 
-                    if (baskets != null) {
-                        for (Basket basket : baskets) {
-                            for (Card c : column.getCards()) {
-                                if (basket.getCard() != null && basket.getCard().equals(c)) {
-                                    c.setIsArchive(false);
-                                    basketRepository.deleteBasket(basket.getId());
-                                }
-                            }
-
-                            if (basket.getColumn() != null && basket.getColumn().equals(column)) {
+                    for (Basket basket : baskets) {
+                        for (Card c : cardRepository.findCardsByColumnId(column.getId())) {
+                            if (basket.getCard() != null && basket.getCard().equals(c)) {
+                                c.setIsArchive(false);
                                 basketRepository.deleteBasket(basket.getId());
                             }
+                        }
+
+                        if (basket.getColumn() != null && basket.getColumn().equals(column)) {
+                            basketRepository.deleteBasket(basket.getId());
                         }
                     }
 
